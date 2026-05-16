@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D365FO – Project Management & Accounting | Training Schedule</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --text: #1a1814;
+    --muted: #6b6457;
+    --border: #e2ddd4;
+    --accent-blue: #1a4d8f;
+    --accent-blue-light: #e8f0fb;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #854f0b;
+    --accent-amber-light: #faeeda;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  /* ── HEADER ── */
+  .hero {
+    background: var(--accent-blue);
+    color: #fff;
+    padding: 56px 32px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0, rgba(255,255,255,.03) 1px, transparent 0, transparent 50%);
+    background-size: 20px 20px;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+  .hero p {
+    font-size: 15px;
+    opacity: .8;
+    max-width: 520px;
+    margin: 0 auto 28px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-val { font-size: 28px; font-family: 'DM Serif Display', serif; }
+  .hero-stat-lbl { font-size: 12px; opacity: .65; text-transform: uppercase; letter-spacing: .05em; }
+  /* ── LAYOUT ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+  /* ── TABS ── */
+  .tab-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 140px;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+  .tab-btn .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .tab-btn:hover { background: var(--surface2); color: var(--text); }
+  .tab-btn.active { color: #fff; font-weight: 600; }
+  .tab-btn[data-tab="0"].active { background: var(--accent-blue); }
+  .tab-btn[data-tab="1"].active { background: var(--accent-teal); }
+  .tab-btn[data-tab="2"].active { background: var(--accent-amber); }
+  .tab-btn[data-tab="3"].active { background: var(--accent-purple); }
+  /* ── PHASE PANEL ── */
+  .phase-panel { display: none; animation: fadeIn .3s ease; }
+  .phase-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .phase-header {
+    border-radius: var(--radius);
+    padding: 22px 28px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .phase-header-0 { background: var(--accent-blue-light); border-left: 4px solid var(--accent-blue); }
+  .phase-header-1 { background: var(--accent-teal-light); border-left: 4px solid var(--accent-teal); }
+  .phase-header-2 { background: var(--accent-amber-light); border-left: 4px solid var(--accent-amber); }
+  .phase-header-3 { background: var(--accent-purple-light); border-left: 4px solid var(--accent-purple); }
+  .phase-icon { font-size: 32px; }
+  .phase-info { flex: 1; min-width: 200px; }
+  .phase-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; opacity: .7; }
+  .phase-info h2 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 4px 0 6px; }
+  .phase-info p { font-size: 13px; color: var(--muted); max-width: 480px; }
+  .phase-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .phase-pill {
+    font-size: 11px; font-weight: 500; padding: 3px 12px; border-radius: 20px;
+    background: rgba(0,0,0,.07); color: var(--text);
+  }
+  /* ── SESSIONS GRID ── */
+  .sessions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .session-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .session-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .session-card.open { border-color: currentColor; box-shadow: var(--shadow); }
+  .session-card-0.open { border-color: var(--accent-blue); }
+  .session-card-1.open { border-color: var(--accent-teal); }
+  .session-card-2.open { border-color: var(--accent-amber); }
+  .session-card-3.open { border-color: var(--accent-purple); }
+  .session-num { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px; }
+  .session-num-0 { color: var(--accent-blue); }
+  .session-num-1 { color: var(--accent-teal); }
+  .session-num-2 { color: var(--accent-amber); }
+  .session-num-3 { color: var(--accent-purple); }
+  .session-title { font-weight: 600; font-size: 14px; margin-bottom: 10px; line-height: 1.4; }
+  .session-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .session-badge {
+    font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500;
+    background: var(--surface2); color: var(--muted);
+  }
+  .expand-hint { font-size: 11px; color: var(--muted); margin-left: auto; }
+  /* ── DETAIL DRAWER ── */
+  .detail-drawer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    display: none;
+  }
+  .detail-drawer.open { display: block; animation: fadeIn .25s ease; }
+  .drawer-top {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .drawer-top-0 { border-top: 3px solid var(--accent-blue); }
+  .drawer-top-1 { border-top: 3px solid var(--accent-teal); }
+  .drawer-top-2 { border-top: 3px solid var(--accent-amber); }
+  .drawer-top-3 { border-top: 3px solid var(--accent-purple); }
+  .drawer-title { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; flex: 1; }
+  .close-drawer {
+    background: var(--surface2); border: none; border-radius: 6px;
+    padding: 6px 12px; font-size: 12px; cursor: pointer; color: var(--muted);
+    font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  }
+  .close-drawer:hover { background: var(--border); }
+  .drawer-body { padding: 20px 24px; }
+  .drawer-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .drawer-cols { grid-template-columns: 1fr; } }
+  .drawer-section-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin-bottom: 10px;
+  }
+  .drawer-list { list-style: none; }
+  .drawer-list li {
+    font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+  }
+  .drawer-list li:last-child { border-bottom: none; }
+  .drawer-list li::before { content: '›'; color: var(--muted); flex-shrink: 0; margin-top: 1px; }
+  /* ── TIP BOX ── */
+  .tip-box {
+    background: #fff8ed;
+    border: 1px solid #f7c75e;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
+  .tip-icon { font-size: 18px; flex-shrink: 0; }
+  /* ── MS LEARN LINKS ── */
+  .learn-section { border-top: 1px solid var(--border); padding-top: 18px; }
+  .learn-section-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .learn-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .learn-links { display: flex; flex-direction: column; gap: 8px; }
+  .learn-link {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: var(--text);
+    border: 1px solid var(--border);
+    transition: all .2s;
+  }
+  .learn-link:hover { background: #e8f0fb; border-color: var(--accent-blue); }
+  .learn-link-icon { flex-shrink: 0; margin-top: 2px; }
+  .learn-link-icon svg { width: 18px; height: 18px; }
+  .learn-link-body { flex: 1; min-width: 0; }
+  .learn-link-title { font-size: 13px; font-weight: 600; color: var(--accent-blue); margin-bottom: 2px; }
+  .learn-link-path { font-size: 11px; color: var(--muted); word-break: break-all; }
+  .learn-link-type {
+    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px;
+    white-space: nowrap; align-self: flex-start; flex-shrink: 0;
+    background: var(--accent-blue-light); color: var(--accent-blue);
+  }
+  .learn-link-type.doc { background: var(--accent-teal-light); color: var(--accent-teal); }
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    margin-top: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .footer-note-icon { font-size: 20px; flex-shrink: 0; }
+  .footer-note a { color: var(--accent-blue); text-decoration: none; }
+  .footer-note a:hover { text-decoration: underline; }
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin-bottom: 24px; }
+  .progress-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .progress-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+  .progress-fill-0 { background: var(--accent-blue); }
+  .progress-fill-1 { background: var(--accent-teal); }
+  .progress-fill-2 { background: var(--accent-amber); }
+  .progress-fill-3 { background: var(--accent-purple); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Instructor Notes · D365FO</div>
+  <h1>Project Management &amp; Accounting<br><em>Complete Training Schedule</em></h1>
+  <p>A structured 8-week curriculum for beginners, with Microsoft Learn references for every session.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val">16</div><div class="hero-stat-lbl">Sessions</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">4</div><div class="hero-stat-lbl">Phases</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">~32</div><div class="hero-stat-lbl">Hours</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">8</div><div class="hero-stat-lbl">Weeks</div></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TAB NAV -->
+  <nav class="tab-nav" role="tablist" aria-label="Training phases">
+    <button class="tab-btn active" data-tab="0" role="tab" aria-selected="true">
+      <span class="dot" style="background:#1a4d8f"></span> Phase 1 · Foundation
+    </button>
+    <button class="tab-btn" data-tab="1" role="tab" aria-selected="false">
+      <span class="dot" style="background:#0f6e56"></span> Phase 2 · Transactions
+    </button>
+    <button class="tab-btn" data-tab="2" role="tab" aria-selected="false">
+      <span class="dot" style="background:#854f0b"></span> Phase 3 · Billing &amp; Revenue
+    </button>
+    <button class="tab-btn" data-tab="3" role="tab" aria-selected="false">
+      <span class="dot" style="background:#3c3489"></span> Phase 4 · Reporting &amp; Close
+    </button>
+  </nav>
+
+  <!-- ══════════════════ PHASE 0 ══════════════════ -->
+  <div class="phase-panel active" id="panel-0">
+    <div class="phase-header phase-header-0">
+      <div class="phase-icon">🏗️</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 1 · Weeks 1–2</div>
+        <h2>Foundation</h2>
+        <p>Orient the student to D365FO navigation, project types, ledger setup, and the category framework — the building blocks everything else rests on.</p>
+        <div class="phase-meta">
+          <span class="phase-pill">4 sessions</span>
+          <span class="phase-pill">8 hrs</span>
+          <span class="phase-pill">Demo company: USMF</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Phase progress</span><span>Weeks 1–2</span></div>
+      <div class="progress-track"><div class="progress-fill progress-fill-0" style="width:25%"></div></div>
+    </div>
+    <div class="sessions-grid" id="grid-0"></div>
+    <div id="drawers-0"></div>
+  </div>
+
+  <!-- ══════════════════ PHASE 1 ══════════════════ -->
+  <div class="phase-panel" id="panel-1">
+    <div class="phase-header phase-header-1">
+      <div class="phase-icon">📒</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 2 · Weeks 3–4</div>
+        <h2>Transactions</h2>
+        <p>Walk through every transaction type — hours, expenses, items, fees, and on-account entries — and see how each posts to the ledger.</p>
+        <div class="phase-meta">
+          <span class="phase-pill">4 sessions</span>
+          <span class="phase-pill">8 hrs</span>
+          <span class="phase-pill">Demo company: USMF</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Phase progress</span><span>Weeks 3–4</span></div>
+      <div class="progress-track"><div class="progress-fill progress-fill-1" style="width:25%"></div></div>
+    </div>
+    <div class="sessions-grid" id="grid-1"></div>
+    <div id="drawers-1"></div>
+  </div>
+
+  <!-- ══════════════════ PHASE 2 ══════════════════ -->
+  <div class="phase-panel" id="panel-2">
+    <div class="phase-header phase-header-2">
+      <div class="phase-icon">💳</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 3 · Weeks 5–6</div>
+        <h2>Billing &amp; Revenue Recognition</h2>
+        <p>Master invoice proposals, fixed-price estimates, funding sources, and intercompany billing — the financial heart of the module.</p>
+        <div class="phase-meta">
+          <span class="phase-pill">4 sessions</span>
+          <span class="phase-pill">9 hrs</span>
+          <span class="phase-pill">Demo company: USMF + USSI</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Phase progress</span><span>Weeks 5–6</span></div>
+      <div class="progress-track"><div class="progress-fill progress-fill-2" style="width:25%"></div></div>
+    </div>
+    <div class="sessions-grid" id="grid-2"></div>
+    <div id="drawers-2"></div>
+  </div>
+
+  <!-- ══════════════════ PHASE 3 ══════════════════ -->
+  <div class="phase-panel" id="panel-3">
+    <div class="phase-header phase-header-3">
+      <div class="phase-icon">📊</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 4 · Weeks 7–8</div>
+        <h2>Reporting &amp; Period-end Close</h2>
+        <p>Budget vs actuals, forecasting, project statements, WIP elimination, and a full capstone simulation to consolidate all learning.</p>
+        <div class="phase-meta">
+          <span class="phase-pill">4 sessions</span>
+          <span class="phase-pill">9 hrs</span>
+          <span class="phase-pill">Capstone simulation in S16</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Phase progress</span><span>Weeks 7–8</span></div>
+      <div class="progress-track"><div class="progress-fill progress-fill-3" style="width:25%"></div></div>
+    </div>
+    <div class="sessions-grid" id="grid-3"></div>
+    <div id="drawers-3"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-note">
+    <div class="footer-note-icon">📌</div>
+    <div>
+      <strong>Microsoft Learn — free self-study:</strong> All links above point to official Microsoft Learn documentation and training modules. Your student can bookmark each page and self-study between sessions. The main entry point for the full PMA module documentation is:
+      <a href="https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting" target="_blank">Project management and accounting overview</a>.
+      For certification context, see the
+      <a href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/mb-310" target="_blank">MB-310 study guide</a>
+      which covers relevant PMA exam objectives.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+const MS_LEARN_ICON = `<svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="8.5" height="8.5" fill="#f25022"/><rect x="9.5" width="8.5" height="8.5" fill="#7fba00"/><rect y="9.5" width="8.5" height="8.5" fill="#00a4ef"/><rect x="9.5" y="9.5" width="8.5" height="8.5" fill="#ffb900"/></svg>`;
+
+const phases = [
+  {
+    id: 0,
+    sessions: [
+      {
+        num: "S1", week: "Week 1", time: "2 hrs",
+        title: "D365FO Overview & Navigation",
+        topics: ["What is D365FO and ERP concepts","Module navigation & workspaces","Role-based views & personalisation","Key PMA terminology"],
+        labs: ["Navigate to Project management module","Explore the PM workspace dashboard","Set up quick links and favourites"],
+        tip: "Start in USMF demo company. Let the student explore freely for 15 minutes before structured tasks — it builds confidence fast.",
+        links: [
+          { title: "Get started with Dynamics 365 Finance", path: "learn.microsoft.com/en-us/training/modules/get-started-financial-management-dyn365-finance/", url: "https://learn.microsoft.com/en-us/training/modules/get-started-financial-management-dyn365-finance/", type: "training" },
+          { title: "Get started with Dynamics 365 Project Operations", path: "learn.microsoft.com/en-us/training/modules/get-started-project-operations/", url: "https://learn.microsoft.com/en-us/training/modules/get-started-project-operations/", type: "training" },
+          { title: "Project management and accounting overview", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" }
+        ]
+      },
+      {
+        num: "S2", week: "Week 1", time: "2 hrs",
+        title: "Project Types & Lifecycle",
+        topics: ["Fixed-price vs Time & material projects","Internal & investment project types","Project lifecycle stages","Project hierarchy & sub-projects"],
+        labs: ["Create a Time & material project","Move project through stages (Created → In process)","Review project tree structure"],
+        tip: "Use a real-world scenario (e.g. a construction contract) to make project types tangible before touching the system.",
+        links: [
+          { title: "Project management and accounting overview — Project types section", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" },
+          { title: "Investment projects in D365 Project Operations", path: "learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project", type: "doc" },
+          { title: "Get started with project accounting (training module)", path: "learn.microsoft.com/en-us/training/modules/get-started-project-accounting/", url: "https://learn.microsoft.com/en-us/training/modules/get-started-project-accounting/", type: "training" }
+        ]
+      },
+      {
+        num: "S3", week: "Week 2", time: "2 hrs",
+        title: "Project Groups & Parameters",
+        topics: ["Project group configuration","Project management parameters page","Ledger posting setup basics","Cost & revenue account mapping"],
+        labs: ["Configure a new project group","Walk through PM parameters page","Map accounts to ledger posting types"],
+        tip: "Project groups are the backbone of all posting. Tell the student: 'If something posts to the wrong account later, come back here first.'",
+        links: [
+          { title: "Project management and accounting overview — Parameters & groups", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" },
+          { title: "Project accounting with general budget reservations", path: "learn.microsoft.com/en-us/dynamics365/finance/public-sector/general-budget-reservations-project-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/finance/public-sector/general-budget-reservations-project-accounting", type: "doc" }
+        ]
+      },
+      {
+        num: "S4", week: "Week 2", time: "2 hrs",
+        title: "Project Categories & Category Groups",
+        topics: ["Category groups: Hour, Expense, Fee, Item","Shared categories across modules","Category-to-ledger account mapping","Transaction categories vs project categories"],
+        labs: ["Create an Hour and Expense category group","Set up shared categories","Link project categories to GL accounts"],
+        tip: "Show how one misconfigured category breaks posting downstream. It creates good habits — students become meticulous about category setup.",
+        links: [
+          { title: "Configure project categories — Microsoft Learn", path: "learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-project-categories", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-project-categories", type: "doc" }
+        ]
+      }
+    ]
+  },
+  {
+    id: 1,
+    sessions: [
+      {
+        num: "S5", week: "Week 3", time: "2 hrs",
+        title: "Hour Journals & Timesheets",
+        topics: ["Hour journal structure and posting","Timesheet creation and approval workflow","WIP accounting for hours","Analysing hour transactions in posted view"],
+        labs: ["Post an hour journal entry to a project","Submit and approve a timesheet","Review posted hour transactions in inquiry"],
+        tip: "Connect timesheets to payroll concepts the student may already know — it bridges the gap between HR and Finance thinking.",
+        links: [
+          { title: "Project management and accounting overview — Timesheets", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" },
+          { title: "Get started with project accounting (module)", path: "learn.microsoft.com/en-us/training/modules/get-started-project-accounting/", url: "https://learn.microsoft.com/en-us/training/modules/get-started-project-accounting/", type: "training" }
+        ]
+      },
+      {
+        num: "S6", week: "Week 3", time: "2 hrs",
+        title: "Expense Journals & Reports",
+        topics: ["Project expense journals","Employee expense reports via Expense management","Expense category policies","How expense posts to project ledger"],
+        labs: ["Create and post a project expense journal","Submit an expense report linked to a project","Review cost ledger entries for expenses"],
+        tip: "Open both the PM module and Expense management side by side. Seeing the integration in real time is far more effective than explaining it in theory.",
+        links: [
+          { title: "Project management and accounting overview — Expenses", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" },
+          { title: "Get started with project accounting", path: "learn.microsoft.com/en-us/training/modules/get-started-project-accounting/", url: "https://learn.microsoft.com/en-us/training/modules/get-started-project-accounting/", type: "training" }
+        ]
+      },
+      {
+        num: "S7", week: "Week 4", time: "2 hrs",
+        title: "Item Journals & Purchase Orders",
+        topics: ["Item cost transactions on projects","Project purchase orders","Product receipt posting to project","Inventory items vs non-inventory procurement"],
+        labs: ["Create a PO linked to a project","Post product receipt and review item cost","Compare inventory vs non-inventory item posting"],
+        tip: "Highlight the difference between inventory items (stocked) and procurement categories (non-stocked). This is one of the most common beginner confusion points.",
+        links: [
+          { title: "Project management and accounting overview — Procurement", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" }
+        ]
+      },
+      {
+        num: "S8", week: "Week 4", time: "2 hrs",
+        title: "Fee Journals & On-account Transactions",
+        topics: ["Fee journal transactions","On-account invoicing concept","Customer advance payments","Billing milestones and prepayments"],
+        labs: ["Post a fee journal to a project","Create an on-account transaction","Preview projected invoice amount"],
+        tip: "Draw a simple timeline on the whiteboard: Cost → WIP → On-account → Invoice → Revenue. Students must see this flow before touching the system.",
+        links: [
+          { title: "Configure project categories — On-account type", path: "learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-project-categories", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-project-categories", type: "doc" },
+          { title: "Get started with invoicing in Project Operations", path: "learn.microsoft.com/en-us/training/modules/get-started-invoicing-project-operations/", url: "https://learn.microsoft.com/en-us/training/modules/get-started-invoicing-project-operations/", type: "training" }
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    sessions: [
+      {
+        num: "S9", week: "Week 5", time: "2 hrs",
+        title: "Project Invoice Proposals",
+        topics: ["Invoice proposal creation","Invoice rules for T&M vs Fixed-price","Partial and milestone invoicing","Credit notes on project invoices"],
+        labs: ["Generate an invoice proposal for a T&M project","Post and review the customer invoice","Create a credit note correction"],
+        tip: "Walk through the entire billing cycle in a single project end-to-end before discussing edge cases. Context first, details second.",
+        links: [
+          { title: "Manage project invoice proposals — Microsoft Learn", path: "learn.microsoft.com/en-us/dynamics365/project-operations/invoicing/format-update-project-invoice-proposals", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/invoicing/format-update-project-invoice-proposals", type: "doc" },
+          { title: "Get started with invoicing in Dynamics 365 Project Operations", path: "learn.microsoft.com/en-us/training/modules/get-started-invoicing-project-operations/", url: "https://learn.microsoft.com/en-us/training/modules/get-started-invoicing-project-operations/", type: "training" }
+        ]
+      },
+      {
+        num: "S10", week: "Week 5", time: "3 hrs",
+        title: "Revenue Recognition Methods",
+        topics: ["Completed contract method","Percentage of completion","WIP balances and fixed-price estimates","Running and posting estimates"],
+        labs: ["Configure a fixed-price project estimate","Run the estimate calculation","Post WIP entries and review GL impact"],
+        tip: "This is the hardest conceptual session. Spend 30 minutes on the whiteboard explaining WIP before opening D365FO — do not skip this.",
+        links: [
+          { title: "Revenue recognition overview — Project Operations", path: "learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview", type: "doc" },
+          { title: "Revenue recognition overview — Finance", path: "learn.microsoft.com/en-us/dynamics365/finance/accounts-receivable/revenue-recognition-overview", url: "https://learn.microsoft.com/en-us/dynamics365/finance/accounts-receivable/revenue-recognition-overview", type: "doc" },
+          { title: "Work with revenue recognition in Dynamics 365 Finance (training)", path: "learn.microsoft.com/en-us/training/modules/revenue-recognition-finance/", url: "https://learn.microsoft.com/en-us/training/modules/revenue-recognition-finance/", type: "training" },
+          { title: "Revenue recognition setup", path: "learn.microsoft.com/en-us/dynamics365/finance/accounts-receivable/revenue-recognition-setup", url: "https://learn.microsoft.com/en-us/dynamics365/finance/accounts-receivable/revenue-recognition-setup", type: "doc" }
+        ]
+      },
+      {
+        num: "S11", week: "Week 6", time: "2 hrs",
+        title: "Funding Sources & Limits",
+        topics: ["Multiple funding sources on one project","Funding limits and allocation rules","Grant and customer funding setup","Funding source priority rules"],
+        labs: ["Add two funding sources to a project","Set a funding limit","Review funding distribution after posting"],
+        tip: "Keep it to two funding sources in the lab — real complexity comes naturally. Always pair abstract rules with a concrete scenario (e.g. 70% customer + 30% grant).",
+        links: [
+          { title: "Project management and accounting overview — Funding", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" }
+        ]
+      },
+      {
+        num: "S12", week: "Week 6", time: "2 hrs",
+        title: "Intercompany Transactions",
+        topics: ["Intercompany lending and borrowing concept","Intercompany posting setup (USSI ↔ USMF)","Transfer pricing basics","Cross-company invoice flow"],
+        labs: ["Set up intercompany relationships","Post an intercompany hour journal","Review both legal entity ledger entries"],
+        tip: "Open two browser sessions — one per legal entity — side by side. Watching both sides update in real time is the fastest way to understand intercompany flow.",
+        links: [
+          { title: "Create intercompany transactions — Microsoft Learn", path: "learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/create-intercompany-transactions", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/create-intercompany-transactions", type: "doc" },
+          { title: "Intercompany accounting in Dynamics 365 Finance (training)", path: "learn.microsoft.com/en-us/training/modules/intercompany-accounting-dyn365-finance/", url: "https://learn.microsoft.com/en-us/training/modules/intercompany-accounting-dyn365-finance/", type: "training" }
+        ]
+      }
+    ]
+  },
+  {
+    id: 3,
+    sessions: [
+      {
+        num: "S13", week: "Week 7", time: "2 hrs",
+        title: "Project Budgets & Cost Control",
+        topics: ["Project budget setup and original budget entry","Budget revisions and carry-forward","Cost control workspace walkthrough","Committed costs and over-budget handling"],
+        labs: ["Enter an original budget for a project","Post a budget revision","Compare actuals vs budget in cost control workspace"],
+        tip: "The cost control workspace is what PMs use every day. Spend extra time here — it's the most visible and valuable screen for the student's future role.",
+        links: [
+          { title: "Configure and use budgeting in Dynamics 365 Finance", path: "learn.microsoft.com/en-in/training/paths/configure-use-budgeting-dyn365-finance/", url: "https://learn.microsoft.com/en-in/training/paths/configure-use-budgeting-dyn365-finance/", type: "training" },
+          { title: "Project management and accounting overview — Budgets", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" },
+          { title: "MB-310 study guide — Project budgeting objectives", path: "learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/mb-310", url: "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/mb-310", type: "doc" }
+        ]
+      },
+      {
+        num: "S14", week: "Week 7", time: "2 hrs",
+        title: "Project Forecasting",
+        topics: ["Forecast models in D365FO","Hour, cost, and revenue forecasts","Comparing forecasts vs actuals","When to use forecasting vs budgeting"],
+        labs: ["Create a forecast model","Enter hour and cost forecasts on a project","Compare forecast vs actual in the project statement"],
+        tip: "Students always ask: 'Why do we have both budgets AND forecasts?' Answer this before starting — the distinction is about perspective (financial control vs operational planning).",
+        links: [
+          { title: "Project management and accounting overview — Forecasting", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" }
+        ]
+      },
+      {
+        num: "S15", week: "Week 8", time: "2 hrs",
+        title: "Project Statements & Inquiries",
+        topics: ["Project statement report overview","Posted transactions inquiry","Revenue recognition report","Drilling from summary to transaction detail"],
+        labs: ["Run a project statement report","Drill down from summary line to voucher","Export project data to Excel for analysis"],
+        tip: "Teach the student to always verify here before doing period-end close. Frame it as their pre-close checklist — a habit that prevents errors in production.",
+        links: [
+          { title: "Project management and accounting overview — Reporting", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" },
+          { title: "Subscription billing and deferral schedules with PMA (TechTalk)", path: "learn.microsoft.com/en-us/dynamics365/guidance/techtalks/finance-subscription-billing-deferral-schedules-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/guidance/techtalks/finance-subscription-billing-deferral-schedules-project-management-accounting", type: "doc" }
+        ]
+      },
+      {
+        num: "S16", week: "Week 8", time: "3 hrs",
+        title: "⭐ Period-end Close & Capstone",
+        topics: ["WIP elimination process","Accruals and period reversals","Period-end close checklist","Common errors and how to fix them"],
+        labs: ["Run WIP elimination for a fixed-price project","Review eliminated GL entries","Full simulation: project creation → invoice → close"],
+        tip: "This is the capstone. Run the full simulation from project creation to period close. End by asking the student to explain every step they took — it solidifies all 8 weeks.",
+        links: [
+          { title: "Revenue recognition overview — WIP and elimination", path: "learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview", type: "doc" },
+          { title: "General journals for advanced accounting", path: "learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/general-journals", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/general-journals", type: "doc" },
+          { title: "Project management and accounting overview — Full reference", path: "learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", url: "https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting", type: "doc" },
+          { title: "MB-310 Exam study guide (certification path)", path: "learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/mb-310", url: "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/mb-310", type: "doc" }
+        ]
+      }
+    ]
+  }
+];
+
+function buildSessions() {
+  phases.forEach(phase => {
+    const grid = document.getElementById(`grid-${phase.id}`);
+    const drawers = document.getElementById(`drawers-${phase.id}`);
+    phase.sessions.forEach((s, idx) => {
+      // Card
+      const card = document.createElement('div');
+      card.className = `session-card session-card-${phase.id}`;
+      card.id = `card-${phase.id}-${idx}`;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-expanded', 'false');
+      card.innerHTML = `
+        <div class="session-num session-num-${phase.id}">${s.num} · ${s.week}</div>
+        <div class="session-title">${s.title}</div>
+        <div class="session-footer">
+          <span class="session-badge">⏱ ${s.time}</span>
+          <span class="session-badge">${s.links.length} refs</span>
+          <span class="expand-hint">Click to expand ↓</span>
+        </div>
+      `;
+      card.addEventListener('click', () => toggleDrawer(phase.id, idx));
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') toggleDrawer(phase.id, idx); });
+      grid.appendChild(card);
+
+      // Drawer
+      const drawer = document.createElement('div');
+      drawer.className = `detail-drawer`;
+      drawer.id = `drawer-${phase.id}-${idx}`;
+      const typeColor = phase.id === 0 ? 'var(--accent-blue)' : phase.id === 1 ? 'var(--accent-teal)' : phase.id === 2 ? 'var(--accent-amber)' : 'var(--accent-purple)';
+      drawer.innerHTML = `
+        <div class="drawer-top drawer-top-${phase.id}">
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:${typeColor};margin-bottom:4px">${s.num} · ${s.week} · ${s.time}</div>
+            <div class="drawer-title">${s.title}</div>
+          </div>
+          <button class="close-drawer" onclick="closeDrawer(${phase.id},${idx})">✕ Close</button>
+        </div>
+        <div class="drawer-body">
+          <div class="drawer-cols">
+            <div>
+              <div class="drawer-section-label">📘 Topics to cover</div>
+              <ul class="drawer-list">${s.topics.map(t => `<li>${t}</li>`).join('')}</ul>
+            </div>
+            <div>
+              <div class="drawer-section-label">🖥 Lab exercises</div>
+              <ul class="drawer-list">${s.labs.map(l => `<li>${l}</li>`).join('')}</ul>
+            </div>
+          </div>
+          <div class="tip-box">
+            <div class="tip-icon">💡</div>
+            <div><strong>Teaching tip:</strong> ${s.tip}</div>
+          </div>
+          <div class="learn-section">
+            <div class="learn-section-label">Microsoft Learn references</div>
+            <div class="learn-links">
+              ${s.links.map(l => `
+                <a class="learn-link" href="${l.url}" target="_blank" rel="noopener">
+                  <div class="learn-link-icon">${MS_LEARN_ICON}</div>
+                  <div class="learn-link-body">
+                    <div class="learn-link-title">${l.title}</div>
+                    <div class="learn-link-path">🔗 ${l.path}</div>
+                  </div>
+                  <div class="learn-link-type ${l.type === 'doc' ? 'doc' : ''}">${l.type === 'training' ? 'Training' : 'Docs'}</div>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+      drawers.appendChild(drawer);
+    });
+  });
+}
+
+function toggleDrawer(phaseId, idx) {
+  const drawer = document.getElementById(`drawer-${phaseId}-${idx}`);
+  const card = document.getElementById(`card-${phaseId}-${idx}`);
+  const isOpen = drawer.classList.contains('open');
+  // Close all in this phase
+  phases[phaseId].sessions.forEach((_, i) => {
+    document.getElementById(`drawer-${phaseId}-${i}`)?.classList.remove('open');
+    const c = document.getElementById(`card-${phaseId}-${i}`);
+    c?.classList.remove('open');
+    c?.setAttribute('aria-expanded', 'false');
+  });
+  if (!isOpen) {
+    drawer.classList.add('open');
+    card.classList.add('open');
+    card.setAttribute('aria-expanded', 'true');
+    setTimeout(() => drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+}
+
+function closeDrawer(phaseId, idx) {
+  document.getElementById(`drawer-${phaseId}-${idx}`)?.classList.remove('open');
+  const card = document.getElementById(`card-${phaseId}-${idx}`);
+  card?.classList.remove('open');
+  card?.setAttribute('aria-expanded', 'false');
+}
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = parseInt(btn.dataset.tab);
+    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+    document.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    document.getElementById(`panel-${tab}`).classList.add('active');
+  });
+});
+
+buildSessions();
+</script>
+</body>
+</html>
