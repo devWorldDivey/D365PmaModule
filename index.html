@@ -291,9 +291,57 @@
   .progress-fill-1 { background: var(--accent-teal); }
   .progress-fill-2 { background: var(--accent-amber); }
   .progress-fill-3 { background: var(--accent-purple); }
+
+/* ── UNIVERSAL SITE NAV ── */
+.site-nav{
+  position:sticky;top:0;z-index:300;
+  background:#1a2332;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;
+  padding:0 20px;height:52px;gap:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+.sn-brand{
+  font-family:'DM Serif Display','Playfair Display',Georgia,serif;
+  font-size:13px;font-weight:400;color:#fff;
+  white-space:nowrap;margin-right:16px;flex-shrink:0;
+  letter-spacing:-.01em;
+}
+.sn-brand span{color:#7eaaef;font-style:italic}
+.sn-links{
+  display:flex;gap:2px;flex:1;overflow-x:auto;
+  -ms-overflow-style:none;scrollbar-width:none;
+  align-items:center;
+}
+.sn-links::-webkit-scrollbar{display:none}
+.sn-link{
+  display:flex;align-items:center;gap:5px;
+  padding:0 11px;height:52px;
+  font-size:11.5px;font-weight:500;
+  color:rgba(255,255,255,.45);
+  text-decoration:none;white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:color .15s,border-color .15s;
+  flex-shrink:0;cursor:pointer;
+}
+.sn-link:hover{color:rgba(255,255,255,.85)}
+.sn-link.sn-active{color:#fff;border-bottom-color:#fff}
+.sn-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sn-div{width:1px;height:20px;background:rgba(255,255,255,.1);
+  margin:0 4px;flex-shrink:0;align-self:center}
+@media(max-width:680px){
+  .sn-brand{font-size:11px;margin-right:8px}
+  .sn-link{font-size:10px;padding:0 6px}
+  .sn-dot{display:none}
+}
 </style>
 </head>
 <body>
+<nav class="site-nav">
+  <div class="sn-brand">D365FO <span>&middot; PMA</span></div>
+  <div class="sn-links"><span class="sn-link sn-active"><span class="sn-dot" style="background:#7eaaef"></span>📅 Schedule</span><a class="sn-link" href="labs.html"><span class="sn-dot" style="background:#94a3b8"></span>🧪 All Labs</a><div class="sn-div"></div><a class="sn-link" href="tm.html"><span class="sn-dot" style="background:#5b8fff"></span>⏱ T&amp;M</a><a class="sn-link" href="fp.html"><span class="sn-dot" style="background:#4dcfbe"></span>🎯 Fixed Price</a><a class="sn-link" href="investment.html"><span class="sn-dot" style="background:#a78bfa"></span>🏗️ Investment</a><a class="sn-link" href="internal.html"><span class="sn-dot" style="background:#f59e0b"></span>👥 Internal</a><a class="sn-link" href="cost.html"><span class="sn-dot" style="background:#10b981"></span>💰 Cost</a><a class="sn-link" href="time.html"><span class="sn-dot" style="background:#ef4444"></span>🕒 Time</a></div>
+</nav>
+
 
 <div class="hero">
   <div class="hero-tag">Instructor Notes · D365FO</div>
@@ -310,7 +358,7 @@
 <div class="container">
 
   <!-- TAB NAV -->
-  <nav class="tab-nav" role="tablist" aria-label="Training phases">
+  <div class="tab-nav" role="tablist" aria-label="Training phases">
     <button class="tab-btn active" data-tab="0" role="tab" aria-selected="true">
       <span class="dot" style="background:#1a4d8f"></span> Phase 1 · Foundation
     </button>
@@ -323,7 +371,7 @@
     <button class="tab-btn" data-tab="3" role="tab" aria-selected="false">
       <span class="dot" style="background:#3c3489"></span> Phase 4 · Reporting &amp; Close
     </button>
-  </nav>
+  </div>
 
   <!-- ══════════════════ PHASE 0 ══════════════════ -->
   <div class="phase-panel active" id="panel-0">

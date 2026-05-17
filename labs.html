@@ -128,14 +128,59 @@ body{font-family:'Inter',sans-serif;background:#f0f3f8;color:#1a2332;min-height:
 
 @media(max-width:800px){.cards{grid-template-columns:repeat(2,1fr)}.how{grid-template-columns:1fr 1fr}}
 @media(max-width:500px){.cards,.how{grid-template-columns:1fr}.cmp{font-size:11px}}
+
+/* ── UNIVERSAL SITE NAV ── */
+.site-nav{
+  position:sticky;top:0;z-index:300;
+  background:#1a2332;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;
+  padding:0 20px;height:52px;gap:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+.sn-brand{
+  font-family:'DM Serif Display','Playfair Display',Georgia,serif;
+  font-size:13px;font-weight:400;color:#fff;
+  white-space:nowrap;margin-right:16px;flex-shrink:0;
+  letter-spacing:-.01em;
+}
+.sn-brand span{color:#7eaaef;font-style:italic}
+.sn-links{
+  display:flex;gap:2px;flex:1;overflow-x:auto;
+  -ms-overflow-style:none;scrollbar-width:none;
+  align-items:center;
+}
+.sn-links::-webkit-scrollbar{display:none}
+.sn-link{
+  display:flex;align-items:center;gap:5px;
+  padding:0 11px;height:52px;
+  font-size:11.5px;font-weight:500;
+  color:rgba(255,255,255,.45);
+  text-decoration:none;white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:color .15s,border-color .15s;
+  flex-shrink:0;cursor:pointer;
+}
+.sn-link:hover{color:rgba(255,255,255,.85)}
+.sn-link.sn-active{color:#fff;border-bottom-color:#fff}
+.sn-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sn-div{width:1px;height:20px;background:rgba(255,255,255,.1);
+  margin:0 4px;flex-shrink:0;align-self:center}
+@media(max-width:680px){
+  .sn-brand{font-size:11px;margin-right:8px}
+  .sn-link{font-size:10px;padding:0 6px}
+  .sn-dot{display:none}
+}
 </style>
 </head>
 <body>
+<nav class="site-nav">
+  <div class="sn-brand">D365FO <span>&middot; PMA</span></div>
+  <div class="sn-links"><a class="sn-link" href="index.html"><span class="sn-dot" style="background:#7eaaef"></span>📅 Schedule</a><span class="sn-link sn-active"><span class="sn-dot" style="background:#94a3b8"></span>🧪 All Labs</span><div class="sn-div"></div><a class="sn-link" href="tm.html"><span class="sn-dot" style="background:#5b8fff"></span>⏱ T&amp;M</a><a class="sn-link" href="fp.html"><span class="sn-dot" style="background:#4dcfbe"></span>🎯 Fixed Price</a><a class="sn-link" href="investment.html"><span class="sn-dot" style="background:#a78bfa"></span>🏗️ Investment</a><a class="sn-link" href="internal.html"><span class="sn-dot" style="background:#f59e0b"></span>👥 Internal</a><a class="sn-link" href="cost.html"><span class="sn-dot" style="background:#10b981"></span>💰 Cost</a><a class="sn-link" href="time.html"><span class="sn-dot" style="background:#ef4444"></span>🕒 Time</a></div>
+</nav>
+
 
 <div class="header">
-  <div>
-    <a class="back-btn" href="index.html">← Back to Training Schedule</a>
-  </div>
   <div class="header-badge">🧪 Hands-on Labs · D365FO PMA · Demo USMF</div>
   <h1>Hands-on Lab Guides<br><em>All 6 Project Types</em></h1>
   <p>Six standalone lab guides — each starts from base setup and covers all transactions, reports, and real-world scenarios with WBS templates ready to upload in D365FO.</p>
