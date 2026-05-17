@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>D365FO PMA · Cost Project Lab Guide</title>
+<meta name="description" content="Short-duration internal cost tracking — P&L direct, no billing, no capitalisation. R&D sprints, overhead allocation pools, and departmental cost centres.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0d0d;--ink2:#1a1a1a;--paper:#fafaf7;
+  --line:#e2e0d8;--line2:#ccc9be;
+  --blue:#0047cc;--blue-bg:#e8f0ff;--blue-mid:#b3c8f5;
+  --teal:#006d5b;--teal-bg:#e0f5f1;--teal-mid:#7ecbbf;
+  --amber:#a05a00;--amber-bg:#fff4e0;--amber-mid:#f5c97a;
+  --purple:#5c2d91;--purple-bg:#f0eaff;--purple-mid:#c4a8f5;
+  --green:#155724;--green-bg:#e8f5e9;--green-mid:#81c784;
+  --red:#c41c1c;--red-bg:#ffebeb;--red-mid:#f5a3a3;
+  --orange:#b84000;--orange-bg:#fff0e6;
+  --inv:#10b981;--inv-bg:#ecfdf5;--inv-mid:#6ee7b7;
+  --mono:'Syne Mono',monospace;--sans:'Inter',sans-serif;--display:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.65}
+.nav{position:sticky;top:0;z-index:200;background:var(--ink);display:flex;align-items:center;padding:0 24px;height:52px;gap:0;flex-wrap:nowrap;overflow:hidden}
+.nav-brand{font-family:var(--display);font-size:14px;font-weight:700;color:#fff;white-space:nowrap;margin-right:20px;flex-shrink:0}
+.nav-tabs{display:flex;gap:0;overflow-x:auto;flex:1;-ms-overflow-style:none;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{color:rgba(255,255,255,.45);font-size:11px;font-weight:500;padding:0 12px;height:52px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;user-select:none;font-family:var(--display)}
+.ntab:hover{color:rgba(255,255,255,.75)}
+.ntab.on{color:#fff;border-bottom-color:#fff}
+.nav-right{margin-left:auto;flex-shrink:0;padding-left:12px;display:flex;align-items:center;gap:8px}
+.pbadge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);white-space:nowrap;font-family:var(--display)}
+.hero{background:var(--ink2);padding:48px 28px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(124,58,237,.15) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 50%,rgba(0,109,91,.08) 0%,transparent 60%)}
+.hero-lbl{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.15);border-radius:4px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:4px 12px;margin-bottom:16px;font-family:var(--display)}
+.hero h1{font-family:var(--display);font-size:clamp(24px,5vw,42px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-.03em;margin-bottom:12px}
+.hero h1 span{color:#a78bfa}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:520px;margin:0 auto 24px;line-height:1.7}
+.hero-chips{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:5px;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:4px 11px;font-size:11px;font-weight:500;color:rgba(255,255,255,.65)}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.d-blue{background:#5b8fff}.d-teal{background:#4dcfbe}.d-amber{background:#f5c97a}
+.d-purple{background:#c4a8f5}.d-green{background:#81c784}.d-orange{background:#ffb347}
+.d-inv{background:#a78bfa}
+.stats{background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto}
+.stat{padding:14px 20px;border-right:1px solid var(--line);flex-shrink:0}
+.stat-n{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em}
+.stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-top:2px}
+.wrap{max-width:1020px;margin:0 auto;padding:28px 18px 80px}
+.sec-view{display:none}.sec-view.on{display:block;animation:rise .22s ease}
+@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sec-hdr{border-radius:12px;padding:20px 24px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.sh-0{background:var(--inv-bg);border-left:4px solid var(--inv)}.sh-0 .sh-title{color:var(--inv)}
+.sh-1{background:var(--teal-bg);border-left:4px solid var(--teal)}.sh-1 .sh-title{color:var(--teal)}
+.sh-2{background:var(--amber-bg);border-left:4px solid var(--amber)}.sh-2 .sh-title{color:var(--amber)}
+.sh-3{background:var(--green-bg);border-left:4px solid var(--green)}.sh-3 .sh-title{color:var(--green)}
+.sh-4{background:var(--blue-bg);border-left:4px solid var(--blue)}.sh-4 .sh-title{color:var(--blue)}
+.sh-5{background:var(--purple-bg);border-left:4px solid var(--purple)}.sh-5 .sh-title{color:var(--purple)}
+.sh-title{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.sh-desc{font-size:13px;color:#555;line-height:1.6;max-width:580px}
+.sh-meta{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.sh-pill{font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:rgba(0,0,0,.07);color:var(--ink);white-space:nowrap}
+.labs{display:flex;flex-direction:column;gap:9px}
+.lab{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;transition:border-color .15s}
+.lab:hover{border-color:var(--line2)}.lab.open{border-color:#a8a098}
+.lab-head{display:grid;grid-template-columns:42px 1fr auto auto auto;gap:10px;align-items:center;padding:12px 16px;cursor:pointer;user-select:none}
+.lab-num{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;font-weight:700;flex-shrink:0}
+.ln-0{background:var(--inv-bg);color:var(--inv)}.ln-1{background:var(--teal-bg);color:var(--teal)}
+.ln-2{background:var(--amber-bg);color:var(--amber)}.ln-3{background:var(--green-bg);color:var(--green)}
+.ln-4{background:var(--blue-bg);color:var(--blue)}.ln-5{background:var(--purple-bg);color:var(--purple)}
+.lab-info{min-width:0}
+.lab-title{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:2px;font-family:var(--display)}
+.lab-sub{font-size:11px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
+.lb-s{background:#f0eaff;color:#7c3aed}.lb-t{background:#e0fff8;color:#006d5b}
+.lb-i{background:#ede0ff;color:#5c2d91}.lb-r{background:#e8f5e9;color:#155724}
+.lb-w{background:#e8f0ff;color:#0047cc}.lb-sc{background:#ffebeb;color:#c41c1c}
+.tick{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;font-size:11px;color:transparent}
+.tick.done{background:var(--green);border-color:var(--green);color:#fff}
+.chev{font-size:14px;color:#bbb;transition:transform .2s;flex-shrink:0}
+.lab.open .chev{transform:rotate(180deg)}
+.lab-body{display:none;border-top:1px solid var(--line)}
+.lab.open .lab-body{display:block;animation:rise .18s ease}
+.lb-inner{padding:16px 18px}
+.ow-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ow-card{border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.6;display:flex;gap:7px}
+.ow-obj{background:var(--inv-bg);color:#5b21b6}.ow-why{background:var(--amber-bg);color:var(--amber)}
+.ow-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.pr-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pr-card{border-radius:7px;padding:10px 13px;font-size:12px;line-height:1.55}
+.pr-pre{background:#f5f5f0;border:1px solid var(--line);color:#444}
+.pr-res{background:var(--green-bg);border:1px solid var(--green-mid);color:var(--green)}
+.pr-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;opacity:.7}
+.prl{list-style:none;display:flex;flex-direction:column;gap:3px}
+.prl li{display:flex;gap:6px;align-items:flex-start}
+.prl li::before{content:'›';flex-shrink:0;opacity:.5;font-size:15px;margin-top:-1px}
+.slbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.steps{display:flex;flex-direction:column;position:relative;margin-bottom:16px}
+.steps::before{content:'';position:absolute;left:18px;top:26px;bottom:26px;width:2px;background:var(--line);z-index:0}
+.step{display:flex;gap:12px;position:relative;z-index:1;padding:3px 0}
+.sdot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:700;flex-shrink:0;background:#fff;border:2px solid var(--line);margin-top:2px}
+.sd-0{border-color:var(--inv);color:var(--inv);background:var(--inv-bg)}
+.sd-1{border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
+.sd-2{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+.sd-3{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+.sd-4{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.sd-5{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
+.step-c{flex:1;padding-bottom:12px}
+.step-t{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;font-family:var(--display)}
+.step-b{font-size:13px;color:#444;line-height:1.6}
+.step-b code{font-family:var(--mono);font-size:11px;background:#f0ede6;border:1px solid var(--line);padding:1px 5px;border-radius:3px;color:#333}
+.np{display:inline-flex;align-items:center;gap:3px;background:var(--ink);color:#fff;border-radius:4px;padding:3px 9px;font-family:var(--mono);font-size:10.5px;margin:4px 0;flex-wrap:wrap}
+.np .sep{opacity:.35}
+.ft{width:100%;border-collapse:collapse;margin:7px 0 3px;font-size:12.5px}
+.ft th{background:#f5f3ec;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#666;padding:6px 9px;text-align:left;border-bottom:2px solid var(--line)}
+.ft td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.ft tr:last-child td{border-bottom:none}
+.fn{font-family:var(--mono);font-size:11px;color:var(--inv);font-weight:500}
+.fv{color:var(--teal);font-family:var(--mono);font-size:11px;background:var(--teal-bg);padding:1px 5px;border-radius:3px}
+.fd{color:#666;font-size:12px}
+.warn{background:var(--red-bg);border:1px solid var(--red-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--red);display:flex;gap:7px;margin:6px 0}
+.tip{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--amber);display:flex;gap:7px;margin:6px 0}
+.info{background:var(--inv-bg);border:1px solid var(--inv-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:#5b21b6;display:flex;gap:7px;margin:6px 0}
+.bi{font-size:15px;flex-shrink:0;margin-top:1px}
+.voucher{background:#f8f7f2;border:1px solid var(--line);border-radius:7px;padding:10px 13px;margin:7px 0}
+.vlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:6px}
+.ve{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 0}
+.va{color:#333;font-size:11.5px;font-family:var(--mono);flex:1}
+.vdr{color:var(--red);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vcr{color:var(--teal);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vbl{min-width:100px}
+.wbs-wrap{overflow-x:auto;margin:8px 0}
+.wbs{width:100%;border-collapse:collapse;font-size:12px}
+.wbs th{background:var(--ink);color:#fff;padding:7px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.wbs td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.wbs tr:nth-child(even) td{background:#fafaf7}
+.wbs .l1{font-weight:700;color:var(--inv);background:var(--inv-bg)!important}
+.wbs .l2{font-weight:600;color:#333;padding-left:20px}
+.wbs .l3{color:#555;padding-left:36px}
+.wbs .tot{font-weight:700}
+.wbs .hrs{text-align:right;font-family:var(--mono);font-size:11px}
+.wbs .cost{text-align:right;font-family:var(--mono);font-size:11px;color:var(--teal)}
+.wbs .rev{text-align:right;font-family:var(--mono);font-size:11px;color:var(--inv)}
+.rlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:16px 0 7px;display:flex;align-items:center;gap:7px}
+.rlbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.refs{display:flex;flex-direction:column;gap:5px;margin-bottom:3px}
+.refa{display:flex;align-items:flex-start;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:8px 11px;text-decoration:none;color:var(--ink);transition:background .15s,border-color .15s}
+.refa:hover{background:var(--inv-bg);border-color:var(--inv-mid)}
+.ri{color:var(--inv);font-size:13px;flex-shrink:0;margin-top:2px}
+.rb-t{font-size:12px;font-weight:500;color:var(--inv);margin-bottom:1px}
+.rb-u{font-size:10px;color:#aaa;word-break:break-all;font-family:var(--mono)}
+.rsrc{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;align-self:flex-start;background:var(--inv-bg);color:var(--inv)}
+.so{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:14px;overflow:hidden}
+.so-h{display:flex;align-items:center;gap:7px;padding:10px 14px;cursor:pointer;font-size:12.5px;font-weight:600;background:#f8f7f2;color:#555;user-select:none}
+.so-h:hover{background:var(--line)}
+.so-b{display:none;padding:14px}.so-b.on{display:block;animation:rise .18s ease}
+.oct{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px}
+.oct th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;padding:6px 9px;border-bottom:1px solid var(--line);text-align:left}
+.oct td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+.oct tr:last-child td{border-bottom:none}
+.occ{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:transparent;transition:all .15s}
+.occ.ok{background:var(--green);border-color:var(--green);color:#fff}
+.rr{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.rb{border:1px solid var(--line);background:transparent;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s;color:#555}
+.rb:hover{background:#f5f3ec}
+.rb.s1{background:var(--red-bg);border-color:var(--red-mid);color:var(--red)}
+.rb.s2{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.rb.s3{background:var(--teal-bg);border-color:var(--teal-mid);color:var(--teal)}
+.rb.s4{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.si-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.sif label{font-size:11px;font-weight:500;color:#888;display:block;margin-bottom:3px}
+.sif input{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:13px;font-family:var(--sans);background:var(--paper);color:var(--ink)}
+.sif input:focus{outline:none;border-color:var(--inv-mid)}
+.sbtn{background:var(--inv);color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:opacity .15s}
+.sbtn:hover{opacity:.82}
+.pstrip{background:#fff;border-top:1px solid var(--line);padding:0 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;bottom:0;z-index:100}
+.ps-lbl{font-size:12px;font-weight:600;color:#555;padding:10px 0;white-space:nowrap}
+.ps-trk{flex:1;min-width:160px;height:5px;background:var(--line);border-radius:3px;overflow:hidden;max-width:280px}
+.ps-fill{height:100%;border-radius:3px;background:var(--inv);transition:width .4s}
+.ps-pct{font-size:12px;font-weight:600;color:var(--inv);min-width:32px;font-family:var(--display)}
+.ps-exp{margin-left:auto;background:var(--ink);color:#fff;border:none;border-radius:6px;padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.ps-exp:hover{opacity:.82}
+@media(max-width:680px){
+  .ow-row,.pr-row,.si-grid{grid-template-columns:1fr}
+  .lab-head{grid-template-columns:36px 1fr auto auto}
+  .lbadge{display:none}
+  .sec-hdr{grid-template-columns:1fr}
+  .sh-meta{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+  .stats{flex-wrap:wrap}.stat{min-width:45%}
+}
+@media(max-width:460px){
+  .nav-brand{font-size:12px;margin-right:10px}.ntab{font-size:10px;padding:0 8px}.hero h1{font-size:20px}
+}
+@media print{
+  .nav,.pstrip{display:none!important}
+  .sec-view{display:block!important;page-break-after:always;break-after:page}
+  .lab-body{display:block!important}.so-b{display:block!important}
+  .lab{page-break-inside:avoid;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">D365FO · Cost Lab</span>
+  <div class="nav-tabs" id="ntabs"></div>
+  <div class="nav-right">
+    <a href="labs.html" style="font-size:11px;color:rgba(255,255,255,.45);text-decoration:none;margin-right:8px;white-space:nowrap;flex-shrink:0">⌂ Labs</a>
+    <a href="tm.html" style="font-size:11px;font-weight:600;color:#5b8fff;text-decoration:none;background:rgba(91,143,255,.12);border:1px solid rgba(91,143,255,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">⏱</a>
+    <a href="fp.html" style="font-size:11px;font-weight:600;color:#4dcfbe;text-decoration:none;background:rgba(77,207,190,.12);border:1px solid rgba(77,207,190,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">🎯</a>
+    <a href="investment.html" style="font-size:11px;font-weight:600;color:#a78bfa;text-decoration:none;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">🏗️</a>
+    <a href="internal.html" style="font-size:11px;font-weight:600;color:#f59e0b;text-decoration:none;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">👥</a>
+    <a href="time.html" style="font-size:11px;font-weight:600;color:#ef4444;text-decoration:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">🕒</a>
+    <span class="pbadge" id="pbadge">0 / 0 done</span>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-lbl">💰 Hands-on Lab · Cost Project · Demo USMF</div>
+  <h1>Cost Project<br><span style="color:#6ee7b7">Complete Lab Guide</span></h1>
+  <div class="hero-sub">Short-duration internal cost tracking — P&L direct, no billing, no capitalisation. R&D sprints, overhead allocation pools, and departmental cost centres.</div>
+  <div class="hero-chips"><div class="chip"><span class="dot" style="background:#10b981;width:6px;height:6px;border-radius:50%;flex-shrink:0"></span>S1 · Base Setup</div><div class="chip"><span class="dot" style="background:#f59e0b;width:6px;height:6px;border-radius:50%;flex-shrink:0"></span>S2 · Transactions</div><div class="chip"><span class="dot" style="background:#8b5cf6;width:6px;height:6px;border-radius:50%;flex-shrink:0"></span>S3 · Reports</div><div class="chip"><span class="dot" style="background:#3b82f6;width:6px;height:6px;border-radius:50%;flex-shrink:0"></span>S4 · R&D Sprint + WBS</div><div class="chip"><span class="dot" style="background:#ef4444;width:6px;height:6px;border-radius:50%;flex-shrink:0"></span>S5 · Overhead Allocation + WBS</div></div>
+</div>
+<div class="stats"><div class="stat"><div class="stat-n">5</div><div class="stat-l">Sections</div></div><div class="stat"><div class="stat-n" id="total-lbl">—</div><div class="stat-l">Labs</div></div><div class="stat"><div class="stat-n">USMF</div><div class="stat-l">Demo co.</div></div><div class="stat"><div class="stat-n">No billing</div><div class="stat-l">Key rule</div></div><div class="stat"><div class="stat-n">P&L direct</div><div class="stat-l">Posting</div></div><div class="stat"><div class="stat-n">2</div><div class="stat-l">WBS</div></div></div>
+<div class="wrap" id="main-wrap"><div id="sec-views"></div></div>
+<div class="pstrip">
+  <span class="ps-lbl">Lab progress</span>
+  <div class="ps-trk"><div class="ps-fill" id="ps-fill" style="width:0%"></div></div>
+  <span class="ps-pct" id="ps-pct">0%</span>
+  <button class="ps-exp" id="exp-btn">📄 Export progress report</button>
+</div>
+<script>
+const SECTIONS = [
+{id:0,label:"S1 · Base Setup",title:"Section 1 — Base Setup: Cost Project Configuration",
+ desc:"Cost projects post costs directly to P&L — like Internal. Key differences: shorter duration, no capitalisation, no billing. Often used for R&D and overhead allocation.",
+ cls:"sh-0",nc:"ln-0",
+ labs:[
+  {id:"0-0",badge:"lb-s",bl:"Concept",
+   title:"Cost Project vs Internal Project — The Differences",
+   sub:"When to use Cost vs Internal",
+   obj:"Identify the 3 differences between Cost and Internal projects and the 4 rules that apply to both.",
+   why:"Cost and Internal projects are nearly identical in accounting behaviour. The distinction is operational and organisational. Getting this wrong doesn't cause accounting errors — but it causes reporting confusion.",
+   pre:["Internal project concepts understood (internal.html)"],
+   result:["3 differences between Cost and Internal stated","4 shared rules confirmed","Use-case examples for each identified"],
+   steps:[
+    {t:"What Cost and Internal share",b:"",
+     f:[{f:"No billing",v:"Cannot create invoice proposals",d:""},{f:"No revenue",v:"Zero revenue posting",d:""},{f:"No capitalisation",v:"P&L direct — no WIP",d:""},{f:"No customer contract needed",v:"Leave contract ID blank",d:""}],
+     w:null,tp:null,inf:null,v:null},
+    {t:"3 differences — Cost vs Internal",b:"",
+     f:[{f:"Duration",v:"Cost = shorter (days–weeks). Internal = longer (months–years)",d:"Rule of thumb"},{f:"Capitalisation option",v:"Internal can track resource consumption for planning. Cost cannot be capitalised to balance sheet.",d:""},{f:"Typical use",v:"Cost = R&D sprints, overhead allocation, audit fees. Internal = training programmes, office moves, IT support.",d:""}],
+     w:null,tp:"When in doubt: short-duration internal activity → Cost project. Long-duration organisational initiative → Internal project.",inf:null,v:null},
+    {t:"R&D Cost project — why not Internal?",b:"Research and development sprints are tracked as Cost projects because:",
+     f:[{f:"Short sprint cycles",v:"2-4 week R&D sprints reset often",d:"Cost projects suit short cycles"},{f:"IAS 38 consideration",v:"Development phase costs may be capitalised",d:"If capitalisation applies, use Investment project instead"},{f:"No planning horizon",v:"R&D doesn't need long-term resource planning",d:"Internal projects have better planning tools"}],
+     w:null,tp:"Important: If the R&D project reaches the development phase under IAS 38 and costs qualify for capitalisation, switch to an Investment project. Cost projects cannot be capitalised.",inf:null,v:null}
+   ],
+   out:["Cost vs Internal differences clearly stated","4 shared no-billing rules confirmed","R&D use-case for Cost project understood"],
+   refs:[{t:"Project management and accounting overview — cost projects",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+  {id:"0-1",badge:"lb-s",bl:"Setup",
+   title:"Create Cost Project Group and Project",
+   sub:"Project management and accounting › Setup › Posting › Project groups",
+   obj:"Create project group COST-RD with P&L posting and create project PROJ-COST-001 for an R&D sprint.",
+   why:"The setup for Cost projects is almost identical to Internal. The only configuration difference is the project type restriction. This lab reinforces the pattern — same engine, different classification.",
+   pre:["PMA parameters configured"],
+   result:["COST-RD group — P&L, no revenue","PROJ-COST-001 created — no contract, no customer"],
+   steps:[
+    {t:"Create COST-RD project group",b:'<span class="np">Project groups</span><br>New:',
+     f:[{f:"Project group",v:"COST-RD",d:""},{f:"Name",v:"R&D Cost Projects",d:""},{f:"Project type",v:"Cost",d:"⭐ Restricts to Cost project type only"},{f:"Hour — Cost",v:"Profit and loss",d:"P&L direct"},{f:"Revenue",v:"No revenue",d:""}],
+     w:null,tp:null,inf:null,v:null},
+    {t:"Create PROJ-COST-001",b:'<span class="np">All projects</span><br>New:',
+     f:[{f:"Project ID",v:"PROJ-COST-001",d:""},{f:"Project name",v:"AI Feature Research Sprint Q1",d:""},{f:"Project type",v:"Cost",d:""},{f:"Project group",v:"COST-RD",d:""},{f:"Contract ID",v:"(blank)",d:"No customer"},{f:"Stage",v:"In process",d:""}],
+     w:null,tp:null,inf:null,v:null}
+   ],
+   out:["COST-RD group created — P&L posting","PROJ-COST-001 in In process — no contract"],
+   refs:[{t:"Configure accounting for billable projects",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-accounting-billable-projects"}]}
+ ]
+},
+{id:1,label:"S2 · Transactions",title:"Section 2 — Cost Project Transactions",
+ desc:"Post all transaction types to a Cost project — same journals as Internal, same P&L direct result. Understand how Cost project costs are tracked for overhead allocation.",
+ cls:"sh-1",nc:"ln-1",
+ labs:[
+  {id:"1-0",badge:"lb-t",bl:"Transaction",
+   title:"Post Hours, Expenses & Items to Cost Project",
+   sub:"Hour journal + Expense journal + Item journal",
+   obj:"Post R&D sprint costs: 80 engineering hours, USD 2,000 cloud compute expenses, and USD 5,000 of prototype materials — all to P&L directly.",
+   why:"The posting process on Cost projects is identical to Internal — same journals, same menus, same result. The lab reinforces the pattern while using realistic R&D numbers that resonate with technology companies.",
+   pre:["PROJ-COST-001 in In process"],
+   result:["80 hours posted — P&L","USD 2,000 cloud expense — P&L","USD 5,000 prototype materials — P&L","Total sprint cost = USD 19,000"],
+   steps:[
+    {t:"Post 80 R&D hours",b:'<span class="np">Journals <span class="sep">›</span> Hour</span><br>New → Lines:',
+     f:[{f:"Project ID",v:"PROJ-COST-001",d:""},{f:"Category",v:"ConsultHours",d:""},{f:"Hours",v:"80",d:"2-week sprint team"},{f:"Cost price",v:"140.00",d:"USD 11,200 total"},{f:"Line property",v:"Non-chargeable",d:""}],
+     w:null,tp:null,inf:null,
+     v:{lbl:"GL — Hours on Cost project",rows:[{a:"601100 R&D labour cost (P&L)",dr:"USD 11,200.00",cr:""},{a:"Payroll allocation",dr:"",cr:"USD 11,200.00"}]}},
+    {t:"Post cloud compute expense",b:'<span class="np">Journals <span class="sep">›</span> Expense</span>',
+     f:[{f:"Category",v:"TravelExp",d:"Or create CloudCompute category"},{f:"Amount",v:"2,000.00",d:"AWS/Azure compute costs for sprint"}],
+     w:null,tp:null,inf:null,v:null},
+    {t:"Post prototype materials (Item journal)",b:'<span class="np">Journals <span class="sep">›</span> Item</span><br>10 units × USD 500 of electronic components:',
+     f:[{f:"Item number",v:"ELEC-PROTO",d:""},{f:"Quantity",v:"10",d:""},{f:"Category",v:"Materials",d:""},{f:"Line property",v:"Non-chargeable",d:""}],
+     w:null,tp:null,inf:null,
+     v:{lbl:"GL — Item journal on Cost project",rows:[{a:"601300 R&D materials (P&L)",dr:"USD 5,000.00",cr:""},{a:"Inventory offset",dr:"",cr:"USD 5,000.00"}]}}
+   ],
+   out:["All 3 transaction types posted","Total sprint cost USD 19,000 in P&L","No WIP, no revenue confirmed"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+},
+{id:2,label:"S3 · Reports",title:"Section 3 — Cost Project Reporting",
+ desc:"Run cost project reports and understand how Cost project costs feed into overhead allocation and departmental expense reporting.",
+ cls:"sh-2",nc:"ln-2",
+ labs:[
+  {id:"2-0",badge:"lb-r",bl:"Report",
+   title:"Project Statement + Cost Control Workspace",
+   sub:"Project statements + Cost control workspace",
+   obj:"Run the project statement for PROJ-COST-001 and use the cost control workspace to compare R&D sprint cost to the approved sprint budget.",
+   why:"For R&D and overhead projects, cost control is the primary management tool. The question isn't 'did we bill enough?' — it's 'did we spend within the approved R&D budget?'",
+   pre:["Transactions posted"],
+   result:["Statement: USD 19,000 cost, zero revenue, zero WIP","Cost vs sprint budget variance identified","Workspace shows actual vs committed R&D spend"],
+   steps:[
+    {t:"Run project statement",b:'<span class="np">Inquiries and reports <span class="sep">›</span> Project statements</span>',
+     f:[{f:"Revenue",v:"USD 0",d:""},{f:"Cost — Hours",v:"USD 11,200",d:""},{f:"Cost — Expenses",v:"USD 2,000",d:""},{f:"Cost — Items",v:"USD 5,000",d:""},{f:"Total",v:"USD 18,200",d:"Plus any additional items"}],
+     w:null,tp:null,inf:null,v:null},
+    {t:"Open Cost control workspace",b:'<span class="np">Workspaces <span class="sep">›</span> Cost control</span><br>Filter to PROJ-COST-001. Compare actual cost to approved sprint budget.',
+     f:[{f:"Budget",v:"USD 25,000",d:"Approved R&D sprint budget"},{f:"Actual",v:"USD 18,200",d:"Sprint costs to date"},{f:"Remaining",v:"USD 6,800",d:"Available for remainder of sprint"}],
+     w:null,tp:"R&D sprint reporting tip: export the cost control workspace weekly during the sprint. Flag any single category that reaches 80% of its sub-budget. This catches overspending before it happens.",inf:null,v:null}
+   ],
+   out:["Statement confirms cost-only view","Cost control workspace shows budget vs actuals","R&D spending cadence established"],
+   refs:[{t:"Project forecasts and budgets",u:"https://learn.microsoft.com/en-in/dynamics365/project-operations/prod-pma/project-forecasts-budgets"}]}
+ ]
+},
+{id:3,label:"S4 · R&D Sprint WBS",title:"Section 4 — R&D Sprint Scenario + WBS",
+ desc:"Cost project scenario for a 4-week AI feature development sprint: engineering, testing, infrastructure, and documentation. USD 80,000 sprint budget.",
+ cls:"sh-3",nc:"ln-3",
+ labs:[
+  {id:"3-0",badge:"lb-w",bl:"WBS",
+   title:"R&D Sprint WBS — USD 80,000",
+   sub:"PROJ-COST-RD · Cost · AI feature development · 4 weeks",
+   obj:"Build a 5-phase WBS for a 4-week R&D sprint developing a new AI-powered feature.",
+   why:"R&D Cost projects need a WBS even though they are short. Without one, you cannot track which phase consumed the budget — making the post-sprint retrospective meaningless.",
+   pre:["PROJ-COST-RD created (Cost type)","Sprint budget: USD 80,000 approved by CTO"],
+   result:["5-phase sprint WBS created","Labour and infrastructure costs split","Template for future sprints"],
+   steps:[{t:"Build WBS",b:"See table. Enter in D365FO: Plan → Work breakdown structure.",f:null,w:null,tp:"Create a WBS template from this sprint and reuse it for all future sprints. Consistent WBS structures make cross-sprint comparison possible in the project statement.",inf:null,v:null}],
+   wbs:{headers:["Task","Level","Hours","Infrastructure (USD)","Vendors (USD)","Category"],
+    rows:[
+     ["1 — DISCOVERY & DESIGN","L1","","","",""],
+     ["1.1 Problem statement & scope","L2","16","—","—","ConsultHours"],
+     ["1.2 Technical architecture","L2","24","—","—","ConsultHours"],
+     ["1.3 UX / interface design","L2","16","—","USD 3,000","ConsultHours"],
+     ["— PHASE 1 TOTAL","tot","56","—","USD 3,000",""],
+     ["2 — DEVELOPMENT","L1","","","",""],
+     ["2.1 Backend API development","L2","80","—","—","ConsultHours"],
+     ["2.2 ML model training","L2","40","USD 8,000","—","ConsultHours"],
+     ["2.3 Frontend integration","L2","40","—","—","ConsultHours"],
+     ["2.4 Cloud compute (GPU)","L2","—","USD 12,000","—","Materials"],
+     ["— PHASE 2 TOTAL","tot","160","USD 20,000","—",""],
+     ["3 — TESTING","L1","","","",""],
+     ["3.1 Unit and integration tests","L2","32","—","—","ConsultHours"],
+     ["3.2 Performance testing","L2","16","USD 2,000","—","ConsultHours"],
+     ["3.3 Security review","L2","—","—","USD 5,000","TravelExp"],
+     ["— PHASE 3 TOTAL","tot","48","USD 2,000","USD 5,000",""],
+     ["4 — DOCUMENTATION","L1","","","",""],
+     ["4.1 Technical docs","L2","24","—","—","ConsultHours"],
+     ["4.2 API documentation","L2","16","—","—","ConsultHours"],
+     ["— PHASE 4 TOTAL","tot","40","—","—",""],
+     ["5 — SPRINT REVIEW","L1","","","",""],
+     ["5.1 Demo & retrospective","L2","8","—","—","ConsultHours"],
+     ["5.2 Backlog refinement","L2","8","—","—","ConsultHours"],
+     ["— PHASE 5 TOTAL","tot","16","—","—",""],
+     ["═══ SPRINT TOTAL","tot","320 hrs","USD 22,000","USD 8,000","USD 80,000"]
+    ]
+   },
+   out:["5-phase sprint WBS created","Budget USD 80,000 allocated","Template saved for future sprints"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+},
+{id:4,label:"S5 · Overhead Allocation WBS",title:"Section 5 — Overhead Allocation Scenario + WBS",
+ desc:"Cost project used as an overhead allocation vehicle — IT shared services costs allocated to business units via a Cost project structure.",
+ cls:"sh-4",nc:"ln-4",
+ labs:[
+  {id:"4-0",badge:"lb-w",bl:"WBS",
+   title:"IT Shared Services Overhead Allocation WBS",
+   sub:"PROJ-COST-OH · Cost · Annual IT overhead allocation · USD 240,000",
+   obj:"Build a WBS for the annual IT shared services overhead cost pool — to be allocated to business units at year-end.",
+   why:"Overhead allocation is a common use case for Cost projects in large organisations. IT, Finance, and HR shared services costs need a home before being allocated. A Cost project provides the accumulation vehicle with full transaction visibility.",
+   pre:["PROJ-COST-OH created (Cost type)","Annual IT budget: USD 240,000"],
+   result:["Annual IT cost pool WBS created","Costs accumulated throughout the year","Allocation basis defined per business unit"],
+   steps:[
+    {t:"Build overhead WBS",b:"See table. The WBS tracks IT cost categories — not projects. Costs accumulate in the pool all year.",f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Year-end allocation process",b:"At year-end, post an allocation journal to distribute the pooled costs to business unit cost centres:",
+     f:[{f:"Allocation basis",v:"Headcount % per business unit",d:"Most common allocation driver"},{f:"BU 1 (Sales — 40 staff)",v:"40/200 = 20% × USD 240,000 = USD 48,000",d:""},{f:"BU 2 (Operations — 80 staff)",v:"40% × USD 240,000 = USD 96,000",d:""},{f:"BU 3 (Finance — 30 staff)",v:"15% × USD 240,000 = USD 36,000",d:""},{f:"Other BUs",v:"Remaining 25%",d:""}],
+     w:null,tp:"Post allocation using a General journal (not a project journal). The Cost project has served its purpose as an accumulation vehicle — the allocation journals clear the balance to departmental cost centres.",inf:null,v:null}
+   ],
+   wbs:{headers:["Cost Category","Level","Annual Cost (USD)","Type","GL Account","Category"],
+    rows:[
+     ["IT SHARED SERVICES POOL","L1","USD 240,000","","",""],
+     ["Infrastructure","L2","USD 80,000","Fixed","613100","Materials"],
+     ["  Server & storage licences","L3","USD 35,000","Fixed","613100","Materials"],
+     ["  Network & connectivity","L3","USD 25,000","Fixed","613100","Materials"],
+     ["  Cloud hosting (Azure)","L3","USD 20,000","Variable","613100","Materials"],
+     ["IT Support Labour","L2","USD 96,000","Fixed","601100","ConsultHours"],
+     ["  Helpdesk team (8 FTEs)","L3","USD 72,000","Fixed","601100","ConsultHours"],
+     ["  Systems admin (2 FTEs)","L3","USD 24,000","Fixed","601100","ConsultHours"],
+     ["Software Licences","L2","USD 48,000","Fixed","613200","Materials"],
+     ["  Microsoft 365","L3","USD 20,000","Fixed","613200","Materials"],
+     ["  ERP licences (D365FO)",  "L3","USD 18,000","Fixed","613200","Materials"],
+     ["  Other SaaS tools","L3","USD 10,000","Variable","613200","Materials"],
+     ["Training & Development","L2","USD 16,000","Variable","614100","TravelExp"],
+     ["═══ ANNUAL TOTAL","tot","USD 240,000","","",""]
+    ]
+   },
+   out:["IT overhead WBS created — USD 240,000 cost pool","Annual accumulation process understood","Year-end allocation calculation demonstrated"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+}
+]; // END SECTIONS
+const TOTAL = SECTIONS.reduce((a,s)=>a+s.labs.length,0);
+const done  = new Set(JSON.parse(localStorage.getItem('pma_cost_done')||'[]'));
+function saveDone(){ localStorage.setItem('pma_cost_done',JSON.stringify([...done])); }
+function updateProg(){
+  const n=done.size, p=Math.round(n/TOTAL*100);
+  document.getElementById('pbadge').textContent = n+' / '+TOTAL+' done';
+  document.getElementById('ps-fill').style.width = p+'%';
+  document.getElementById('ps-pct').textContent  = p+'%';
+  document.getElementById('total-lbl').textContent = TOTAL;
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────
+let curSec=0;
+function buildNav(){
+  const c=document.getElementById('ntabs');
+  SECTIONS.forEach((s,i)=>{
+    const b=document.createElement('div');
+    b.className='ntab'+(i===0?' on':'');
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected',i===0?'true':'false');
+    b.textContent=s.label;
+    b.onclick=()=>switchSec(i);
+    c.appendChild(b);
+  });
+}
+function switchSec(i){
+  curSec=i;
+  document.querySelectorAll('.ntab').forEach((t,j)=>{
+    t.classList.toggle('on',j===i);
+    t.setAttribute('aria-selected',j===i?'true':'false');
+  });
+  document.querySelectorAll('.sec-view').forEach((v,j)=>v.classList.toggle('on',j===i));
+  document.getElementById('main-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── BUILD VIEWS ───────────────────────────────────────────────────────
+function buildViews(){
+  const c=document.getElementById('sec-views');
+  SECTIONS.forEach((sec,si)=>{
+    const view=document.createElement('div');
+    view.className='sec-view'+(si===0?' on':'');
+    const hdr=document.createElement('div');
+    hdr.className='sec-hdr '+sec.cls;
+    hdr.innerHTML=`<div><div class="sh-title">${sec.title}</div><div class="sh-desc">${sec.desc}</div></div>
+      <div class="sh-meta"><span class="sh-pill">Section ${si+1} of ${SECTIONS.length}</span><span class="sh-pill">${sec.labs.length} labs</span></div>`;
+    view.appendChild(hdr);
+    const labsDiv=document.createElement('div');
+    labsDiv.className='labs';
+    sec.labs.forEach((lab,li)=>labsDiv.appendChild(buildLab(lab,si,li,sec)));
+    view.appendChild(labsDiv);
+    c.appendChild(view);
+  });
+}
+
+function buildLab(lab,si,li,sec){
+  const key=lab.id;
+  const card=document.createElement('div');
+  card.className='lab';
+  const head=document.createElement('div');
+  head.className='lab-head';
+  const isDone=done.has(key);
+  head.innerHTML=`
+    <div class="lab-num ${sec.nc}">${li+1}</div>
+    <div class="lab-info">
+      <div class="lab-title">${lab.title}</div>
+      <div class="lab-sub">${lab.sub}</div>
+    </div>
+    <span class="lbadge ${lab.badge}">${lab.bl}</span>
+    <div class="tick${isDone?' done':''}" title="Mark complete">✓</div>
+    <span class="chev">⌄</span>`;
+  head.querySelector('.tick').onclick=e=>{
+    e.stopPropagation();
+    done.has(key)?done.delete(key):done.add(key);
+    saveDone(); updateProg();
+    e.target.classList.toggle('done',done.has(key));
+  };
+  head.onclick=()=>card.classList.toggle('open');
+  const body=document.createElement('div');
+  body.className='lab-body';
+  body.appendChild(buildBody(lab,si));
+  card.appendChild(head);
+  card.appendChild(body);
+  return card;
+}
+
+function buildBody(lab,si){
+  const d=document.createElement('div');
+  d.className='lb-inner';
+  d.innerHTML=`<div class="ow-row">
+    <div class="ow-card ow-obj"><div class="ow-ico">🎯</div><div><strong>Objective:</strong> ${lab.obj}</div></div>
+    <div class="ow-card ow-why"><div class="ow-ico">💡</div><div><strong>Why this matters:</strong> ${lab.why}</div></div>
+  </div>
+  <div class="pr-row">
+    <div class="pr-card pr-pre"><div class="pr-lbl">Prerequisites</div><ul class="prl">${lab.pre.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="pr-card pr-res"><div class="pr-lbl">Expected results</div><ul class="prl">${lab.result.map(r=>`<li>${r}</li>`).join('')}</ul></div>
+  </div>`;
+
+  const slbl=document.createElement('div');
+  slbl.className='slbl'; slbl.textContent='Step-by-step instructions';
+  d.appendChild(slbl);
+
+  const stepsDiv=document.createElement('div');
+  stepsDiv.className='steps';
+  lab.steps.forEach((s,idx)=>{
+    const st=document.createElement('div');
+    st.className='step';
+    let extra='';
+    if(s.f){ extra+='<table class="ft"><thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead><tbody>'; s.f.forEach(f=>{extra+=`<tr><td class="fn">${f.f}</td><td class="fv">${f.v}</td><td class="fd">${f.d}</td></tr>`;}); extra+='</tbody></table>'; }
+    if(s.w) extra+=`<div class="warn"><div class="bi">⚠️</div><div>${s.w}</div></div>`;
+    if(s.tp) extra+=`<div class="tip"><div class="bi">💡</div><div><strong>Tip:</strong> ${s.tp}</div></div>`;
+    if(s.inf) extra+=`<div class="info"><div class="bi">ℹ️</div><div>${s.inf}</div></div>`;
+    if(s.v){
+      extra+=`<div class="voucher"><div class="vlbl">${s.v.lbl}</div>`;
+      s.v.rows.forEach(r=>{
+        extra+=`<div class="ve"><div class="va">${r.a}</div>`;
+        extra+=r.dr?`<div class="vdr">Dr ${r.dr}</div>`:`<div class="vbl"></div>`;
+        extra+=r.cr?`<div class="vcr">Cr ${r.cr}</div>`:`<div class="vbl"></div>`;
+        extra+='</div>';
+      });
+      extra+='</div>';
+    }
+    st.innerHTML=`<div class="sdot sd-${si%6}">${idx+1}</div><div class="step-c"><div class="step-t">${s.t}</div><div class="step-b">${s.b}${extra}</div></div>`;
+    stepsDiv.appendChild(st);
+  });
+  d.appendChild(stepsDiv);
+
+  if(lab.wbs){
+    const wl=document.createElement('div'); wl.className='slbl'; wl.textContent='WBS Template — upload in D365FO'; d.appendChild(wl);
+    const wr=document.createElement('div'); wr.className='wbs-wrap';
+    const th=lab.wbs.headers.map(h=>`<th>${h}</th>`).join('');
+    const rows=lab.wbs.rows.map(r=>{
+      const isTot=r[0].includes('TOTAL')||r[0].includes('═══');
+      const isL1=r[1]==='L1', isL2=r[1]==='L2';
+      return `<tr><td class="${isTot?'tot':isL1?'l1':isL2?'l2':''}">${r[0]}</td>${r.slice(1).map((c,ci)=>`<td class="${ci>=1?'cost':''}">${c}</td>`).join('')}</tr>`;
+    }).join('');
+    wr.innerHTML=`<table class="wbs"><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table>`;
+    d.appendChild(wr);
+  }
+
+  if(lab.refs&&lab.refs.length){
+    const rl=document.createElement('div'); rl.className='rlbl'; rl.textContent='Microsoft Learn references'; d.appendChild(rl);
+    const refs=document.createElement('div'); refs.className='refs';
+    lab.refs.forEach(r=>{
+      const a=document.createElement('a');
+      a.className='refa'; a.href=r.u; a.target='_blank'; a.rel='noopener';
+      a.innerHTML=`<div class="ri">↗</div><div style="flex:1"><div class="rb-t">${r.t}</div><div class="rb-u">${r.u}</div></div><div class="rsrc">MS Learn</div>`;
+      refs.appendChild(a);
+    });
+    d.appendChild(refs);
+  }
+
+  d.appendChild(buildSignoff(lab));
+  return d;
+}
+
+function buildSignoff(lab){
+  const key=lab.id;
+  const saved=JSON.parse(localStorage.getItem('pma_cost_so_'+key)||'null');
+  const so=document.createElement('div'); so.className='so';
+  const head=document.createElement('div'); head.className='so-h'; head.textContent='✅ Lab sign-off — confirm all outcomes';
+  const body=document.createElement('div'); body.className='so-b';
+  head.onclick=()=>body.classList.toggle('on');
+  so.appendChild(head);
+  let t=`<table class="oct"><thead><tr><th>Expected outcome</th><th>Done?</th><th>Notes</th></tr></thead><tbody>`;
+  lab.out.forEach((o,oi)=>{
+    const ok=saved&&saved.oc&&saved.oc[oi];
+    t+=`<tr><td>${o}</td><td style="text-align:center"><span class="occ${ok?' ok':''}" onclick="this.classList.toggle('ok')">✓</span></td><td><input type="text" style="width:100%;border:none;background:transparent;font-size:12px;color:#555;outline:none" value="${saved&&saved.ns&&saved.ns[oi]||''}" placeholder="notes..."></td></tr>`;
+  });
+  t+='</tbody></table>';
+  const ratings=[['1','⭐ Needs review'],['2','⭐⭐ Getting there'],['3','⭐⭐⭐ Confident'],['4','⭐⭐⭐⭐ Could teach it']];
+  let rHtml='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:7px">Session rating</div><div class="rr">';
+  ratings.forEach(([v,l])=>{const sel=saved&&saved.rating===v?` s${v}`:''; rHtml+=`<button class="rb${sel}" data-v="${v}" onclick="selRating(this,event)">${l}</button>`;});
+  rHtml+='</div>';
+  const inputs=`<div class="si-grid">
+    <div class="sif"><label>Student name</label><input type="text" id="sn-${key}" value="${saved&&saved.sn||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Student signature + date</label><input type="text" id="ss-${key}" value="${saved&&saved.ss||''}" placeholder="Sign / DD MMM YYYY"></div>
+    <div class="sif"><label>Instructor name</label><input type="text" id="in-${key}" value="${saved&&saved.in||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Instructor signature + date</label><input type="text" id="is-${key}" value="${saved&&saved.is||''}" placeholder="Sign / DD MMM YYYY"></div>
+  </div>`;
+  body.innerHTML=t+rHtml+inputs;
+  const btn=document.createElement('button'); btn.className='sbtn'; btn.textContent='Save sign-off';
+  btn.onclick=()=>{
+    const oc={},ns={};
+    body.querySelectorAll('.occ').forEach((el,i)=>oc[i]=el.classList.contains('ok'));
+    body.querySelectorAll('input[type=text]').forEach((el,i)=>{if(i<lab.out.length) ns[i]=el.value;});
+    const selBtn=body.querySelector('.rb[class*=" s"]');
+    const rating=selBtn?selBtn.dataset.v:'';
+    const data={oc,ns,rating,sn:document.getElementById('sn-'+key)?.value||'',ss:document.getElementById('ss-'+key)?.value||'',in:document.getElementById('in-'+key)?.value||'',is:document.getElementById('is-'+key)?.value||''};
+    localStorage.setItem('pma_cost_so_'+key,JSON.stringify(data));
+    done.add(key); saveDone(); updateProg();
+    btn.textContent='✓ Saved';
+    setTimeout(()=>btn.textContent='Save sign-off',2000);
+  };
+  body.appendChild(btn);
+  so.appendChild(body);
+  return so;
+}
+
+window.selRating=function(btn,e){
+  e.stopPropagation();
+  btn.closest('.rr').querySelectorAll('.rb').forEach(b=>{b.className='rb';b.removeAttribute('data-selected');});
+  btn.className='rb s'+btn.dataset.v;
+};
+window.switchSec=switchSec;
+
+// ── EXPORT ────────────────────────────────────────────────────────────
+document.getElementById('exp-btn').onclick=function(){
+  const now=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  let rows='',gi=0;
+  SECTIONS.forEach((sec,si)=>{
+    sec.labs.forEach((lab)=>{
+      const k=lab.id,isDone=done.has(k);
+      const so=JSON.parse(localStorage.getItem('pma_cost_so_'+k)||'null');
+      const rating=so&&so.rating?'⭐'.repeat(parseInt(so.rating)):'-';
+      gi++;
+      rows+=`<tr style="background:${gi%2===0?'#f8f7f2':'#fff'}">
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:600;color:#10b981;font-size:11px">${sec.label}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:500;font-size:12px">${lab.title}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center;color:${isDone?'#155724':'#888'};font-weight:${isDone?700:400}">${isDone?'✓ Done':'○ Pending'}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center">${rating}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${(so&&so.ss)||''}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${(so&&so.is)||''}</td>
+      </tr>`;
+    });
+  });
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Investment Lab Progress</title>
+<style>body{font-family:Arial,sans-serif;margin:36px;font-size:14px;color:#1c1a16}h1{font-size:20px;margin-bottom:4px}.meta{color:#888;font-size:13px;margin-bottom:18px}table{width:100%;border-collapse:collapse}th{background:#0d0d0d;color:#fff;padding:7px 9px;text-align:left;font-size:11px}.sum{display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap}.sc{background:#ecfdf5;border-radius:6px;padding:10px 16px}.sv{font-size:20px;font-weight:700;color:#10b981}.sl{font-size:11px;color:#888;text-transform:uppercase;margin-top:2px}.tip{background:#ecfdf5;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#10b981}@media print{.tip{display:none}}</style>
+</head><body>
+<div class="tip">💡 File → Save As → .doc or .docx | Ctrl+P to print</div>
+<h1>D365FO PMA — Investment Project Lab · Progress Report</h1>
+<div class="meta">Date: ${now} · Demo company: USMF</div>
+<div class="sum"><div class="sc"><div class="sv">${done.size}/${TOTAL}</div><div class="sl">Labs done</div></div><div class="sc"><div class="sv">${Math.round(done.size/TOTAL*100)}%</div><div class="sl">Complete</div></div><div class="sc"><div class="sv">6</div><div class="sl">Sections</div></div></div>
+<table><thead><tr><th>Section</th><th>Lab</th><th>Status</th><th>Rating</th><th>Student</th><th>Instructor</th></tr></thead><tbody>${rows}</tbody></table>
+<div style="margin-top:44px;display:flex;gap:80px">
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Student signature &amp; date</div></div>
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Instructor signature &amp; date</div></div>
+</div></body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`PMA_COST_Lab_Progress_${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(a.href);
+};
+
+// ── INIT ─────────────────────────────────────────────────────────────
+buildNav();
+buildViews();
+updateProg();
+
+</script>
+</body>
+</html>

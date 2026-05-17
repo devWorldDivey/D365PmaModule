@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>D365FO PMA · Investment Project Lab Guide</title>
+<meta name="description" content="Complete D365FO Investment Project lab guide — capitalise costs to fixed assets, no revenue, no billing. IT infrastructure and building construction scenarios with WBS.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- CSS injected below via build script placeholder - full CSS from engine -->
+<style>
+:root{
+  --ink:#0d0d0d;--ink2:#1a1a1a;--paper:#fafaf7;
+  --line:#e2e0d8;--line2:#ccc9be;
+  --blue:#0047cc;--blue-bg:#e8f0ff;--blue-mid:#b3c8f5;
+  --teal:#006d5b;--teal-bg:#e0f5f1;--teal-mid:#7ecbbf;
+  --amber:#a05a00;--amber-bg:#fff4e0;--amber-mid:#f5c97a;
+  --purple:#5c2d91;--purple-bg:#f0eaff;--purple-mid:#c4a8f5;
+  --green:#155724;--green-bg:#e8f5e9;--green-mid:#81c784;
+  --red:#c41c1c;--red-bg:#ffebeb;--red-mid:#f5a3a3;
+  --orange:#b84000;--orange-bg:#fff0e6;
+  --inv:#7c3aed;--inv-bg:#f5f0ff;--inv-mid:#c4b0f5;
+  --mono:'Syne Mono',monospace;--sans:'Inter',sans-serif;--display:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.65}
+.nav{position:sticky;top:0;z-index:200;background:var(--ink);display:flex;align-items:center;padding:0 24px;height:52px;gap:0;flex-wrap:nowrap;overflow:hidden}
+.nav-brand{font-family:var(--display);font-size:14px;font-weight:700;color:#fff;white-space:nowrap;margin-right:20px;flex-shrink:0}
+.nav-tabs{display:flex;gap:0;overflow-x:auto;flex:1;-ms-overflow-style:none;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{color:rgba(255,255,255,.45);font-size:11px;font-weight:500;padding:0 12px;height:52px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;user-select:none;font-family:var(--display)}
+.ntab:hover{color:rgba(255,255,255,.75)}
+.ntab.on{color:#fff;border-bottom-color:#fff}
+.nav-right{margin-left:auto;flex-shrink:0;padding-left:12px;display:flex;align-items:center;gap:8px}
+.pbadge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);white-space:nowrap;font-family:var(--display)}
+.hero{background:var(--ink2);padding:48px 28px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(124,58,237,.15) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 50%,rgba(0,109,91,.08) 0%,transparent 60%)}
+.hero-lbl{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.15);border-radius:4px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:4px 12px;margin-bottom:16px;font-family:var(--display)}
+.hero h1{font-family:var(--display);font-size:clamp(24px,5vw,42px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-.03em;margin-bottom:12px}
+.hero h1 span{color:#a78bfa}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:520px;margin:0 auto 24px;line-height:1.7}
+.hero-chips{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:5px;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:4px 11px;font-size:11px;font-weight:500;color:rgba(255,255,255,.65)}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.d-blue{background:#5b8fff}.d-teal{background:#4dcfbe}.d-amber{background:#f5c97a}
+.d-purple{background:#c4a8f5}.d-green{background:#81c784}.d-orange{background:#ffb347}
+.d-inv{background:#a78bfa}
+.stats{background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto}
+.stat{padding:14px 20px;border-right:1px solid var(--line);flex-shrink:0}
+.stat-n{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em}
+.stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-top:2px}
+.wrap{max-width:1020px;margin:0 auto;padding:28px 18px 80px}
+.sec-view{display:none}.sec-view.on{display:block;animation:rise .22s ease}
+@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sec-hdr{border-radius:12px;padding:20px 24px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.sh-0{background:var(--inv-bg);border-left:4px solid var(--inv)}.sh-0 .sh-title{color:var(--inv)}
+.sh-1{background:var(--teal-bg);border-left:4px solid var(--teal)}.sh-1 .sh-title{color:var(--teal)}
+.sh-2{background:var(--amber-bg);border-left:4px solid var(--amber)}.sh-2 .sh-title{color:var(--amber)}
+.sh-3{background:var(--green-bg);border-left:4px solid var(--green)}.sh-3 .sh-title{color:var(--green)}
+.sh-4{background:var(--blue-bg);border-left:4px solid var(--blue)}.sh-4 .sh-title{color:var(--blue)}
+.sh-5{background:var(--purple-bg);border-left:4px solid var(--purple)}.sh-5 .sh-title{color:var(--purple)}
+.sh-title{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.sh-desc{font-size:13px;color:#555;line-height:1.6;max-width:580px}
+.sh-meta{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.sh-pill{font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:rgba(0,0,0,.07);color:var(--ink);white-space:nowrap}
+.labs{display:flex;flex-direction:column;gap:9px}
+.lab{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;transition:border-color .15s}
+.lab:hover{border-color:var(--line2)}.lab.open{border-color:#a8a098}
+.lab-head{display:grid;grid-template-columns:42px 1fr auto auto auto;gap:10px;align-items:center;padding:12px 16px;cursor:pointer;user-select:none}
+.lab-num{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;font-weight:700;flex-shrink:0}
+.ln-0{background:var(--inv-bg);color:var(--inv)}.ln-1{background:var(--teal-bg);color:var(--teal)}
+.ln-2{background:var(--amber-bg);color:var(--amber)}.ln-3{background:var(--green-bg);color:var(--green)}
+.ln-4{background:var(--blue-bg);color:var(--blue)}.ln-5{background:var(--purple-bg);color:var(--purple)}
+.lab-info{min-width:0}
+.lab-title{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:2px;font-family:var(--display)}
+.lab-sub{font-size:11px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
+.lb-s{background:#f0eaff;color:#7c3aed}.lb-t{background:#e0fff8;color:#006d5b}
+.lb-i{background:#ede0ff;color:#5c2d91}.lb-r{background:#e8f5e9;color:#155724}
+.lb-w{background:#e8f0ff;color:#0047cc}.lb-sc{background:#ffebeb;color:#c41c1c}
+.tick{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;font-size:11px;color:transparent}
+.tick.done{background:var(--green);border-color:var(--green);color:#fff}
+.chev{font-size:14px;color:#bbb;transition:transform .2s;flex-shrink:0}
+.lab.open .chev{transform:rotate(180deg)}
+.lab-body{display:none;border-top:1px solid var(--line)}
+.lab.open .lab-body{display:block;animation:rise .18s ease}
+.lb-inner{padding:16px 18px}
+.ow-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ow-card{border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.6;display:flex;gap:7px}
+.ow-obj{background:var(--inv-bg);color:#5b21b6}.ow-why{background:var(--amber-bg);color:var(--amber)}
+.ow-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.pr-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pr-card{border-radius:7px;padding:10px 13px;font-size:12px;line-height:1.55}
+.pr-pre{background:#f5f5f0;border:1px solid var(--line);color:#444}
+.pr-res{background:var(--green-bg);border:1px solid var(--green-mid);color:var(--green)}
+.pr-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;opacity:.7}
+.prl{list-style:none;display:flex;flex-direction:column;gap:3px}
+.prl li{display:flex;gap:6px;align-items:flex-start}
+.prl li::before{content:'›';flex-shrink:0;opacity:.5;font-size:15px;margin-top:-1px}
+.slbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.steps{display:flex;flex-direction:column;position:relative;margin-bottom:16px}
+.steps::before{content:'';position:absolute;left:18px;top:26px;bottom:26px;width:2px;background:var(--line);z-index:0}
+.step{display:flex;gap:12px;position:relative;z-index:1;padding:3px 0}
+.sdot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:700;flex-shrink:0;background:#fff;border:2px solid var(--line);margin-top:2px}
+.sd-0{border-color:var(--inv);color:var(--inv);background:var(--inv-bg)}
+.sd-1{border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
+.sd-2{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+.sd-3{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+.sd-4{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.sd-5{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
+.step-c{flex:1;padding-bottom:12px}
+.step-t{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;font-family:var(--display)}
+.step-b{font-size:13px;color:#444;line-height:1.6}
+.step-b code{font-family:var(--mono);font-size:11px;background:#f0ede6;border:1px solid var(--line);padding:1px 5px;border-radius:3px;color:#333}
+.np{display:inline-flex;align-items:center;gap:3px;background:var(--ink);color:#fff;border-radius:4px;padding:3px 9px;font-family:var(--mono);font-size:10.5px;margin:4px 0;flex-wrap:wrap}
+.np .sep{opacity:.35}
+.ft{width:100%;border-collapse:collapse;margin:7px 0 3px;font-size:12.5px}
+.ft th{background:#f5f3ec;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#666;padding:6px 9px;text-align:left;border-bottom:2px solid var(--line)}
+.ft td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.ft tr:last-child td{border-bottom:none}
+.fn{font-family:var(--mono);font-size:11px;color:var(--inv);font-weight:500}
+.fv{color:var(--teal);font-family:var(--mono);font-size:11px;background:var(--teal-bg);padding:1px 5px;border-radius:3px}
+.fd{color:#666;font-size:12px}
+.warn{background:var(--red-bg);border:1px solid var(--red-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--red);display:flex;gap:7px;margin:6px 0}
+.tip{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--amber);display:flex;gap:7px;margin:6px 0}
+.info{background:var(--inv-bg);border:1px solid var(--inv-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:#5b21b6;display:flex;gap:7px;margin:6px 0}
+.bi{font-size:15px;flex-shrink:0;margin-top:1px}
+.voucher{background:#f8f7f2;border:1px solid var(--line);border-radius:7px;padding:10px 13px;margin:7px 0}
+.vlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:6px}
+.ve{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 0}
+.va{color:#333;font-size:11.5px;font-family:var(--mono);flex:1}
+.vdr{color:var(--red);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vcr{color:var(--teal);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vbl{min-width:100px}
+.wbs-wrap{overflow-x:auto;margin:8px 0}
+.wbs{width:100%;border-collapse:collapse;font-size:12px}
+.wbs th{background:var(--ink);color:#fff;padding:7px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.wbs td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.wbs tr:nth-child(even) td{background:#fafaf7}
+.wbs .l1{font-weight:700;color:var(--inv);background:var(--inv-bg)!important}
+.wbs .l2{font-weight:600;color:#333;padding-left:20px}
+.wbs .l3{color:#555;padding-left:36px}
+.wbs .tot{font-weight:700}
+.wbs .hrs{text-align:right;font-family:var(--mono);font-size:11px}
+.wbs .cost{text-align:right;font-family:var(--mono);font-size:11px;color:var(--teal)}
+.wbs .rev{text-align:right;font-family:var(--mono);font-size:11px;color:var(--inv)}
+.rlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:16px 0 7px;display:flex;align-items:center;gap:7px}
+.rlbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.refs{display:flex;flex-direction:column;gap:5px;margin-bottom:3px}
+.refa{display:flex;align-items:flex-start;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:8px 11px;text-decoration:none;color:var(--ink);transition:background .15s,border-color .15s}
+.refa:hover{background:var(--inv-bg);border-color:var(--inv-mid)}
+.ri{color:var(--inv);font-size:13px;flex-shrink:0;margin-top:2px}
+.rb-t{font-size:12px;font-weight:500;color:var(--inv);margin-bottom:1px}
+.rb-u{font-size:10px;color:#aaa;word-break:break-all;font-family:var(--mono)}
+.rsrc{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;align-self:flex-start;background:var(--inv-bg);color:var(--inv)}
+.so{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:14px;overflow:hidden}
+.so-h{display:flex;align-items:center;gap:7px;padding:10px 14px;cursor:pointer;font-size:12.5px;font-weight:600;background:#f8f7f2;color:#555;user-select:none}
+.so-h:hover{background:var(--line)}
+.so-b{display:none;padding:14px}.so-b.on{display:block;animation:rise .18s ease}
+.oct{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px}
+.oct th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;padding:6px 9px;border-bottom:1px solid var(--line);text-align:left}
+.oct td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+.oct tr:last-child td{border-bottom:none}
+.occ{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:transparent;transition:all .15s}
+.occ.ok{background:var(--green);border-color:var(--green);color:#fff}
+.rr{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.rb{border:1px solid var(--line);background:transparent;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s;color:#555}
+.rb:hover{background:#f5f3ec}
+.rb.s1{background:var(--red-bg);border-color:var(--red-mid);color:var(--red)}
+.rb.s2{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.rb.s3{background:var(--teal-bg);border-color:var(--teal-mid);color:var(--teal)}
+.rb.s4{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.si-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.sif label{font-size:11px;font-weight:500;color:#888;display:block;margin-bottom:3px}
+.sif input{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:13px;font-family:var(--sans);background:var(--paper);color:var(--ink)}
+.sif input:focus{outline:none;border-color:var(--inv-mid)}
+.sbtn{background:var(--inv);color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:opacity .15s}
+.sbtn:hover{opacity:.82}
+.pstrip{background:#fff;border-top:1px solid var(--line);padding:0 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;bottom:0;z-index:100}
+.ps-lbl{font-size:12px;font-weight:600;color:#555;padding:10px 0;white-space:nowrap}
+.ps-trk{flex:1;min-width:160px;height:5px;background:var(--line);border-radius:3px;overflow:hidden;max-width:280px}
+.ps-fill{height:100%;border-radius:3px;background:var(--inv);transition:width .4s}
+.ps-pct{font-size:12px;font-weight:600;color:var(--inv);min-width:32px;font-family:var(--display)}
+.ps-exp{margin-left:auto;background:var(--ink);color:#fff;border:none;border-radius:6px;padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.ps-exp:hover{opacity:.82}
+@media(max-width:680px){
+  .ow-row,.pr-row,.si-grid{grid-template-columns:1fr}
+  .lab-head{grid-template-columns:36px 1fr auto auto}
+  .lbadge{display:none}
+  .sec-hdr{grid-template-columns:1fr}
+  .sh-meta{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+  .stats{flex-wrap:wrap}.stat{min-width:45%}
+}
+@media(max-width:460px){
+  .nav-brand{font-size:12px;margin-right:10px}.ntab{font-size:10px;padding:0 8px}.hero h1{font-size:20px}
+}
+@media print{
+  .nav,.pstrip{display:none!important}
+  .sec-view{display:block!important;page-break-after:always;break-after:page}
+  .lab-body{display:block!important}.so-b{display:block!important}
+  .lab{page-break-inside:avoid;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-brand">D365FO · Investment Lab</span>
+  <div class="nav-tabs" id="ntabs"></div>
+  <div class="nav-right">
+    <a href="labs.html" style="font-size:11px;color:rgba(255,255,255,.45);text-decoration:none;margin-right:8px;white-space:nowrap;flex-shrink:0">⌂ Labs</a>
+    <a href="tm.html" style="font-size:11px;font-weight:600;color:#5b8fff;text-decoration:none;background:rgba(91,143,255,.12);border:1px solid rgba(91,143,255,.25);border-radius:20px;padding:3px 11px;white-space:nowrap;flex-shrink:0">⏱ T&amp;M →</a>
+    <a href="fp.html" style="font-size:11px;font-weight:600;color:#4dcfbe;text-decoration:none;background:rgba(77,207,190,.12);border:1px solid rgba(77,207,190,.25);border-radius:20px;padding:3px 11px;white-space:nowrap;flex-shrink:0">🎯 FP →</a>
+
+    <a href="internal.html" style="font-size:11px;font-weight:600;color:#f59e0b;text-decoration:none;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">👥</a>
+    <a href="cost.html" style="font-size:11px;font-weight:600;color:#10b981;text-decoration:none;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">💰</a>
+    <a href="time.html" style="font-size:11px;font-weight:600;color:#ef4444;text-decoration:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">🕒</a>
+    <span class="pbadge" id="pbadge">0 / 0 done</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-lbl">🏗️ Hands-on Lab · Investment Project · Demo USMF</div>
+  <h1>Investment Project<br><span>Complete Lab Guide</span></h1>
+  <div class="hero-sub">Capitalise internal costs to fixed assets — no revenue, no billing. WIP accumulates until project completion, then transfers to the asset register. Full D365FO lifecycle from setup to fixed asset acquisition.</div>
+  <div class="hero-chips">
+    <div class="chip"><span class="dot d-inv"></span>S1 · Base Setup</div>
+    <div class="chip"><span class="dot d-teal"></span>S2 · Transactions</div>
+    <div class="chip"><span class="dot d-amber"></span>S3 · Estimate &amp; Eliminate</div>
+    <div class="chip"><span class="dot d-green"></span>S4 · Reports</div>
+    <div class="chip"><span class="dot d-blue"></span>S5 · IT Infrastructure + WBS</div>
+    <div class="chip"><span class="dot d-purple"></span>S6 · Building Construction + WBS</div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n">6</div><div class="stat-l">Sections</div></div>
+  <div class="stat"><div class="stat-n" id="total-lbl">—</div><div class="stat-l">Labs</div></div>
+  <div class="stat"><div class="stat-n">USMF</div><div class="stat-l">Demo company</div></div>
+  <div class="stat"><div class="stat-n">2</div><div class="stat-l">WBS templates</div></div>
+  <div class="stat"><div class="stat-n">No revenue</div><div class="stat-l">Key difference</div></div>
+  <div class="stat"><div class="stat-n">Fixed asset</div><div class="stat-l">Output on completion</div></div>
+</div>
+
+<div class="wrap" id="main-wrap"><div id="sec-views"></div></div>
+
+<div class="pstrip">
+  <span class="ps-lbl">Lab progress</span>
+  <div class="ps-trk"><div class="ps-fill" id="ps-fill" style="width:0%"></div></div>
+  <span class="ps-pct" id="ps-pct">0%</span>
+  <button class="ps-exp" id="exp-btn">📄 Export progress report</button>
+</div>
+
+<script>
+const SECTIONS = [
+// ══════════════════════ S1 — BASE SETUP ═══════════════════════════════
+{id:0,label:"S1 · Base Setup",title:"Section 1 — Base Setup: Investment Project Configuration",
+ desc:"Configure all master data needed for an Investment project from scratch: parameters, project group with Balance (WIP) posting, capitalise-cost line properties, fixed asset setup, and project creation.",
+ cls:"sh-0",nc:"ln-0",
+ labs:[
+  {id:"0-0",badge:"lb-s",bl:"Setup",
+   title:"What Makes Investment Projects Different",
+   sub:"Key concepts before you configure anything",
+   obj:"Understand the 3 fundamental differences between Investment, T&M, and Fixed Price projects — before touching any setup screen.",
+   why:"Students who start configuring without understanding WHY investment projects are different always make the same mistakes: they try to create invoices (not possible), wonder why P&L shows nothing, or don't know how to close the project. 10 minutes of concept clarity saves 3 hours of confusion.",
+   pre:["T&M and Fixed Price concepts understood (tm.html and fp.html)","Basic D365FO navigation"],
+   result:["3 key differences articulated clearly","No-invoice rule understood","Fixed asset lifecycle mapped"],
+   steps:[
+    {t:"Difference 1 — No revenue, no billing",b:"Investment projects do <strong>not produce revenue</strong>. You cannot create an invoice proposal. You cannot bill a customer. The project exists entirely to track the internal cost of building or acquiring a capital asset.",f:[{f:"T&M",v:"Bills customer monthly for hours/expenses",d:"Revenue recognised per transaction"},{f:"Fixed Price",v:"Bills customer at milestones",d:"Revenue recognised via estimates"},{f:"Investment",v:"NO billing, NO revenue",d:"Costs capitalised to balance sheet only"}],w:null,tp:"The moment a student asks 'how do I invoice this investment project?' — stop and redirect. Investment projects NEVER invoice. That is the defining characteristic.",inf:null,v:null},
+    {t:"Difference 2 — WIP until capitalisation",b:"All costs (hours, expenses, items) accumulate in WIP balance sheet accounts — exactly like Fixed Price. But unlike FP where WIP clears to P&L revenue at completion, Investment WIP clears to a <strong>fixed asset</strong> or ledger account.",f:[{f:"Fixed Price elimination",v:"WIP → P&L Revenue + P&L Cost",d:"P&L gets both sides at completion"},{f:"Investment elimination",v:"WIP → Fixed Asset (balance sheet)",d:"P&L gets nothing — asset created"}],w:null,tp:null,inf:null,v:{lbl:"Investment project — what moves at elimination",rows:[{a:"130100 WIP — Cost value (CLEARED)",dr:"",cr:"USD 250,000"},{a:"Fixed asset acquisition cost",dr:"USD 250,000",cr:""},{a:"P&L Revenue",v:"ZERO — no revenue ever",dr:"$0",cr:"$0"},{a:"P&L Cost",v:"ZERO — cost is capitalised, not expensed",dr:"$0",cr:"$0"}]}},
+    {t:"Difference 3 — Capitalise cost line property",b:"The key configuration switch is the <strong>Capitalise cost</strong> setting on line properties. When enabled, costs post to WIP instead of P&L. Investment projects require this to be active.",f:[{f:"Capitalise cost = No",v:"Costs post to P&L directly",d:"Standard for T&M non-capital work"},{f:"Capitalise cost = Yes",v:"Costs post to WIP balance sheet",d:"Required for investment projects"}],w:null,tp:null,inf:null,v:null},
+    {t:"The investment project lifecycle",b:"5 stages every investment project goes through:",f:[{f:"1. Setup",v:"Create project group, line properties, fixed asset, project",d:""},{f:"2. Cost accumulation",v:"Post hours, expenses, items → all go to WIP 130100",d:""},{f:"3. Periodic estimates",v:"Optional — track % complete, monitor budget vs WIP",d:""},{f:"4. Elimination",v:"WIP transfers to fixed asset or ledger account",d:""},{f:"5. Depreciation",v:"Fixed asset depreciates over useful life",d:"Now in Fixed assets module, not PMA"}],w:null,tp:null,inf:null,v:null}
+   ],
+   out:["3 investment project differences explained without notes","No-billing rule understood","WIP-to-fixed-asset lifecycle mapped"],
+   refs:[{t:"Project management and accounting overview — investment projects",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"},{t:"Investment Projects in D365FO Project Operations",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"}]},
+
+  {id:"0-1",badge:"lb-s",bl:"Setup",
+   title:"Investment Project Group — Balance (WIP) Posting",
+   sub:"Project management and accounting › Setup › Posting › Project groups",
+   obj:"Create project group INV-CAPITAL with Balance posting for all cost types — same as Fixed Price but with Investment project type restriction.",
+   why:"The project group for investment projects uses Balance posting (WIP) — identical to Fixed Price. The critical difference is the project type restriction to Investment. This prevents accidental use for billable work.",
+   pre:["PMA parameters configured","GL accounts for WIP and fixed assets exist in USMF"],
+   result:["INV-CAPITAL group created with Balance posting","No revenue accrual (investment projects never accrue revenue)","Maximum capitalisation limit understood"],
+   steps:[
+    {t:"Create INV-CAPITAL project group",b:'<span class="np">Project management and accounting <span class="sep">›</span> Setup <span class="sep">›</span> Posting <span class="sep">›</span> Project groups</span><br>New:',f:[{f:"Project group",v:"INV-CAPITAL",d:""},{f:"Name",v:"Capital Investment Projects",d:""},{f:"Project type",v:"Investment",d:"Restricts to Investment type only"}],w:null,tp:null,inf:null,v:null},
+    {t:"Set Ledger FastTab — Balance for all costs",b:"",f:[{f:"Hour — Cost",v:"Balance",d:"Hours post to WIP — never P&L"},{f:"Expense — Cost",v:"Balance",d:""},{f:"Item — Cost",v:"Balance",d:""},{f:"Revenue",v:"No revenue",d:"Investment projects have no revenue settings"}],w:"Do NOT enable revenue accrual on investment project groups. There is no customer and no revenue stream — enabling revenue would create accounting errors.",tp:null,inf:null,v:{lbl:"GL — Hour journal on Investment project",rows:[{a:"130100 WIP — Cost value (hours)",dr:"USD 1,500.00",cr:""},{a:"Payroll allocation offset",dr:"",cr:"USD 1,500.00"},{a:"P&L Cost account 601100",v:"NOT POSTED — capitalised to WIP",dr:"—",cr:"—"}]}},
+    {t:"Set maximum capitalisation (optional)",b:"On the project, you can set a maximum capitalisation limit — useful for budget control:",f:[{f:"Maximum capitalization",v:"e.g. USD 500,000",d:"D365FO warns if WIP exceeds this amount"},{f:"Leave blank",v:"No limit — all costs capitalised",d:"Most common setting for infrastructure projects"}],w:null,tp:"Set a maximum capitalisation on every investment project. When WIP approaches the limit, management is alerted before committing further capital. This is a key governance control.",inf:null,v:null}
+   ],
+   out:["INV-CAPITAL group created — Balance posting, no revenue","WIP account mapping confirmed","Maximum capitalisation concept understood"],
+   refs:[{t:"Configure accounting for billable projects — project groups",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-accounting-billable-projects"},{t:"How project groups determine project posting",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-group-categories-line-properties"}]},
+
+  {id:"0-2",badge:"lb-s",bl:"Setup",
+   title:"Configure Capitalise Cost Line Property",
+   sub:"Project management and accounting › Setup › Line properties",
+   obj:"Enable the Capitalise cost setting on a line property called CAPEX so that all investment project transactions go to WIP instead of P&L.",
+   why:"Line properties control whether individual transactions are capitalised. For investment projects, every transaction must have Capitalise cost = Yes. If even one hour journal uses a non-capitalising line property, that cost hits P&L instead of WIP — a misclassification error.",
+   pre:["INV-CAPITAL project group created"],
+   result:["CAPEX line property created with Capitalise cost = Yes","Line property assigned as default on INV-CAPITAL","Non-chargeable confirmed — no billing"],
+   steps:[
+    {t:"Open Line properties",b:'<span class="np">Project management and accounting <span class="sep">›</span> Setup <span class="sep">›</span> Line properties</span><br>New:',f:[{f:"Line property",v:"CAPEX",d:"Capital expenditure"},{f:"Chargeable",v:"No",d:"Investment projects do not bill customers"},{f:"Accrue revenue",v:"No",d:"No revenue on investment projects"},{f:"Capitalize cost",v:"Yes",d:"⭐ THIS IS THE KEY SETTING — routes costs to WIP"}],w:"If Capitalize cost = No, the cost posts to P&L directly and BYPASSES WIP entirely. This destroys the investment project accounting. Always verify this is Yes on every investment project line.",tp:"Verify in the Ledger posting setup that account 130100 (WIP Cost) is mapped to the Capitalise cost account type. If not mapped, the posting will error.",inf:null,v:null},
+    {t:"Understand what Capitalize cost does in GL",b:"",f:[{f:"Normal line (not capitalised)",v:"Dr 601100 P&L Cost / Cr Payroll",d:"Hits income statement"},{f:"CAPEX line (capitalised)",v:"Dr 130100 WIP / Cr Payroll",d:"Hits balance sheet only"}],w:null,tp:null,inf:null,v:null},
+    {t:"Set CAPEX as default on project",b:"When you create the project, set the default line property to CAPEX in the project setup so all transactions automatically use it.",f:[{f:"Project → Setup tab → Line property",v:"CAPEX",d:"All new journal lines default to CAPEX"}],w:null,tp:null,inf:null,v:null}
+   ],
+   out:["CAPEX line property created — Capitalize cost = Yes","Difference between capitalised and non-capitalised GL entries shown","CAPEX set as project default"],
+   refs:[{t:"How project groups, categories and line properties determine posting",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-group-categories-line-properties"}]},
+
+  {id:"0-3",badge:"lb-s",bl:"Setup",
+   title:"Create Investment Project & Link Fixed Asset",
+   sub:"Project management and accounting › Projects › All projects  +  Fixed assets",
+   obj:"Create investment project PROJ-INV-001, create a fixed asset record FA-INFRA-001, and link the asset to the project for automatic acquisition at elimination.",
+   why:"Linking the fixed asset to the project upfront means D365FO automatically acquires the asset when you run elimination. Without this link you must manually journal the WIP-to-asset transfer — which is error-prone and audit-unfriendly.",
+   pre:["INV-CAPITAL project group created","Fixed asset group exists (e.g. COMP for computer equipment)","Fixed assets module enabled"],
+   result:["PROJ-INV-001 created — Investment type, INV-CAPITAL group","FA-INFRA-001 fixed asset created in COMP group","Project and fixed asset linked — ready for automatic acquisition"],
+   steps:[
+    {t:"Create the fixed asset first",b:'<span class="np">Fixed assets <span class="sep">›</span> Fixed assets <span class="sep">›</span> Fixed assets</span><br>New:',f:[{f:"Fixed asset number",v:"FA-INFRA-001",d:"Auto or manual depending on number sequence"},{f:"Name",v:"IT Infrastructure Upgrade 2026",d:""},{f:"Fixed asset group",v:"COMP",d:"Computer equipment group"},{f:"Status",v:"Not yet acquired",d:"Will change to Open when project eliminates"}],w:null,tp:"Create the fixed asset BEFORE starting the project. This lets you link it from day one and gives the finance team visibility of the planned asset before any cost is incurred.",inf:null,v:null},
+    {t:"Create the Investment project",b:'<span class="np">All projects</span><br>New:',f:[{f:"Project ID",v:"PROJ-INV-001",d:""},{f:"Project name",v:"IT Infrastructure Upgrade 2026",d:""},{f:"Project type",v:"Investment",d:"⭐ Cannot change after Save"},{f:"Project group",v:"INV-CAPITAL",d:""},{f:"Start date",v:"01/01/2026",d:""},{f:"End date",v:"31/12/2026",d:""}],w:"Project type Investment CANNOT be changed after saving. Verify before Save.",tp:null,inf:null,v:null},
+    {t:"Link fixed asset to project",b:"On the project: <strong>Setup tab → Fixed asset</strong>:",f:[{f:"Fixed asset number",v:"FA-INFRA-001",d:"Links project costs to this asset"},{f:"Book",v:"SLFB (straight-line depreciation book)",d:"The depreciation profile for this asset"},{f:"Acquisition type",v:"Purchase",d:"How the asset will be acquired on elimination"}],w:null,tp:null,inf:"This link tells D365FO: when I eliminate this project, automatically post the acquisition of FA-INFRA-001 for the total WIP cost. One click closes the project AND acquires the asset.",v:null},
+    {t:"Set project stage to In process",b:"Project stage → In process. Now transactions can post.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["FA-INFRA-001 fixed asset created in COMP group","PROJ-INV-001 Investment project created","Fixed asset linked to project","Project in In process stage — ready for costs"],
+   refs:[{t:"Investment Projects in D365FO Project Operations",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"},{t:"Enable the Investment project feature",u:"https://learn.microsoft.com/en-us/dynamics365/release-plan/2025wave2/enterprise-resource-planning/dynamics365-project-operations/enable-investment-project-feature"}]}
+ ]
+},
+
+// ══════════════════════ S2 — TRANSACTIONS ═════════════════════════════
+{id:1,label:"S2 · Transactions",title:"Section 2 — Posting Costs to an Investment Project",
+ desc:"Post all cost transaction types to PROJ-INV-001 — hours, expenses, items, and purchase orders. All routes to WIP balance sheet. No revenue, no billing at any stage.",
+ cls:"sh-1",nc:"ln-1",
+ labs:[
+  {id:"1-0",badge:"lb-t",bl:"Transaction",
+   title:"Hour Journal — Labour Capitalised to WIP",
+   sub:"Project management and accounting › Journals › Hour",
+   obj:"Post 100 hours of engineering labour to PROJ-INV-001 using line property CAPEX and verify costs go to WIP (not P&L).",
+   why:"Labour is the most common investment project cost. Understanding that engineering hours can be capitalised — just like materials — is the key accountancy concept in IAS 16 (Property, Plant & Equipment). Hours spent constructing a capital asset are part of its cost.",
+   pre:["PROJ-INV-001 in In process","CAPEX line property created","ConsultHours or EngineeringHours category exists"],
+   result:["100 hours posted — all to WIP 130100","P&L shows zero","Voucher: Dr WIP Cost / Cr Payroll"],
+   steps:[
+    {t:"Create Hour journal",b:'<span class="np">Project management and accounting <span class="sep">›</span> Journals <span class="sep">›</span> Hour</span><br>New.',f:[{f:"Journal name",v:"ProjHour",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Add lines — engineering hours",b:"Lines → New:",f:[{f:"Date",v:"15/01/2026",d:""},{f:"Project ID",v:"PROJ-INV-001",d:""},{f:"Category",v:"ConsultHours",d:""},{f:"Worker",v:"Senior engineer",d:""},{f:"Hours",v:"100",d:"100 hours of capitalised engineering time"},{f:"Cost price",v:"120.00",d:"USD 12,000 total labour cost"},{f:"Sales price",v:"0.00",d:"Investment projects have no sales price — always 0"},{f:"Line property",v:"CAPEX",d:"⭐ This routes cost to WIP, not P&L"}],w:"If Line property is not set to CAPEX, costs will post to P&L as an expense — wrong for a capital project.",tp:"IAS 16: labour costs directly attributable to construction of an asset shall be capitalised. This is exactly what Capitalize cost = Yes achieves in D365FO.",inf:null,v:{lbl:"GL voucher — Hour journal on Investment project (CAPEX line property)",rows:[{a:"130100 WIP — Cost value (hours)",dr:"USD 12,000.00",cr:""},{a:"Payroll allocation offset",dr:"",cr:"USD 12,000.00"},{a:"P&L Cost 601100",v:"NOT POSTED",dr:"—",cr:"—"}]}},
+    {t:"Post and verify",b:"Validate → Post → click Voucher. Confirm 130100 WIP is debited — not 601100.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["100 hours capitalised to WIP — not P&L","CAPEX line property effect confirmed","IAS 16 capitalisation principle understood"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"1-1",badge:"lb-t",bl:"Transaction",
+   title:"Expense Journal — Capital Expenses to WIP",
+   sub:"Project management and accounting › Journals › Expense",
+   obj:"Post USD 15,000 of equipment installation expenses to PROJ-INV-001 — capitalised to WIP.",
+   why:"Expenses directly related to bringing an asset to its working condition are capitalised under IAS 16 — freight, installation, testing. This lab shows how expense journals on investment projects behave differently from T&M expense journals.",
+   pre:["PROJ-INV-001 in In process"],
+   result:["USD 15,000 expense in WIP — not P&L","Voucher: Dr WIP / Cr AP offset"],
+   steps:[
+    {t:"Create Expense journal",b:'<span class="np">Journals <span class="sep">›</span> Expense</span><br>New. Lines → New:',f:[{f:"Project ID",v:"PROJ-INV-001",d:""},{f:"Category",v:"TravelExp",d:"Or create EquipInstall category for capital expenses"},{f:"Amount",v:"15,000.00",d:"Equipment installation cost"},{f:"Line property",v:"CAPEX",d:""},{f:"Offset account",v:"200100 AP",d:""}],w:null,tp:"Create a dedicated capital expense category (e.g. CapInstall) for investment projects. This improves reporting — you can see labour vs material vs installation costs in WIP separately.",inf:null,v:{lbl:"GL — Expense on Investment project",rows:[{a:"130100 WIP — Cost value (expenses)",dr:"USD 15,000.00",cr:""},{a:"200100 Accounts payable",dr:"",cr:"USD 15,000.00"}]}},
+    {t:"Post and verify WIP balance",b:"After posting, the WIP balance is: Hours USD 12,000 + Expenses USD 15,000 = <strong>USD 27,000</strong> in account 130100.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Expense capitalised to WIP","Running WIP balance = USD 27,000","IAS 16 directly attributable cost principle applied"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"1-2",badge:"lb-t",bl:"Transaction",
+   title:"Purchase Order — Capital Equipment Procurement",
+   sub:"Procurement and sourcing › Purchase orders › All purchase orders",
+   obj:"Raise a PO for capital equipment (servers) linked to PROJ-INV-001, receive the goods, and verify the item cost goes to WIP.",
+   why:"Physical assets procured for a capital project — servers, hardware, building materials — are the largest investment project cost. The PO process on an investment project is identical to T&M, but the item cost routes to WIP because of the CAPEX line property.",
+   pre:["PROJ-INV-001 in In process","Released product SERVER-RACK exists","Vendor US-102 exists"],
+   result:["PO for 5 server racks received","USD 50,000 item cost in WIP 130100","Running WIP = USD 77,000"],
+   steps:[
+    {t:"Create PO for capital equipment",b:'<span class="np">Procurement <span class="sep">›</span> Purchase orders <span class="sep">›</span> All purchase orders</span><br>New → vendor US-102.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Add PO line with project reference",b:"In PO lines → Line details → Project tab:",f:[{f:"Item number",v:"SERVER-RACK",d:"Capital equipment"},{f:"Quantity",v:"5",d:""},{f:"Unit price",v:"10,000.00",d:"USD 50,000 total"},{f:"Project ID",v:"PROJ-INV-001",d:"⭐ Links cost to investment project"},{f:"Line property",v:"CAPEX",d:"Routes item cost to WIP"}],w:"The Project ID must be on the Line details → Project tab. Without it the cost does not appear on the project. This is the #1 mistake on investment project POs.",tp:null,inf:null,v:null},
+    {t:"Confirm and receive",b:"Confirm PO → Receive → Product receipt → Post.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Product receipt on Investment project",rows:[{a:"130100 WIP — Cost value (items)",dr:"USD 50,000.00",cr:""},{a:"200200 Uninvoiced receipts accrual",dr:"",cr:"USD 50,000.00"}]}},
+    {t:"Post vendor invoice",b:"Invoice → match to PO → Post. Clears the accrual.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Vendor invoice",rows:[{a:"200200 Uninvoiced receipts (reversed)",dr:"USD 50,000.00",cr:""},{a:"200100 Accounts payable",dr:"",cr:"USD 50,000.00"}]}}
+   ],
+   out:["Capital equipment PO received and invoiced","USD 50,000 in WIP","Running WIP = USD 77,000","Full PO cycle vouchers reviewed"],
+   refs:[{t:"Project management and accounting overview — item transactions",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+},
+
+// ══════════════════════ S3 — ESTIMATE & ELIMINATE ═════════════════════
+{id:2,label:"S3 · Estimate & Eliminate",title:"Section 3 — Periodic Estimate & WIP Elimination to Fixed Asset",
+ desc:"Run periodic estimates to monitor WIP progress, then run the WIP elimination that converts all project costs into a fixed asset acquisition — the unique final step of every investment project.",
+ cls:"sh-2",nc:"ln-2",
+ labs:[
+  {id:"2-0",badge:"lb-t",bl:"Transaction",
+   title:"Run Periodic Estimate — Monitor WIP Progress",
+   sub:"Project management and accounting › Periodic › Estimates",
+   obj:"Run a periodic estimate for PROJ-INV-001 to track % complete and monitor WIP balance against budget — without recognising any revenue.",
+   why:"Investment project estimates serve a different purpose than Fixed Price estimates. There is no revenue to recognise — the estimate is purely a cost control tool. It answers: how complete is the project, and how much WIP has accumulated vs our capitalisation budget?",
+   pre:["Cost transactions posted (Labs S2-1 to S2-3)","Budget entered on the project","Fixed-price revenue estimate project linked (auto-created)"],
+   result:["Estimate calculated — % complete based on cost","WIP balance confirmed = USD 77,000","No revenue recognised (investment — confirmed)"],
+   steps:[
+    {t:"Open Estimates",b:'<span class="np">Project management and accounting <span class="sep">›</span> Periodic <span class="sep">›</span> Estimates</span><br>Select the investment project estimate.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Review the estimate calculation",b:"",f:[{f:"Actual WIP cost",v:"USD 77,000",d:"All capitalised transactions"},{f:"Forecast to complete",v:"USD 173,000",d:"Remaining budget to spend"},{f:"Total estimated cost",v:"USD 250,000",d:"Total expected capitalised cost"},{f:"% completion",v:"77,000 ÷ 250,000 = 30.8%",d:"Cost-based progress"},{f:"Revenue recognised",v:"USD 0",d:"Investment projects — ZERO revenue always"}],w:null,tp:"Use this estimate monthly to compare WIP to the approved capital budget. If WIP > budget, escalate to the capital committee before committing more costs.",inf:null,v:null},
+    {t:"Post the estimate",b:"Post → review voucher. For investment projects, no revenue entry is created:",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Investment project estimate posted (cost tracking only)",rows:[{a:"130100 WIP — Cost value",v:"No change — costs already posted",dr:"—",cr:"—"},{a:"Revenue account",v:"ZERO — no revenue on investment projects",dr:"$0",cr:"$0"}]}}
+   ],
+   out:["Estimate run — 30.8% complete by cost","WIP balance confirmed USD 77,000","Zero revenue confirmed on estimate — investment rule verified"],
+   refs:[{t:"Manage revenue estimates",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/rev-rec-completed-contract-method"}]},
+
+  {id:"2-1",badge:"lb-t",bl:"Transaction",
+   title:"WIP Elimination — Transfer to Fixed Asset",
+   sub:"Project management and accounting › Periodic › Estimates › Eliminate",
+   obj:"At project completion, run WIP elimination to transfer the full USD 250,000 WIP balance to fixed asset FA-INFRA-001 as an acquisition.",
+   why:"WIP elimination is the most important step in investment project accounting — and the most unique. Unlike Fixed Price where elimination clears to P&L, investment elimination moves costs to a fixed asset on the balance sheet. The asset is 'born' at this moment.",
+   pre:["All project costs posted — total WIP = USD 250,000","Project is 100% complete","Fixed asset FA-INFRA-001 linked to project"],
+   result:["WIP elimination run — USD 250,000 transferred to FA-INFRA-001","FA-INFRA-001 status changes from Not yet acquired to Open","WIP balance sheet account cleared to zero","Depreciation can now begin on the asset"],
+   steps:[
+    {t:"Final estimate at 100%",b:"Update forecast to complete = 0. Run and post final estimate.",f:[{f:"% completion",v:"100%",d:""},{f:"Total WIP",v:"USD 250,000",d:"All costs accumulated"}],w:null,tp:null,inf:null,v:null},
+    {t:"Run WIP Elimination",b:'<span class="np">Project management and accounting <span class="sep">›</span> Periodic <span class="sep">›</span> Estimates → Eliminate</span><br>In the eliminate dialog, confirm the fixed asset link:',f:[{f:"Elimination type",v:"Fixed asset",d:"Transfer WIP to fixed asset (not ledger account)"},{f:"Fixed asset number",v:"FA-INFRA-001",d:"Auto-populated from project link"},{f:"Book",v:"SLFB",d:"Depreciation book to post acquisition to"}],w:null,tp:null,inf:null,v:null},
+    {t:"Review the elimination voucher",b:"The elimination posts these entries simultaneously:",f:null,w:null,tp:null,inf:null,v:{lbl:"GL voucher — Investment project elimination (WIP → Fixed Asset)",rows:[{a:"180100 Fixed asset — IT Infrastructure (acquisition)",dr:"USD 250,000.00",cr:""},{a:"130100 WIP — Cost value (CLEARED)",dr:"",cr:"USD 250,000.00"},{a:"P&L Cost",v:"ZERO — cost is on balance sheet as fixed asset",dr:"$0",cr:"$0"},{a:"P&L Revenue",v:"ZERO — no revenue ever",dr:"$0",cr:"$0"}]}},
+    {t:"Verify fixed asset acquisition",b:'<span class="np">Fixed assets <span class="sep">›</span> Fixed assets <span class="sep">›</span> Fixed assets <span class="sep">›</span> FA-INFRA-001</span><br>Status should now show <strong>Open</strong> (acquired). Acquisition value = USD 250,000.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Set up depreciation",b:"The asset is now live. Configure the depreciation profile:",f:[{f:"Depreciation method",v:"Straight-line (SLFB)",d:"Common for IT infrastructure"},{f:"Useful life",v:"5 years",d:"20% per year = USD 50,000 annual depreciation"},{f:"Depreciation start date",v:"01/01/2027",d:"Starts when asset is in service"},{f:"Annual depreciation",v:"USD 50,000",d:"USD 250,000 ÷ 5 years"}],w:null,tp:"The depreciation setup is in the Fixed Assets module — not PMA. Once the asset is acquired, PMA's role is complete. Depreciation is managed entirely by the Fixed Assets team.",inf:null,v:null},
+    {t:"Set project to Finished",b:"Project stage → Finished. No further costs can post.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["WIP elimination run — USD 250,000 to FA-INFRA-001","Fixed asset status = Open (acquired)","Balance sheet: WIP cleared, fixed asset created","Depreciation schedule configured (5 years, USD 50k/year)","Project set to Finished"],
+   refs:[{t:"Investment Projects in D365FO — elimination to fixed asset",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"},{t:"Enable the Investment project feature",u:"https://learn.microsoft.com/en-us/dynamics365/release-plan/2025wave2/enterprise-resource-planning/dynamics365-project-operations/enable-investment-project-feature"}]}
+ ]
+},
+
+// ══════════════════════ S4 — REPORTS ══════════════════════════════════
+{id:3,label:"S4 · Reports",title:"Section 4 — Investment Project Reporting",
+ desc:"Run all reports available for investment projects — WIP balance inquiry, budget vs actuals, cost control workspace, and the fixed asset acquisition summary.",
+ cls:"sh-3",nc:"ln-3",
+ labs:[
+  {id:"3-0",badge:"lb-r",bl:"Report",
+   title:"WIP Balance & Project Statement",
+   sub:"Project management and accounting › Inquiries and reports › Project statements",
+   obj:"Run the project statement for PROJ-INV-001 and verify the WIP balance, cost breakdown by category, and zero revenue throughout the project lifecycle.",
+   why:"The project statement for an investment project looks very different from T&M and FP — there is no revenue section, and the entire output is cost tracking. CFOs and capital committees review this statement monthly to monitor capex spend.",
+   pre:["All costs posted — USD 250,000 total WIP"],
+   result:["Statement shows cost by category (labour / expenses / items)","Revenue lines = zero throughout","WIP balance matches posted transactions"],
+   steps:[
+    {t:"Run project statement",b:'<span class="np">Project management and accounting <span class="sep">›</span> Inquiries and reports <span class="sep">›</span> Project statements</span>',f:[{f:"Project ID",v:"PROJ-INV-001",d:""},{f:"Show",v:"Actuals and budgets",d:""},{f:"Detail level",v:"Category",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Read the investment project statement",b:"",f:[{f:"Revenue",v:"USD 0",d:"Confirmed — investment projects never show revenue"},{f:"Cost — Hours",v:"USD 12,000",d:"Engineering labour capitalised"},{f:"Cost — Expenses",v:"USD 15,000",d:"Installation expenses capitalised"},{f:"Cost — Items",v:"USD 50,000",d:"Server equipment capitalised"},{f:"WIP balance",v:"USD 77,000 (before remaining costs)",d:"All on balance sheet"},{f:"Gross profit",v:"USD 0",d:"No revenue = no profit — this is correct"}],w:null,tp:"When presenting to management, rename the report header from 'Project statement' to 'Capital project cost report'. The word 'profit' on an investment project confuses non-accountants.",inf:null,v:null},
+    {t:"Export and annotate for capital committee",b:"Export to Excel. Add a Budget column (from approved capex budget). Add a Remaining column. This becomes your monthly capex progress report.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Statement confirms zero revenue throughout","Cost by category matches posted transactions","Capital committee report format created"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"3-1",badge:"lb-r",bl:"Report",
+   title:"Cost Control Workspace & Budget vs Actuals",
+   sub:"Project management and accounting › Workspaces › Cost control",
+   obj:"Use the Cost control workspace to track capital budget vs WIP actuals and identify any cost overruns before they exceed the approved capex budget.",
+   why:"Capital budget management is stricter than operational budget management in most organisations. Investment projects require formal capital committee approval and overruns must be escalated. The cost control workspace is the daily monitoring tool.",
+   pre:["Budget entered on project","Costs posted"],
+   result:["Workspace shows capex budget vs actual WIP","Budget variance identified","No committed cost overrun"],
+   steps:[
+    {t:"Enter the capital budget",b:'<span class="np">All projects <span class="sep">›</span> PROJ-INV-001 <span class="sep">›</span> Plan <span class="sep">›</span> Budget</span><br>Enter approved capex budget: Labour USD 60,000, Expenses USD 40,000, Equipment USD 150,000. Total USD 250,000.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Open Cost control workspace",b:'<span class="np">Project management and accounting <span class="sep">›</span> Workspaces <span class="sep">›</span> Cost control</span>',f:[{f:"Original budget",v:"USD 250,000",d:"Approved capex budget"},{f:"Actual (WIP)",v:"USD 77,000",d:"Capitalised costs to date"},{f:"Committed",v:"Open POs",d:"Future obligations"},{f:"Remaining",v:"USD 173,000",d:"Available capex budget"}],w:null,tp:"Set up a budget alert at 80% of capex budget. This triggers a capital committee review before the project overruns — standard governance practice.",inf:null,v:null},
+    {t:"Review fixed asset acquisition after elimination",b:'<span class="np">Fixed assets <span class="sep">›</span> Inquiries and reports <span class="sep">›</span> Fixed asset transactions</span><br>Filter by FA-INFRA-001. Confirm: Transaction type = Acquisition, Amount = total WIP at elimination.',f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Cost control workspace reviewed","Budget vs WIP actuals reconciled","Fixed asset acquisition transaction confirmed in FA module"],
+   refs:[{t:"Investment Projects in D365FO",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"}]}
+ ]
+},
+
+// ══════════════════════ S5 — IT INFRASTRUCTURE SCENARIO ════════════════
+{id:4,label:"S5 · IT Infrastructure",title:"Section 5 — IT Infrastructure Upgrade Scenario + WBS",
+ desc:"Complete Investment project scenario for a data centre infrastructure upgrade — new servers, network, storage, and installation. USD 850,000 capital budget.",
+ cls:"sh-4",nc:"ln-4",
+ labs:[
+  {id:"4-0",badge:"lb-w",bl:"WBS",
+   title:"IT Infrastructure WBS — USD 850,000 CAPEX",
+   sub:"PROJ-INV-IT · Investment Project · Data Centre Upgrade",
+   obj:"Build a 5-phase WBS for a data centre infrastructure upgrade covering procurement, installation, networking, testing, and go-live.",
+   why:"IT capital projects are the most common investment projects in finance departments. This WBS template mirrors real capex approvals — students who understand this structure will be immediately useful in their first week on an ERP implementation.",
+   pre:["PROJ-INV-IT created (Investment type, INV-CAPITAL group)","FA-DATACENTER-001 fixed asset created","Capex budget USD 850,000 approved"],
+   result:["5-phase IT infrastructure WBS created","Labour, equipment, and contractor costs differentiated","WBS exported as capex template"],
+   steps:[
+    {t:"Set up the capital budget first",b:"Before building the WBS, enter the approved capex budget by category:",f:[{f:"Engineering / project management",v:"USD 120,000",d:"Internal staff labour capitalised"},{f:"Server & storage hardware",v:"USD 450,000",d:"Physical equipment via POs"},{f:"Networking equipment",v:"USD 150,000",d:"Switches, cables, firewalls"},{f:"Contractor installation",v:"USD 80,000",d:"External contractors — capitalised"},{f:"Testing and commissioning",v:"USD 50,000",d:""},{f:"Total approved capex",v:"USD 850,000",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Build the IT infrastructure WBS",b:"See WBS table below.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   wbs:{headers:["Task","Level","Hours","Equipment (USD)","Contractors (USD)","Category"],
+    rows:[
+     ["1 — PROJECT SETUP & DESIGN","L1","","","",""],
+     ["1.1 Project initiation","L2","40 hrs","—","—","ConsultHours"],
+     ["1.2 Current state assessment","L2","60 hrs","—","—","ConsultHours"],
+     ["1.3 Architecture design","L2","80 hrs","—","—","ConsultHours"],
+     ["1.4 Procurement planning","L2","40 hrs","—","—","ConsultHours"],
+     ["— PHASE 1 TOTAL","","220 hrs","—","—",""],
+     ["2 — HARDWARE PROCUREMENT","L1","","","",""],
+     ["2.1 Server racks (×10)","L2","—","USD 200,000","—","Materials"],
+     ["2.2 Storage array (×2)","L2","—","USD 120,000","—","Materials"],
+     ["2.3 Backup systems","L2","—","USD 80,000","—","Materials"],
+     ["2.4 UPS & power systems","L2","—","USD 50,000","—","Materials"],
+     ["— PHASE 2 TOTAL","","—","USD 450,000","—",""],
+     ["3 — NETWORKING","L1","","","",""],
+     ["3.1 Core switches (×4)","L2","—","USD 60,000","—","Materials"],
+     ["3.2 Firewall appliances","L2","—","USD 40,000","—","Materials"],
+     ["3.3 Cabling & patching","L2","—","USD 30,000","—","Materials"],
+     ["3.4 Network config & setup","L2","—","—","USD 20,000","TravelExp"],
+     ["— PHASE 3 TOTAL","","—","USD 130,000","USD 20,000",""],
+     ["4 — INSTALLATION & INTEGRATION","L1","","","",""],
+     ["4.1 Rack and stack servers","L2","—","—","USD 30,000","TravelExp"],
+     ["4.2 OS and virtualisation setup","L2","80 hrs","—","—","ConsultHours"],
+     ["4.3 Storage configuration","L2","40 hrs","—","—","ConsultHours"],
+     ["4.4 Integration testing","L2","60 hrs","—","—","ConsultHours"],
+     ["4.5 Migration of existing data","L2","80 hrs","—","USD 30,000","ConsultHours"],
+     ["— PHASE 4 TOTAL","","260 hrs","—","USD 60,000",""],
+     ["5 — TESTING & COMMISSIONING","L1","","","",""],
+     ["5.1 Performance testing","L2","40 hrs","—","—","ConsultHours"],
+     ["5.2 Disaster recovery testing","L2","24 hrs","—","—","ConsultHours"],
+     ["5.3 Security audit","L2","—","—","USD 20,000","TravelExp"],
+     ["5.4 Go-live & handover","L2","40 hrs","—","—","ConsultHours"],
+     ["5.5 Documentation","L2","24 hrs","—","—","ConsultHours"],
+     ["— PHASE 5 TOTAL","","128 hrs","—","USD 20,000",""],
+     ["═══ CAPEX TOTAL","","608 hrs","USD 580,000","USD 80,000","TOTAL: USD 850,000"]
+    ]
+   },
+   out:["5-phase IT infrastructure WBS created","Labour, equipment, and contractor costs differentiated","Budget of USD 850,000 fully allocated to WBS","Template exported for future IT capex projects"],
+   refs:[{t:"Investment Projects in D365FO",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"}]},
+
+  {id:"4-1",badge:"lb-sc",bl:"Scenario",
+   title:"IT Infrastructure — Full Lifecycle Lab",
+   sub:"PROJ-INV-IT · USD 850,000 · Data Centre Upgrade · 12 months",
+   obj:"Run the complete investment project lifecycle for the IT infrastructure project: post all costs, run monthly estimates, eliminate to fixed asset, and set up depreciation.",
+   why:"Running a realistic USD 850,000 capex project from setup to asset acquisition is the practical exercise that makes investment project accounting real. This is a scenario your students will encounter in their first finance role.",
+   pre:["IT WBS created (Lab S5-1)","PROJ-INV-IT in In process"],
+   result:["All 5 phases of costs posted to WIP","Monthly estimate reports generated","Elimination: WIP USD 850,000 → FA-DATACENTER-001","Depreciation: 5-year straight-line = USD 170,000/year"],
+   steps:[
+    {t:"Post Phase 1 — engineering hours",b:"220 hrs across 4 engineers from WBS:",f:[{f:"Lead architect",v:"80 hrs × USD 150 = USD 12,000",d:""},{f:"Senior engineers",v:"100 hrs × USD 120 = USD 12,000",d:""},{f:"Project manager",v:"40 hrs × USD 100 = USD 4,000",d:""},{f:"All lines CAPEX",v:"Dr WIP 130100",d:"NOT P&L"}],w:null,tp:null,inf:null,v:null},
+    {t:"Post Phase 2 — hardware POs",b:"4 POs from hardware vendors:",f:[{f:"Server racks PO",v:"USD 200,000 from Dell (US-102)",d:""},{f:"Storage array PO",v:"USD 120,000",d:""},{f:"Backup systems PO",v:"USD 80,000",d:""},{f:"UPS/power PO",v:"USD 50,000",d:""},{f:"All line property: CAPEX",v:"Dr WIP 130100 at product receipt",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Post Phase 3+4 — networking + installation",b:"Networking POs + contractor expense journals:",f:[{f:"Networking equipment POs",v:"USD 130,000",d:"3 POs from Cisco vendor"},{f:"Contractor install",v:"USD 60,000 expense journals",d:"External contractors capitalised"},{f:"Running WIP",v:"USD 468,000",d:"All in 130100"}],w:null,tp:null,inf:null,v:null},
+    {t:"Post Phase 5 — testing & commissioning",b:"Final phase costs:",f:[{f:"Internal testing hours",v:"128 hrs × avg USD 130 = USD 16,640",d:""},{f:"Security audit contractor",v:"USD 20,000 expense journal",d:""},{f:"TOTAL WIP",v:"USD 850,000",d:"All costs capitalised"}],w:null,tp:null,inf:null,v:null},
+    {t:"Run final estimate and eliminate",b:"Estimate at 100% → Eliminate → linked to FA-DATACENTER-001.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — IT Infrastructure elimination (USD 850,000 to fixed asset)",rows:[{a:"180100 Fixed asset — Data Centre (acquisition)",dr:"USD 850,000.00",cr:""},{a:"130100 WIP — Cost value (CLEARED)",dr:"",cr:"USD 850,000.00"},{a:"P&L",v:"ZERO — entire cost on balance sheet",dr:"$0",cr:"$0"}]}},
+    {t:"Configure depreciation",b:"FA-DATACENTER-001 → Depreciation profile:",f:[{f:"Method",v:"Straight-line (SLFB)",d:""},{f:"Useful life",v:"5 years",d:"Standard for data centre hardware"},{f:"Annual depreciation",v:"USD 170,000",d:"USD 850,000 ÷ 5"},{f:"Start date",v:"01/01/2027",d:"When asset enters service"}],w:null,tp:"Annual depreciation of USD 170,000 will hit P&L each year for 5 years AFTER capitalisation. This is when the investment project finally impacts the income statement — but as depreciation, not as a cost.",inf:null,v:null}
+   ],
+   out:["All 5 phases posted — total WIP USD 850,000","Monthly estimates tracked capex progress","Elimination: USD 850,000 → FA-DATACENTER-001","Depreciation: USD 170,000/year for 5 years configured"],
+   refs:[{t:"Investment Projects in D365FO — full lifecycle",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"}]}
+ ]
+},
+
+// ══════════════════════ S6 — BUILDING CONSTRUCTION ═════════════════════
+{id:5,label:"S6 · Building Construction",title:"Section 6 — Building Construction Scenario + WBS",
+ desc:"Investment project for a commercial building construction — capitalise all construction costs to a building fixed asset. IAS 16 borrowing costs concept introduced.",
+ cls:"sh-5",nc:"ln-5",
+ labs:[
+  {id:"5-0",badge:"lb-w",bl:"WBS",
+   title:"Building Construction WBS — USD 2,400,000 CAPEX",
+   sub:"PROJ-INV-BUILD · Investment Project · Commercial Office Building",
+   obj:"Build a 5-phase construction WBS for a commercial office building being constructed by the company for its own use — all costs capitalised under IAS 16.",
+   why:"Construction of a self-use building is the largest and most complex investment project scenario. It involves labour, materials, subcontractors, professional fees — all capitalised. Borrowing costs (interest on construction loan) can also be capitalised under IAS 23. This WBS covers all these dimensions.",
+   pre:["PROJ-INV-BUILD created (Investment type)","FA-BUILDING-001 fixed asset created in BUILDING group","Capital committee approval: USD 2,400,000"],
+   result:["5-phase building WBS created","Subcontractor, material, and professional fee costs mapped","IAS 16 / IAS 23 capitalisation scope defined"],
+   steps:[
+    {t:"Define capitalisation scope (IAS 16)",b:"Under IAS 16, the following costs are capitalised to the building asset:",f:[{f:"Directly attributable costs",v:"Capitalise",d:"Materials, labour, subcontractors directly constructing the building"},{f:"Professional fees",v:"Capitalise",d:"Architect, engineer, surveyor fees for the specific building"},{f:"Borrowing costs (IAS 23)",v:"Capitalise (if loan for this building)",d:"Interest on construction loan may be capitalised during construction"},{f:"General overheads",v:"DO NOT capitalise",d:"Admin costs, general management — these stay in P&L"}],w:"Capitalising general overhead costs to a building project is a common audit finding. Only DIRECTLY ATTRIBUTABLE costs may be capitalised under IAS 16. Train your team on this distinction.",tp:null,inf:null,v:null},
+    {t:"Build the construction WBS",b:"See WBS table below.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   wbs:{headers:["Task","Level","Labour (hrs)","Materials (USD)","Subcontracts (USD)","Prof. Fees (USD)"],
+    rows:[
+     ["1 — PRE-CONSTRUCTION","L1","","","",""],
+     ["1.1 Site survey & geotech","L2","—","—","—","USD 25,000"],
+     ["1.2 Architectural design","L2","—","—","—","USD 80,000"],
+     ["1.3 Engineering design","L2","—","—","—","USD 60,000"],
+     ["1.4 Planning permits","L2","—","—","—","USD 15,000"],
+     ["1.5 Project management (pre-build)","L2","80 hrs","—","—","—"],
+     ["— PHASE 1 TOTAL","","80 hrs","—","—","USD 180,000"],
+     ["2 — FOUNDATIONS & STRUCTURE","L1","","","",""],
+     ["2.1 Earthworks & excavation","L2","—","—","USD 120,000","—"],
+     ["2.2 Concrete foundations","L2","200 hrs","USD 180,000","USD 80,000","—"],
+     ["2.3 Structural steel frame","L2","120 hrs","USD 280,000","USD 60,000","—"],
+     ["2.4 Concrete slabs (all levels)","L2","160 hrs","USD 150,000","USD 70,000","—"],
+     ["— PHASE 2 TOTAL","","480 hrs","USD 610,000","USD 330,000","—"],
+     ["3 — BUILDING ENVELOPE","L1","","","",""],
+     ["3.1 External cladding & facade","L2","—","USD 120,000","USD 80,000","—"],
+     ["3.2 Roof structure & waterproofing","L2","—","USD 90,000","USD 60,000","—"],
+     ["3.3 Glazing (windows & curtain wall)","L2","—","USD 160,000","USD 40,000","—"],
+     ["— PHASE 3 TOTAL","","—","USD 370,000","USD 180,000","—"],
+     ["4 — FIT-OUT & SERVICES","L1","","","",""],
+     ["4.1 Mechanical (HVAC)","L2","—","—","USD 120,000","—"],
+     ["4.2 Electrical installation","L2","—","—","USD 90,000","—"],
+     ["4.3 Plumbing & fire protection","L2","—","—","USD 70,000","—"],
+     ["4.4 Internal fit-out (partitions, finishes)","L2","240 hrs","USD 80,000","USD 100,000","—"],
+     ["— PHASE 4 TOTAL","","240 hrs","USD 80,000","USD 380,000","—"],
+     ["5 — COMMISSIONING & HANDOVER","L1","","","",""],
+     ["5.1 Systems commissioning","L2","80 hrs","—","USD 30,000","—"],
+     ["5.2 Final inspections","L2","—","—","—","USD 20,000"],
+     ["5.3 Practical completion","L2","40 hrs","—","—","—"],
+     ["5.4 IAS 23 borrowing costs (12 months)","L2","—","USD 80,000","—","—"],
+     ["— PHASE 5 TOTAL","","120 hrs","USD 80,000","USD 30,000","USD 20,000"],
+     ["═══ CAPEX TOTAL","","920 hrs","USD 1,140,000","USD 920,000","USD 200,000"],
+     ["IAS 23 borrowing costs included","","","USD 80,000","",""],
+     ["TOTAL CAPITALISED COST","","","","","USD 2,400,000"]
+    ]
+   },
+   out:["5-phase building WBS created","IAS 16 and IAS 23 capitalisation scope defined","USD 2,400,000 budget allocated across phases","Template exported for future building capex projects"],
+   refs:[{t:"Investment Projects in D365FO",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"},{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"5-1",badge:"lb-sc",bl:"Scenario",
+   title:"Building Construction — Full Lifecycle + IAS 23 Borrowing Costs",
+   sub:"PROJ-INV-BUILD · USD 2,400,000 · 18-month construction period",
+   obj:"Run the complete building construction investment project: post all costs including IAS 23 borrowing costs, run monthly capex estimates, eliminate USD 2,400,000 to FA-BUILDING-001.",
+   why:"Building construction investment projects are the most comprehensive PMA scenario — they combine procurement, subcontractors, professional fees, and the unique concept of capitalised borrowing costs. This lab gives students real-world experience that applies directly in property, construction, and infrastructure companies.",
+   pre:["Building WBS created (Lab S6-1)","PROJ-INV-BUILD in In process","Construction loan in place — USD 1,500,000 @ 6% interest"],
+   result:["All construction costs posted to WIP — USD 2,320,000","IAS 23 borrowing costs capitalised — USD 80,000","Elimination: USD 2,400,000 → FA-BUILDING-001","Depreciation: 40-year straight-line = USD 60,000/year"],
+   steps:[
+    {t:"Post professional fees (Phase 1)",b:"Expense journals for professional services:",f:[{f:"Architect fees",v:"USD 80,000 expense journal",d:""},{f:"Engineering design",v:"USD 60,000 expense journal",d:""},{f:"Surveying + permits",v:"USD 40,000 expense journal",d:""},{f:"Line property: CAPEX",v:"Dr WIP 130100",d:""},{f:"Phase 1 WIP",v:"USD 190,800 (incl. PM hours)",d:""}],w:null,tp:"Professional fees for designing a building are capitalised under IAS 16. These are NOT expensed. A common mistake is to post architect invoices to P&L expenses — always route to the project.",inf:null,v:null},
+    {t:"Post structural costs (Phase 2+3)",b:"POs and subcontractor expense journals for foundations, structure, and envelope:",f:[{f:"Concrete and steel POs",v:"USD 610,000 from Phase 2",d:""},{f:"Subcontractor POs",v:"USD 510,000 from Phase 2+3",d:"Earthworks, steel erectors, glaziers"},{f:"Envelope materials",v:"USD 370,000 from Phase 3",d:""},{f:"Running WIP",v:"USD 1,680,800",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Post IAS 23 borrowing costs",b:"Interest on USD 1,500,000 construction loan @ 6% for 12 months = USD 90,000. Only the portion relating to active construction is capitalised:",f:[{f:"Total interest charged",v:"USD 90,000",d:"12 months × 6% × USD 1,500,000"},{f:"Capitalisation period",v:"Jan–Oct 2026 (10 months)",d:"Active construction period"},{f:"Capitalised amount",v:"USD 80,000",d:"10 ÷ 12 × USD 90,000"},{f:"Non-capitalised",v:"USD 10,000",d:"Expensed to P&L (suspension period)"}],w:"IAS 23 requires suspension of capitalisation when active construction is suspended for extended periods. Post non-capitalised interest as a normal expense journal (not CAPEX line).",tp:null,inf:null,v:{lbl:"GL — IAS 23 borrowing costs capitalised",rows:[{a:"130100 WIP — Cost value (borrowing costs)",dr:"USD 80,000.00",cr:""},{a:"Interest payable / bank",dr:"",cr:"USD 80,000.00"}]}},
+    {t:"Post fit-out and commissioning (Phase 4+5)",b:"Remaining phases:",f:[{f:"MEP subcontractors",v:"USD 380,000",d:""},{f:"Fit-out materials + labour",v:"USD 80,000 + 240 hrs",d:""},{f:"Commissioning + inspections",v:"USD 50,000",d:""},{f:"TOTAL WIP",v:"USD 2,400,000",d:"All costs capitalised"}],w:null,tp:null,inf:null,v:null},
+    {t:"Eliminate to FA-BUILDING-001",b:"Final estimate → 100% → Eliminate → FA-BUILDING-001.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Building elimination (USD 2,400,000 to fixed asset)",rows:[{a:"180200 Fixed asset — Commercial Building",dr:"USD 2,400,000.00",cr:""},{a:"130100 WIP — Cost value (CLEARED)",dr:"",cr:"USD 2,400,000.00"},{a:"P&L",v:"ZERO throughout construction",dr:"$0",cr:"$0"}]}},
+    {t:"Configure 40-year straight-line depreciation",b:"",f:[{f:"Method",v:"Straight-line",d:"Standard for commercial buildings"},{f:"Useful life",v:"40 years",d:"IAS 16: buildings typically 25-50 years"},{f:"Annual depreciation",v:"USD 60,000",d:"USD 2,400,000 ÷ 40 years"},{f:"Note on land",v:"Land is NOT depreciated",d:"If land and building are separate, only building cost depreciates"}],w:null,tp:"Under IAS 16, land and buildings are separate assets. If the USD 2,400,000 includes land value (say USD 400,000), only USD 2,000,000 is depreciated over 40 years = USD 50,000/year. Split the fixed asset at elimination.",inf:null,v:null}
+   ],
+   out:["All construction costs capitalised — USD 2,320,000","IAS 23 borrowing costs capitalised — USD 80,000","Total WIP eliminated to FA-BUILDING-001: USD 2,400,000","40-year depreciation: USD 60,000/year","IAS 16 and IAS 23 accounting standards applied"],
+   refs:[{t:"Investment Projects in D365FO — lifecycle",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/project-operations-investment-project"},{t:"Enable the Investment project feature — 2025 wave 2",u:"https://learn.microsoft.com/en-us/dynamics365/release-plan/2025wave2/enterprise-resource-planning/dynamics365-project-operations/enable-investment-project-feature"}]}
+ ]
+}
+]; // END SECTIONS
+
+// ── PROGRESS ──────────────────────────────────────────────────────────
+const TOTAL = SECTIONS.reduce((a,s)=>a+s.labs.length,0);
+const done  = new Set(JSON.parse(localStorage.getItem('pma_inv_done')||'[]'));
+function saveDone(){ localStorage.setItem('pma_inv_done',JSON.stringify([...done])); }
+function updateProg(){
+  const n=done.size, p=Math.round(n/TOTAL*100);
+  document.getElementById('pbadge').textContent = n+' / '+TOTAL+' done';
+  document.getElementById('ps-fill').style.width = p+'%';
+  document.getElementById('ps-pct').textContent  = p+'%';
+  document.getElementById('total-lbl').textContent = TOTAL;
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────
+let curSec=0;
+function buildNav(){
+  const c=document.getElementById('ntabs');
+  SECTIONS.forEach((s,i)=>{
+    const b=document.createElement('div');
+    b.className='ntab'+(i===0?' on':'');
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected',i===0?'true':'false');
+    b.textContent=s.label;
+    b.onclick=()=>switchSec(i);
+    c.appendChild(b);
+  });
+}
+function switchSec(i){
+  curSec=i;
+  document.querySelectorAll('.ntab').forEach((t,j)=>{
+    t.classList.toggle('on',j===i);
+    t.setAttribute('aria-selected',j===i?'true':'false');
+  });
+  document.querySelectorAll('.sec-view').forEach((v,j)=>v.classList.toggle('on',j===i));
+  document.getElementById('main-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── BUILD VIEWS ───────────────────────────────────────────────────────
+function buildViews(){
+  const c=document.getElementById('sec-views');
+  SECTIONS.forEach((sec,si)=>{
+    const view=document.createElement('div');
+    view.className='sec-view'+(si===0?' on':'');
+    const hdr=document.createElement('div');
+    hdr.className='sec-hdr '+sec.cls;
+    hdr.innerHTML=`<div><div class="sh-title">${sec.title}</div><div class="sh-desc">${sec.desc}</div></div>
+      <div class="sh-meta"><span class="sh-pill">Section ${si+1} of ${SECTIONS.length}</span><span class="sh-pill">${sec.labs.length} labs</span></div>`;
+    view.appendChild(hdr);
+    const labsDiv=document.createElement('div');
+    labsDiv.className='labs';
+    sec.labs.forEach((lab,li)=>labsDiv.appendChild(buildLab(lab,si,li,sec)));
+    view.appendChild(labsDiv);
+    c.appendChild(view);
+  });
+}
+
+function buildLab(lab,si,li,sec){
+  const key=lab.id;
+  const card=document.createElement('div');
+  card.className='lab';
+  const head=document.createElement('div');
+  head.className='lab-head';
+  const isDone=done.has(key);
+  head.innerHTML=`
+    <div class="lab-num ${sec.nc}">${li+1}</div>
+    <div class="lab-info">
+      <div class="lab-title">${lab.title}</div>
+      <div class="lab-sub">${lab.sub}</div>
+    </div>
+    <span class="lbadge ${lab.badge}">${lab.bl}</span>
+    <div class="tick${isDone?' done':''}" title="Mark complete">✓</div>
+    <span class="chev">⌄</span>`;
+  head.querySelector('.tick').onclick=e=>{
+    e.stopPropagation();
+    done.has(key)?done.delete(key):done.add(key);
+    saveDone(); updateProg();
+    e.target.classList.toggle('done',done.has(key));
+  };
+  head.onclick=()=>card.classList.toggle('open');
+  const body=document.createElement('div');
+  body.className='lab-body';
+  body.appendChild(buildBody(lab,si));
+  card.appendChild(head);
+  card.appendChild(body);
+  return card;
+}
+
+function buildBody(lab,si){
+  const d=document.createElement('div');
+  d.className='lb-inner';
+  d.innerHTML=`<div class="ow-row">
+    <div class="ow-card ow-obj"><div class="ow-ico">🎯</div><div><strong>Objective:</strong> ${lab.obj}</div></div>
+    <div class="ow-card ow-why"><div class="ow-ico">💡</div><div><strong>Why this matters:</strong> ${lab.why}</div></div>
+  </div>
+  <div class="pr-row">
+    <div class="pr-card pr-pre"><div class="pr-lbl">Prerequisites</div><ul class="prl">${lab.pre.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="pr-card pr-res"><div class="pr-lbl">Expected results</div><ul class="prl">${lab.result.map(r=>`<li>${r}</li>`).join('')}</ul></div>
+  </div>`;
+
+  const slbl=document.createElement('div');
+  slbl.className='slbl'; slbl.textContent='Step-by-step instructions';
+  d.appendChild(slbl);
+
+  const stepsDiv=document.createElement('div');
+  stepsDiv.className='steps';
+  lab.steps.forEach((s,idx)=>{
+    const st=document.createElement('div');
+    st.className='step';
+    let extra='';
+    if(s.f){ extra+='<table class="ft"><thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead><tbody>'; s.f.forEach(f=>{extra+=`<tr><td class="fn">${f.f}</td><td class="fv">${f.v}</td><td class="fd">${f.d}</td></tr>`;}); extra+='</tbody></table>'; }
+    if(s.w) extra+=`<div class="warn"><div class="bi">⚠️</div><div>${s.w}</div></div>`;
+    if(s.tp) extra+=`<div class="tip"><div class="bi">💡</div><div><strong>Tip:</strong> ${s.tp}</div></div>`;
+    if(s.inf) extra+=`<div class="info"><div class="bi">ℹ️</div><div>${s.inf}</div></div>`;
+    if(s.v){
+      extra+=`<div class="voucher"><div class="vlbl">${s.v.lbl}</div>`;
+      s.v.rows.forEach(r=>{
+        extra+=`<div class="ve"><div class="va">${r.a}</div>`;
+        extra+=r.dr?`<div class="vdr">Dr ${r.dr}</div>`:`<div class="vbl"></div>`;
+        extra+=r.cr?`<div class="vcr">Cr ${r.cr}</div>`:`<div class="vbl"></div>`;
+        extra+='</div>';
+      });
+      extra+='</div>';
+    }
+    st.innerHTML=`<div class="sdot sd-${si%6}">${idx+1}</div><div class="step-c"><div class="step-t">${s.t}</div><div class="step-b">${s.b}${extra}</div></div>`;
+    stepsDiv.appendChild(st);
+  });
+  d.appendChild(stepsDiv);
+
+  if(lab.wbs){
+    const wl=document.createElement('div'); wl.className='slbl'; wl.textContent='WBS Template — upload in D365FO'; d.appendChild(wl);
+    const wr=document.createElement('div'); wr.className='wbs-wrap';
+    const th=lab.wbs.headers.map(h=>`<th>${h}</th>`).join('');
+    const rows=lab.wbs.rows.map(r=>{
+      const isTot=r[0].includes('TOTAL')||r[0].includes('═══');
+      const isL1=r[1]==='L1', isL2=r[1]==='L2';
+      return `<tr><td class="${isTot?'tot':isL1?'l1':isL2?'l2':''}">${r[0]}</td>${r.slice(1).map((c,ci)=>`<td class="${ci>=1?'cost':''}">${c}</td>`).join('')}</tr>`;
+    }).join('');
+    wr.innerHTML=`<table class="wbs"><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table>`;
+    d.appendChild(wr);
+  }
+
+  if(lab.refs&&lab.refs.length){
+    const rl=document.createElement('div'); rl.className='rlbl'; rl.textContent='Microsoft Learn references'; d.appendChild(rl);
+    const refs=document.createElement('div'); refs.className='refs';
+    lab.refs.forEach(r=>{
+      const a=document.createElement('a');
+      a.className='refa'; a.href=r.u; a.target='_blank'; a.rel='noopener';
+      a.innerHTML=`<div class="ri">↗</div><div style="flex:1"><div class="rb-t">${r.t}</div><div class="rb-u">${r.u}</div></div><div class="rsrc">MS Learn</div>`;
+      refs.appendChild(a);
+    });
+    d.appendChild(refs);
+  }
+
+  d.appendChild(buildSignoff(lab));
+  return d;
+}
+
+function buildSignoff(lab){
+  const key=lab.id;
+  const saved=JSON.parse(localStorage.getItem('pma_inv_so_'+key)||'null');
+  const so=document.createElement('div'); so.className='so';
+  const head=document.createElement('div'); head.className='so-h'; head.textContent='✅ Lab sign-off — confirm all outcomes';
+  const body=document.createElement('div'); body.className='so-b';
+  head.onclick=()=>body.classList.toggle('on');
+  so.appendChild(head);
+  let t=`<table class="oct"><thead><tr><th>Expected outcome</th><th>Done?</th><th>Notes</th></tr></thead><tbody>`;
+  lab.out.forEach((o,oi)=>{
+    const ok=saved&&saved.oc&&saved.oc[oi];
+    t+=`<tr><td>${o}</td><td style="text-align:center"><span class="occ${ok?' ok':''}" onclick="this.classList.toggle('ok')">✓</span></td><td><input type="text" style="width:100%;border:none;background:transparent;font-size:12px;color:#555;outline:none" value="${saved&&saved.ns&&saved.ns[oi]||''}" placeholder="notes..."></td></tr>`;
+  });
+  t+='</tbody></table>';
+  const ratings=[['1','⭐ Needs review'],['2','⭐⭐ Getting there'],['3','⭐⭐⭐ Confident'],['4','⭐⭐⭐⭐ Could teach it']];
+  let rHtml='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:7px">Session rating</div><div class="rr">';
+  ratings.forEach(([v,l])=>{const sel=saved&&saved.rating===v?` s${v}`:''; rHtml+=`<button class="rb${sel}" data-v="${v}" onclick="selRating(this,event)">${l}</button>`;});
+  rHtml+='</div>';
+  const inputs=`<div class="si-grid">
+    <div class="sif"><label>Student name</label><input type="text" id="sn-${key}" value="${saved&&saved.sn||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Student signature + date</label><input type="text" id="ss-${key}" value="${saved&&saved.ss||''}" placeholder="Sign / DD MMM YYYY"></div>
+    <div class="sif"><label>Instructor name</label><input type="text" id="in-${key}" value="${saved&&saved.in||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Instructor signature + date</label><input type="text" id="is-${key}" value="${saved&&saved.is||''}" placeholder="Sign / DD MMM YYYY"></div>
+  </div>`;
+  body.innerHTML=t+rHtml+inputs;
+  const btn=document.createElement('button'); btn.className='sbtn'; btn.textContent='Save sign-off';
+  btn.onclick=()=>{
+    const oc={},ns={};
+    body.querySelectorAll('.occ').forEach((el,i)=>oc[i]=el.classList.contains('ok'));
+    body.querySelectorAll('input[type=text]').forEach((el,i)=>{if(i<lab.out.length) ns[i]=el.value;});
+    const selBtn=body.querySelector('.rb[class*=" s"]');
+    const rating=selBtn?selBtn.dataset.v:'';
+    const data={oc,ns,rating,sn:document.getElementById('sn-'+key)?.value||'',ss:document.getElementById('ss-'+key)?.value||'',in:document.getElementById('in-'+key)?.value||'',is:document.getElementById('is-'+key)?.value||''};
+    localStorage.setItem('pma_inv_so_'+key,JSON.stringify(data));
+    done.add(key); saveDone(); updateProg();
+    btn.textContent='✓ Saved';
+    setTimeout(()=>btn.textContent='Save sign-off',2000);
+  };
+  body.appendChild(btn);
+  so.appendChild(body);
+  return so;
+}
+
+window.selRating=function(btn,e){
+  e.stopPropagation();
+  btn.closest('.rr').querySelectorAll('.rb').forEach(b=>{b.className='rb';b.removeAttribute('data-selected');});
+  btn.className='rb s'+btn.dataset.v;
+};
+window.switchSec=switchSec;
+
+// ── EXPORT ────────────────────────────────────────────────────────────
+document.getElementById('exp-btn').onclick=function(){
+  const now=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  let rows='',gi=0;
+  SECTIONS.forEach((sec,si)=>{
+    sec.labs.forEach((lab)=>{
+      const k=lab.id,isDone=done.has(k);
+      const so=JSON.parse(localStorage.getItem('pma_inv_so_'+k)||'null');
+      const rating=so&&so.rating?'⭐'.repeat(parseInt(so.rating)):'-';
+      gi++;
+      rows+=`<tr style="background:${gi%2===0?'#f8f7f2':'#fff'}">
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:600;color:#7c3aed;font-size:11px">${sec.label}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:500;font-size:12px">${lab.title}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center;color:${isDone?'#155724':'#888'};font-weight:${isDone?700:400}">${isDone?'✓ Done':'○ Pending'}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center">${rating}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${(so&&so.ss)||''}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${(so&&so.is)||''}</td>
+      </tr>`;
+    });
+  });
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Investment Lab Progress</title>
+<style>body{font-family:Arial,sans-serif;margin:36px;font-size:14px;color:#1c1a16}h1{font-size:20px;margin-bottom:4px}.meta{color:#888;font-size:13px;margin-bottom:18px}table{width:100%;border-collapse:collapse}th{background:#0d0d0d;color:#fff;padding:7px 9px;text-align:left;font-size:11px}.sum{display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap}.sc{background:#f5f0ff;border-radius:6px;padding:10px 16px}.sv{font-size:20px;font-weight:700;color:#7c3aed}.sl{font-size:11px;color:#888;text-transform:uppercase;margin-top:2px}.tip{background:#f5f0ff;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#7c3aed}@media print{.tip{display:none}}</style>
+</head><body>
+<div class="tip">💡 File → Save As → .doc or .docx | Ctrl+P to print</div>
+<h1>D365FO PMA — Investment Project Lab · Progress Report</h1>
+<div class="meta">Date: ${now} · Demo company: USMF</div>
+<div class="sum"><div class="sc"><div class="sv">${done.size}/${TOTAL}</div><div class="sl">Labs done</div></div><div class="sc"><div class="sv">${Math.round(done.size/TOTAL*100)}%</div><div class="sl">Complete</div></div><div class="sc"><div class="sv">6</div><div class="sl">Sections</div></div></div>
+<table><thead><tr><th>Section</th><th>Lab</th><th>Status</th><th>Rating</th><th>Student</th><th>Instructor</th></tr></thead><tbody>${rows}</tbody></table>
+<div style="margin-top:44px;display:flex;gap:80px">
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Student signature &amp; date</div></div>
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Instructor signature &amp; date</div></div>
+</div></body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`INV_Lab_Progress_${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(a.href);
+};
+
+// ── INIT ─────────────────────────────────────────────────────────────
+buildNav();
+buildViews();
+updateProg();
+</script>
+</body>
+</html>

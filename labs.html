@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>D365FO PMA — Hands-on Lab Guides</title>
+<meta name="description" content="Hands-on lab guides for all 6 D365FO project types — T&M, Fixed Price, Investment, Internal, Cost, and Time.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#f0f3f8;color:#1a2332;min-height:100vh}
+
+/* HEADER — matches existing site */
+.header{
+  background:linear-gradient(135deg,#1e3a6e 0%,#2952a3 50%,#1e3a6e 100%);
+  padding:44px 28px 52px;text-align:center;position:relative;overflow:hidden;
+}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.back-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:30px;padding:6px 18px;
+  font-size:12px;font-weight:600;color:rgba(255,255,255,.8);
+  text-decoration:none;margin-bottom:22px;transition:background .15s;
+}
+.back-btn:hover{background:rgba(255,255,255,.2)}
+.header-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  border:1px solid rgba(255,255,255,.2);border-radius:30px;
+  padding:6px 20px;font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.7);margin-bottom:16px;
+}
+.header h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(26px,5vw,44px);font-weight:700;
+  color:#fff;line-height:1.15;margin-bottom:10px;
+}
+.header h1 em{font-style:italic;color:#a8c4f0}
+.header p{
+  font-size:14px;color:rgba(255,255,255,.6);
+  max-width:500px;margin:0 auto 32px;line-height:1.7;
+}
+.stats-row{
+  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+}
+.sr-item{text-align:center}
+.sr-n{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff}
+.sr-l{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:3px}
+
+/* MAIN */
+.main{max-width:1040px;margin:0 auto;padding:44px 20px 64px}
+
+.sec-lbl{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:#6b7fa3;margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.sec-lbl::after{content:'';flex:1;height:1px;background:#dde3ed}
+
+/* COMPARISON TABLE */
+.tbl-wrap{background:#fff;border-radius:12px;border:1px solid #dde3ed;overflow-x:auto;margin-bottom:36px}
+.tbl-head{padding:13px 20px;background:#f8f9fc;border-bottom:1px solid #dde3ed;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#6b7fa3}
+.cmp{width:100%;border-collapse:collapse;font-size:12px;min-width:640px}
+.cmp th{padding:9px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#8a96a8;border-bottom:1px solid #dde3ed;text-align:left;background:#f8f9fc}
+.cmp td{padding:8px 12px;border-bottom:1px solid #f0f2f6;vertical-align:middle}
+.cmp tr:last-child td{border-bottom:none}
+.cmp td:first-child{font-weight:600}
+.bd{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.by{background:#dcfce7;color:#166534}.bn{background:#fee2e2;color:#991b1b}.bm{background:#f1f5f9;color:#475569}
+.open-btn{
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:6px;
+  text-decoration:none;white-space:nowrap;display:inline-block;transition:opacity .15s;
+}
+.open-btn:hover{opacity:.8}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:44px}
+.card{
+  background:#fff;border-radius:12px;border:1px solid #dde3ed;
+  padding:22px;text-decoration:none;color:#1a2332;display:block;
+  transition:transform .18s,box-shadow .18s,border-color .18s;
+  position:relative;overflow:hidden;
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.card:hover{transform:translateY(-2px)}
+
+/* per-type colours */
+.c-tm::before{background:#2563eb}.c-tm:hover{border-color:#2563eb;box-shadow:0 6px 24px rgba(37,99,235,.1)}
+.c-fp::before{background:#0d9488}.c-fp:hover{border-color:#0d9488;box-shadow:0 6px 24px rgba(13,148,136,.1)}
+.c-iv::before{background:#7c3aed}.c-iv:hover{border-color:#7c3aed;box-shadow:0 6px 24px rgba(124,58,237,.1)}
+.c-in::before{background:#d97706}.c-in:hover{border-color:#d97706;box-shadow:0 6px 24px rgba(217,119,6,.1)}
+.c-co::before{background:#059669}.c-co:hover{border-color:#059669;box-shadow:0 6px 24px rgba(5,150,105,.1)}
+.c-ti::before{background:#dc2626}.c-ti:hover{border-color:#dc2626;box-shadow:0 6px 24px rgba(220,38,38,.1)}
+
+.ci{font-size:24px;margin-bottom:10px;display:block}
+.cn{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:4px}
+.ct{font-weight:700;font-size:16px;margin-bottom:5px}
+.cd{font-size:11.5px;color:#64748b;line-height:1.55;margin-bottom:12px}
+.cf-list{display:flex;flex-direction:column;gap:3px;margin-bottom:14px}
+.cf-item{font-size:10.5px;color:#94a3b8;display:flex;gap:5px;align-items:flex-start}
+.cf-item::before{content:'›';flex-shrink:0;color:#bbb}
+.ctag{
+  display:inline-block;font-size:10px;font-weight:600;
+  padding:3px 10px;border-radius:20px;border:1px solid;
+}
+.c-tm .ctag{color:#2563eb;border-color:#bfdbfe;background:#eff6ff}
+.c-fp .ctag{color:#0d9488;border-color:#99f6e4;background:#f0fdfa}
+.c-iv .ctag{color:#7c3aed;border-color:#ddd6fe;background:#f5f3ff}
+.c-in .ctag{color:#d97706;border-color:#fde68a;background:#fffbeb}
+.c-co .ctag{color:#059669;border-color:#a7f3d0;background:#ecfdf5}
+.c-ti .ctag{color:#dc2626;border-color:#fecaca;background:#fef2f2}
+
+/* HOW TO */
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:12px}
+.hw{background:#fff;border-radius:10px;border:1px solid #dde3ed;padding:18px}
+.hw-num{width:28px;height:28px;border-radius:50%;background:#1e3a6e;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-family:'Playfair Display',serif}
+.hw-t{font-size:13px;font-weight:600;margin-bottom:4px}
+.hw-d{font-size:12px;color:#64748b;line-height:1.55}
+
+/* FOOTER */
+.footer{background:#1a2332;color:rgba(255,255,255,.4);text-align:center;padding:22px;font-size:12px}
+.footer a{color:rgba(255,255,255,.5);text-decoration:none;margin:0 7px}
+.footer a:hover{color:#fff}
+
+@media(max-width:800px){.cards{grid-template-columns:repeat(2,1fr)}.how{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.cards,.how{grid-template-columns:1fr}.cmp{font-size:11px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <a class="back-btn" href="index.html">← Back to Training Schedule</a>
+  </div>
+  <div class="header-badge">🧪 Hands-on Labs · D365FO PMA · Demo USMF</div>
+  <h1>Hands-on Lab Guides<br><em>All 6 Project Types</em></h1>
+  <p>Six standalone lab guides — each starts from base setup and covers all transactions, reports, and real-world scenarios with WBS templates ready to upload in D365FO.</p>
+  <div class="stats-row">
+    <div class="sr-item"><div class="sr-n">6</div><div class="sr-l">Project types</div></div>
+    <div class="sr-item"><div class="sr-n">73</div><div class="sr-l">Hands-on labs</div></div>
+    <div class="sr-item"><div class="sr-n">13</div><div class="sr-l">WBS templates</div></div>
+    <div class="sr-item"><div class="sr-n">USMF</div><div class="sr-l">Demo company</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- COMPARISON TABLE -->
+  <div class="sec-lbl">All 6 project types compared</div>
+  <div class="tbl-wrap">
+    <div class="tbl-head">Quick reference — choose the right lab for your scenario</div>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th>Project type</th>
+          <th>Bills customer?</th>
+          <th>Cost posts to</th>
+          <th>WIP?</th>
+          <th>Closes by</th>
+          <th>Example</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:#2563eb">⏱ Time &amp; Material</td>
+          <td><span class="bd by">✓ Yes</span></td>
+          <td>P&amp;L direct</td>
+          <td><span class="bd bm">Optional</span></td>
+          <td>Close project</td>
+          <td style="color:#64748b;font-size:11px">Consulting, IT support</td>
+          <td><a class="open-btn" href="tm.html" style="background:#eff6ff;color:#2563eb">Open →</a></td>
+        </tr>
+        <tr>
+          <td style="color:#0d9488">🎯 Fixed Price</td>
+          <td><span class="bd by">✓ Yes</span></td>
+          <td>WIP (Balance)</td>
+          <td><span class="bd by">Always</span></td>
+          <td>Eliminate → P&amp;L</td>
+          <td style="color:#64748b;font-size:11px">ERP implementation</td>
+          <td><a class="open-btn" href="fp.html" style="background:#f0fdfa;color:#0d9488">Open →</a></td>
+        </tr>
+        <tr>
+          <td style="color:#7c3aed">🏗️ Investment</td>
+          <td><span class="bd bn">✗ No</span></td>
+          <td>WIP (Balance)</td>
+          <td><span class="bd by">Always</span></td>
+          <td>Eliminate → Fixed Asset</td>
+          <td style="color:#64748b;font-size:11px">Data centre, building</td>
+          <td><a class="open-btn" href="investment.html" style="background:#f5f3ff;color:#7c3aed">Open →</a></td>
+        </tr>
+        <tr>
+          <td style="color:#d97706">👥 Internal</td>
+          <td><span class="bd bn">✗ No</span></td>
+          <td>P&amp;L direct</td>
+          <td><span class="bd bn">Never</span></td>
+          <td>Close project</td>
+          <td style="color:#64748b;font-size:11px">Staff training, office move</td>
+          <td><a class="open-btn" href="internal.html" style="background:#fffbeb;color:#d97706">Open →</a></td>
+        </tr>
+        <tr>
+          <td style="color:#059669">💰 Cost</td>
+          <td><span class="bd bn">✗ No</span></td>
+          <td>P&amp;L direct</td>
+          <td><span class="bd bn">Never</span></td>
+          <td>Close project</td>
+          <td style="color:#64748b;font-size:11px">R&amp;D sprint, overhead pool</td>
+          <td><a class="open-btn" href="cost.html" style="background:#ecfdf5;color:#059669">Open →</a></td>
+        </tr>
+        <tr>
+          <td style="color:#dc2626">🕒 Time</td>
+          <td><span class="bd bn">✗ No</span></td>
+          <td style="color:#dc2626;font-weight:600">No ledger</td>
+          <td><span class="bd bn">Never</span></td>
+          <td>Close project</td>
+          <td style="color:#64748b;font-size:11px">Sick leave, holidays</td>
+          <td><a class="open-btn" href="time.html" style="background:#fef2f2;color:#dc2626">Open →</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LAB CARDS -->
+  <div class="sec-lbl">Choose a project type to begin</div>
+  <div class="cards">
+
+    <a class="card c-tm" href="tm.html">
+      <span class="ci">⏱</span>
+      <div class="cn">Lab 1 of 6 · Billable</div>
+      <div class="ct">Time &amp; Material</div>
+      <div class="cd">Bill for actual hours and expenses. Monthly invoice proposals. Revenue recognised per transaction.</div>
+      <div class="cf-list">
+        <div class="cf-item">27 labs · 6 sections · 3 WBS templates</div>
+        <div class="cf-item">All 9 transaction types incl. adjustments</div>
+        <div class="cf-item">IT, Construction &amp; Manufacturing</div>
+      </div>
+      <span class="ctag">Start T&amp;M labs →</span>
+    </a>
+
+    <a class="card c-fp" href="fp.html">
+      <span class="ci">🎯</span>
+      <div class="cn">Lab 2 of 6 · Billable</div>
+      <div class="ct">Fixed Price</div>
+      <div class="cd">Fixed contract price, milestone billing, WIP estimates and elimination.</div>
+      <div class="cf-list">
+        <div class="cf-item">11 labs · 4 sections · 2 WBS templates</div>
+        <div class="cf-item">% Completion + Completed Contract</div>
+        <div class="cf-item">ERP implementation + Building construction</div>
+      </div>
+      <span class="ctag">Start FP labs →</span>
+    </a>
+
+    <a class="card c-iv" href="investment.html">
+      <span class="ci">🏗️</span>
+      <div class="cn">Lab 3 of 6 · No billing</div>
+      <div class="ct">Investment</div>
+      <div class="cd">Capitalise costs to fixed assets — no revenue, WIP clears to asset register.</div>
+      <div class="cf-list">
+        <div class="cf-item">15 labs · 6 sections · 2 WBS templates</div>
+        <div class="cf-item">WIP elimination → fixed asset acquisition</div>
+        <div class="cf-item">IAS 16 &amp; IAS 23 · IT + Building scenarios</div>
+      </div>
+      <span class="ctag">Start Investment labs →</span>
+    </a>
+
+    <a class="card c-in" href="internal.html">
+      <span class="ci">👥</span>
+      <div class="cn">Lab 4 of 6 · No billing</div>
+      <div class="ct">Internal</div>
+      <div class="cd">Track internal costs — no billing, no capitalisation. P&amp;L direct. Resource planning.</div>
+      <div class="cf-list">
+        <div class="cf-item">7 labs · 5 sections · 2 WBS templates</div>
+        <div class="cf-item">Burden hours &amp; utilisation impact</div>
+        <div class="cf-item">HR training + Office relocation</div>
+      </div>
+      <span class="ctag">Start Internal labs →</span>
+    </a>
+
+    <a class="card c-co" href="cost.html">
+      <span class="ci">💰</span>
+      <div class="cn">Lab 5 of 6 · No billing</div>
+      <div class="ct">Cost</div>
+      <div class="cd">Short-duration internal cost tracking — R&amp;D sprints and overhead allocation.</div>
+      <div class="cf-list">
+        <div class="cf-item">6 labs · 5 sections · 2 WBS templates</div>
+        <div class="cf-item">Cost vs Internal — key differences</div>
+        <div class="cf-item">R&amp;D sprint + IT overhead pool</div>
+      </div>
+      <span class="ctag">Start Cost labs →</span>
+    </a>
+
+    <a class="card c-ti" href="time.html">
+      <span class="ci">🕒</span>
+      <div class="cn">Lab 6 of 6 · No billing</div>
+      <div class="ct">Time</div>
+      <div class="cd">Hours only — zero ledger postings. Pure utilisation tracking for non-productive time.</div>
+      <div class="cf-list">
+        <div class="cf-item">7 labs · 5 sections · 2 WBS templates</div>
+        <div class="cf-item">No GL vouchers — confirmed in D365FO</div>
+        <div class="cf-item">Sick/holiday + non-billable admin</div>
+      </div>
+      <span class="ctag">Start Time labs →</span>
+    </a>
+
+  </div>
+
+  <!-- HOW TO USE -->
+  <div class="sec-lbl">How the labs work</div>
+  <div class="how">
+    <div class="hw">
+      <div class="hw-num">1</div>
+      <div class="hw-t">Base setup first</div>
+      <div class="hw-d">Every lab guide starts with Section 1 — Base Setup. This covers parameters, project groups, categories, and creating the first project from scratch.</div>
+    </div>
+    <div class="hw">
+      <div class="hw-num">2</div>
+      <div class="hw-t">Step-by-step labs</div>
+      <div class="hw-d">Each lab has exact navigation paths, field tables with values to enter, GL voucher entries, warning boxes, and Microsoft Learn reference links.</div>
+    </div>
+    <div class="hw">
+      <div class="hw-num">3</div>
+      <div class="hw-t">Sign off &amp; export</div>
+      <div class="hw-d">Complete the sign-off section at the end of each lab. Export a progress report with student and instructor signatures for your records.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>D365FO Project Management &amp; Accounting · Hands-on Lab Suite · Demo company USMF</p>
+  <p style="margin-top:7px">
+    <a href="index.html">← Training Schedule</a>
+    <a href="https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting" target="_blank">PMA Overview</a>
+    <a href="https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview" target="_blank">Revenue Recognition</a>
+  </p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>D365FO — Time & Material Lab Guide</title>
+<meta name="description" content="Complete hands-on lab guide for D365FO Time and Material projects — base setup, all transaction types, invoicing, reports, IT, Construction and Manufacturing scenarios with WBS templates.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & TOKENS ───────────────────────────────────── */
+:root{
+  --ink:#0d0d0d;--ink2:#1a1a1a;--paper:#fafaf7;
+  --line:#e2e0d8;--line2:#ccc9be;
+  --blue:#0047cc;--blue-bg:#e8f0ff;--blue-mid:#b3c8f5;
+  --teal:#006d5b;--teal-bg:#e0f5f1;--teal-mid:#7ecbbf;
+  --amber:#a05a00;--amber-bg:#fff4e0;--amber-mid:#f5c97a;
+  --purple:#5c2d91;--purple-bg:#f0eaff;--purple-mid:#c4a8f5;
+  --green:#155724;--green-bg:#e8f5e9;--green-mid:#81c784;
+  --red:#c41c1c;--red-bg:#ffebeb;--red-mid:#f5a3a3;
+  --orange:#b84000;--orange-bg:#fff0e6;
+  --mono:'Syne Mono',monospace;--sans:'Inter',sans-serif;--display:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.65}
+
+/* ── TOP NAV ─────────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:200;background:var(--ink);
+  display:flex;align-items:center;padding:0 24px;height:52px;
+  gap:0;flex-wrap:nowrap;overflow:hidden;
+}
+.nav-brand{
+  font-family:var(--display);font-size:13px;font-weight:700;
+  color:#fff;white-space:nowrap;margin-right:16px;flex-shrink:0;
+  letter-spacing:-.01em;
+}
+.nav-type-badge{
+  font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;
+  background:rgba(91,143,255,.2);color:#5b8fff;
+  border:1px solid rgba(91,143,255,.3);white-space:nowrap;
+  flex-shrink:0;margin-right:12px;font-family:var(--display);
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.nav-tabs{display:flex;gap:0;overflow-x:auto;flex:1;-ms-overflow-style:none;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{
+  color:rgba(255,255,255,.4);font-size:11px;font-weight:500;
+  padding:0 12px;height:52px;display:flex;align-items:center;
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .15s;white-space:nowrap;user-select:none;
+  font-family:var(--display);
+}
+.ntab:hover{color:rgba(255,255,255,.7)}
+.ntab.on{color:#fff;border-bottom-color:#5b8fff}
+.nav-right{
+  margin-left:auto;flex-shrink:0;padding-left:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-switch{
+  font-size:11px;font-weight:600;color:#4dcfbe;
+  text-decoration:none;background:rgba(77,207,190,.12);
+  border:1px solid rgba(77,207,190,.3);border-radius:20px;
+  padding:3px 11px;white-space:nowrap;transition:background .15s;
+  flex-shrink:0;
+}
+.nav-switch:hover{background:rgba(77,207,190,.22)}
+.nav-home{
+  font-size:11px;color:rgba(255,255,255,.4);
+  text-decoration:none;white-space:nowrap;flex-shrink:0;
+  transition:color .15s;
+}
+.nav-home:hover{color:rgba(255,255,255,.7)}
+.pbadge{
+  font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;
+  background:rgba(255,255,255,.1);color:rgba(255,255,255,.65);
+  white-space:nowrap;font-family:var(--display);flex-shrink:0;
+}
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero{
+  background:var(--ink2);padding:48px 28px 40px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 90% 60% at 50% 0%,rgba(0,71,204,.15),transparent 65%);
+}
+.hero::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-45deg,rgba(255,255,255,.015) 0,rgba(255,255,255,.015) 1px,transparent 0,transparent 8px);
+}
+.hero-inner{position:relative;z-index:1}
+.hero-lbl{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid rgba(255,255,255,.12);border-radius:4px;
+  font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.45);
+  padding:4px 12px;margin-bottom:16px;font-family:var(--display);
+}
+.hero h1{
+  font-family:var(--display);font-size:clamp(26px,5vw,46px);
+  font-weight:800;color:#fff;line-height:1.1;
+  letter-spacing:-.03em;margin-bottom:10px;
+}
+.hero h1 .hl{color:#5b8fff}
+.hero-sub{
+  font-size:13px;color:rgba(255,255,255,.45);max-width:540px;
+  margin:0 auto 24px;line-height:1.7;
+}
+.hero-chips{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.chip{
+  display:flex;align-items:center;gap:5px;
+  border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  padding:4px 11px;font-size:11px;font-weight:500;
+  color:rgba(255,255,255,.55);
+}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.d-blue{background:#5b8fff}.d-teal{background:#4dcfbe}
+.d-amber{background:#f5c97a}.d-purple{background:#c4a8f5}
+.d-green{background:#81c784}.d-orange{background:#ffb347}
+
+/* ── STATS ROW ───────────────────────────────────────── */
+.stats{background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto}
+.stat{padding:14px 22px;border-right:1px solid var(--line);flex-shrink:0}
+.stat-n{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em}
+.stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-top:2px}
+
+/* ── LAYOUT ──────────────────────────────────────────── */
+.wrap{max-width:1020px;margin:0 auto;padding:28px 18px 80px}
+.sec-view{display:none}
+.sec-view.on{display:block;animation:rise .22s ease}
+@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION HEADER ──────────────────────────────────── */
+.sec-hdr{border-radius:12px;padding:20px 24px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.sh-0{background:var(--blue-bg);border-left:4px solid var(--blue)}.sh-0 .sh-title{color:var(--blue)}
+.sh-1{background:var(--teal-bg);border-left:4px solid var(--teal)}.sh-1 .sh-title{color:var(--teal)}
+.sh-2{background:var(--amber-bg);border-left:4px solid var(--amber)}.sh-2 .sh-title{color:var(--amber)}
+.sh-3{background:var(--purple-bg);border-left:4px solid var(--purple)}.sh-3 .sh-title{color:var(--purple)}
+.sh-4{background:var(--green-bg);border-left:4px solid var(--green)}.sh-4 .sh-title{color:var(--green)}
+.sh-5{background:var(--orange-bg);border-left:4px solid var(--orange)}.sh-5 .sh-title{color:var(--orange)}
+.sh-title{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.sh-desc{font-size:13px;color:#555;line-height:1.6;max-width:580px}
+.sh-meta{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.sh-pill{font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:rgba(0,0,0,.07);color:var(--ink);white-space:nowrap}
+
+/* ── LAB CARDS ───────────────────────────────────────── */
+.labs{display:flex;flex-direction:column;gap:9px}
+.lab{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;transition:border-color .15s}
+.lab:hover{border-color:var(--line2)}
+.lab.open{border-color:#a8a098}
+.lab-head{display:grid;grid-template-columns:42px 1fr auto auto auto;gap:10px;align-items:center;padding:12px 16px;cursor:pointer;user-select:none}
+.lab-num{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;font-weight:700;flex-shrink:0}
+.ln-0{background:var(--blue-bg);color:var(--blue)}.ln-1{background:var(--teal-bg);color:var(--teal)}
+.ln-2{background:var(--amber-bg);color:var(--amber)}.ln-3{background:var(--purple-bg);color:var(--purple)}
+.ln-4{background:var(--green-bg);color:var(--green)}.ln-5{background:var(--orange-bg);color:var(--orange)}
+.lab-info{min-width:0}
+.lab-title{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:2px;font-family:var(--display)}
+.lab-sub{font-size:11px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
+.lb-s{background:#fff0e0;color:#a05a00}.lb-t{background:#e0fff8;color:#006d5b}
+.lb-i{background:#ede0ff;color:#5c2d91}.lb-r{background:#e8f5e9;color:#155724}
+.lb-w{background:#e8f0ff;color:#0047cc}.lb-sc{background:#ffebeb;color:#c41c1c}
+.tick{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;font-size:11px;color:transparent}
+.tick.done{background:var(--green);border-color:var(--green);color:#fff}
+.chev{font-size:14px;color:#bbb;transition:transform .2s;flex-shrink:0}
+.lab.open .chev{transform:rotate(180deg)}
+
+/* ── LAB BODY ────────────────────────────────────────── */
+.lab-body{display:none;border-top:1px solid var(--line)}
+.lab.open .lab-body{display:block;animation:rise .18s ease}
+.lb-inner{padding:16px 18px}
+
+/* ── OBJ + WHY ───────────────────────────────────────── */
+.ow-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ow-card{border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.6;display:flex;gap:7px}
+.ow-obj{background:var(--blue-bg);color:#003a8c}
+.ow-why{background:var(--amber-bg);color:var(--amber)}
+.ow-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* ── PRE + RESULT ────────────────────────────────────── */
+.pr-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pr-card{border-radius:7px;padding:10px 13px;font-size:12px;line-height:1.55}
+.pr-pre{background:#f5f5f0;border:1px solid var(--line);color:#444}
+.pr-res{background:var(--green-bg);border:1px solid var(--green-mid);color:var(--green)}
+.pr-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;opacity:.7}
+.prl{list-style:none;display:flex;flex-direction:column;gap:3px}
+.prl li{display:flex;gap:6px;align-items:flex-start}
+.prl li::before{content:'›';flex-shrink:0;opacity:.5;font-size:15px;margin-top:-1px}
+
+/* ── STEPS ───────────────────────────────────────────── */
+.slbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.steps{display:flex;flex-direction:column;position:relative;margin-bottom:16px}
+.steps::before{content:'';position:absolute;left:18px;top:26px;bottom:26px;width:2px;background:var(--line);z-index:0}
+.step{display:flex;gap:12px;position:relative;z-index:1;padding:3px 0}
+.sdot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:700;flex-shrink:0;background:#fff;border:2px solid var(--line);margin-top:2px}
+.sd-0{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.sd-1{border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
+.sd-2{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+.sd-3{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
+.sd-4{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+.sd-5{border-color:var(--orange);color:var(--orange);background:var(--orange-bg)}
+.step-c{flex:1;padding-bottom:12px}
+.step-t{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;font-family:var(--display)}
+.step-b{font-size:13px;color:#444;line-height:1.6}
+.step-b code{font-family:var(--mono);font-size:11px;background:#f0ede6;border:1px solid var(--line);padding:1px 5px;border-radius:3px;color:#333}
+.np{display:inline-flex;align-items:center;gap:3px;background:var(--ink);color:#fff;border-radius:4px;padding:3px 9px;font-family:var(--mono);font-size:10.5px;margin:4px 0;flex-wrap:wrap}
+.np .sep{opacity:.35}
+
+/* ── FIELD TABLE ─────────────────────────────────────── */
+.ft{width:100%;border-collapse:collapse;margin:7px 0 3px;font-size:12.5px}
+.ft th{background:#f5f3ec;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#666;padding:6px 9px;text-align:left;border-bottom:2px solid var(--line)}
+.ft td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.ft tr:last-child td{border-bottom:none}
+.fn{font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:500}
+.fv{color:var(--teal);font-family:var(--mono);font-size:11px;background:var(--teal-bg);padding:1px 5px;border-radius:3px}
+.fd{color:#666;font-size:12px}
+
+/* ── ALERT BOXES ─────────────────────────────────────── */
+.warn{background:var(--red-bg);border:1px solid var(--red-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--red);display:flex;gap:7px;margin:6px 0}
+.tip{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--amber);display:flex;gap:7px;margin:6px 0}
+.info{background:var(--blue-bg);border:1px solid var(--blue-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:#003a8c;display:flex;gap:7px;margin:6px 0}
+.bi{font-size:15px;flex-shrink:0;margin-top:1px}
+
+/* ── VOUCHER ─────────────────────────────────────────── */
+.voucher{background:#f8f7f2;border:1px solid var(--line);border-radius:7px;padding:10px 13px;margin:7px 0}
+.vlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:6px}
+.ve{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 0}
+.va{color:#333;font-size:11.5px;font-family:var(--mono);flex:1}
+.vdr{color:var(--red);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vcr{color:var(--teal);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vbl{min-width:100px}
+
+/* ── WBS TABLE ───────────────────────────────────────── */
+.wbs-wrap{overflow-x:auto;margin:8px 0}
+.wbs{width:100%;border-collapse:collapse;font-size:12px}
+.wbs th{background:var(--ink);color:#fff;padding:7px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.wbs td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.wbs tr:nth-child(even) td{background:#fafaf7}
+.wbs .l1{font-weight:700;color:var(--blue);background:var(--blue-bg)!important}
+.wbs .l2{font-weight:600;color:#333;padding-left:20px}
+.wbs .l3{color:#555;padding-left:36px}
+.wbs .tot{font-weight:700}
+.wbs .hrs{text-align:right;font-family:var(--mono);font-size:11px}
+.wbs .cost{text-align:right;font-family:var(--mono);font-size:11px;color:var(--teal)}
+
+/* ── REFS ────────────────────────────────────────────── */
+.rlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:16px 0 7px;display:flex;align-items:center;gap:7px}
+.rlbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.refs{display:flex;flex-direction:column;gap:5px;margin-bottom:3px}
+.refa{display:flex;align-items:flex-start;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:8px 11px;text-decoration:none;color:var(--ink);transition:background .15s,border-color .15s}
+.refa:hover{background:var(--blue-bg);border-color:var(--blue-mid)}
+.ri{color:var(--blue);font-size:13px;flex-shrink:0;margin-top:2px}
+.rb-t{font-size:12px;font-weight:500;color:var(--blue);margin-bottom:1px}
+.rb-u{font-size:10px;color:#aaa;word-break:break-all;font-family:var(--mono)}
+.rsrc{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;align-self:flex-start;background:var(--blue-bg);color:var(--blue)}
+
+/* ── SIGN-OFF ─────────────────────────────────────────── */
+.so{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:14px;overflow:hidden}
+.so-h{display:flex;align-items:center;gap:7px;padding:10px 14px;cursor:pointer;font-size:12.5px;font-weight:600;background:#f8f7f2;color:#555;user-select:none}
+.so-h:hover{background:var(--line)}
+.so-b{display:none;padding:14px}
+.so-b.on{display:block;animation:rise .18s ease}
+.oct{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px}
+.oct th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;padding:6px 9px;border-bottom:1px solid var(--line);text-align:left}
+.oct td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+.oct tr:last-child td{border-bottom:none}
+.occ{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:transparent;transition:all .15s}
+.occ.ok{background:var(--green);border-color:var(--green);color:#fff}
+.rr{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.rb{border:1px solid var(--line);background:transparent;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s;color:#555}
+.rb:hover{background:#f5f3ec}
+.rb.s1{background:var(--red-bg);border-color:var(--red-mid);color:var(--red)}
+.rb.s2{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.rb.s3{background:var(--teal-bg);border-color:var(--teal-mid);color:var(--teal)}
+.rb.s4{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.si-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.sif label{font-size:11px;font-weight:500;color:#888;display:block;margin-bottom:3px}
+.sif input{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:13px;font-family:var(--sans);background:var(--paper);color:var(--ink)}
+.sif input:focus{outline:none;border-color:var(--blue-mid)}
+.sbtn{background:var(--ink);color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:opacity .15s}
+.sbtn:hover{opacity:.82}
+
+/* ── PROGRESS STRIP ──────────────────────────────────── */
+.pstrip{background:#fff;border-top:1px solid var(--line);padding:0 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;bottom:0;z-index:100}
+.ps-lbl{font-size:12px;font-weight:600;color:#555;padding:10px 0;white-space:nowrap}
+.ps-trk{flex:1;min-width:160px;height:5px;background:var(--line);border-radius:3px;overflow:hidden;max-width:280px}
+.ps-fill{height:100%;border-radius:3px;background:var(--blue);transition:width .4s}
+.ps-pct{font-size:12px;font-weight:600;color:var(--blue);min-width:32px;font-family:var(--display)}
+.ps-exp{margin-left:auto;background:var(--ink);color:#fff;border:none;border-radius:6px;padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.ps-exp:hover{opacity:.82}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+.footer{background:var(--ink2);padding:24px 28px;text-align:center}
+.footer p{font-size:12px;color:rgba(255,255,255,.3);margin-bottom:4px}
+.footer a{color:rgba(255,255,255,.45);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,.7)}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:680px){
+  .ow-row,.pr-row,.si-grid{grid-template-columns:1fr}
+  .lab-head{grid-template-columns:36px 1fr auto auto}
+  .lbadge{display:none}
+  .sec-hdr{grid-template-columns:1fr}
+  .sh-meta{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+  .nav-switch{display:none}
+}
+@media(max-width:460px){
+  .nav-brand{font-size:12px}
+  .ntab{font-size:10px;padding:0 8px}
+  .hero h1{font-size:22px}
+  .hero-chips{gap:5px}
+  .chip{font-size:10px;padding:3px 8px}
+}
+@media print{
+  .nav,.pstrip,.footer{display:none!important}
+  .sec-view{display:block!important;page-break-after:always;break-after:page}
+  .lab-body{display:block!important}
+  .so-b{display:block!important}
+  .lab{page-break-inside:avoid;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-brand">D365FO · PMA</span>
+  <span class="nav-type-badge">T&amp;M</span>
+  <div class="nav-tabs" id="ntabs"></div>
+  <div class="nav-right">
+    <a class="nav-home" href="labs.html">⌂ Labs</a>
+    <a class="nav-switch" href="fp.html">🎯 Fixed Price →</a>
+    <a class="nav-switch" href="investment.html" style="color:#a78bfa;background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.25)">🏗️ Investment →</a>
+
+    <a href="internal.html" style="font-size:11px;font-weight:600;color:#f59e0b;text-decoration:none;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">👥</a>
+    <a href="cost.html" style="font-size:11px;font-weight:600;color:#10b981;text-decoration:none;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">💰</a>
+    <a href="time.html" style="font-size:11px;font-weight:600;color:#ef4444;text-decoration:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">🕒</a>
+    <span class="pbadge" id="pbadge">0 / 0 done</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-lbl">🧪 Hands-on Lab · D365FO PMA · Demo USMF</div>
+    <h1>Time &amp; Material<br><span class="hl">Complete Lab Guide</span></h1>
+    <div class="hero-sub">Start from scratch — parameters, project groups, all 9 transaction types, invoicing, full reports, and 3 industry scenarios with WBS templates ready to upload in D365FO.</div>
+    <div class="hero-chips">
+      <div class="chip"><span class="dot d-blue"></span>S1 · Base Setup</div>
+      <div class="chip"><span class="dot d-teal"></span>S2 · All Transactions</div>
+      <div class="chip"><span class="dot d-amber"></span>S3 · Invoicing</div>
+      <div class="chip"><span class="dot d-purple"></span>S4 · Reports</div>
+      <div class="chip"><span class="dot d-green"></span>S5 · IT Scenario + WBS</div>
+      <div class="chip"><span class="dot d-orange"></span>S6 · Construction &amp; Mfg + WBS</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-n">6</div><div class="stat-l">Sections</div></div>
+  <div class="stat"><div class="stat-n" id="total-lbl">27</div><div class="stat-l">Labs</div></div>
+  <div class="stat"><div class="stat-n">USMF</div><div class="stat-l">Demo company</div></div>
+  <div class="stat"><div class="stat-n">9</div><div class="stat-l">Transaction types</div></div>
+  <div class="stat"><div class="stat-n">3</div><div class="stat-l">WBS templates</div></div>
+</div>
+
+<!-- MAIN -->
+<div class="wrap" id="main-wrap"><div id="sec-views"></div></div>
+
+<!-- PROGRESS STRIP -->
+<div class="pstrip">
+  <span class="ps-lbl">Lab progress</span>
+  <div class="ps-trk"><div class="ps-fill" id="ps-fill" style="width:0%"></div></div>
+  <span class="ps-pct" id="ps-pct">0%</span>
+  <button class="ps-exp" id="exp-btn">📄 Export progress report</button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>D365FO Time &amp; Material Lab Guide · Demo company USMF · All references link to official Microsoft Learn documentation</p>
+  <p><a href="index.html">⌂ Home</a> &nbsp;·&nbsp; <a href="fp.html">🎯 Switch to Fixed Price</a> &nbsp;·&nbsp; <a href="https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting" target="_blank">MS Learn: PMA Overview</a></p>
+</div>
+
+<script>
+const SECTIONS = [
+{id:0,label:"S1 · Base Setup",title:"Section 1 — Base Setup: Parameters, Groups & Categories",
+ desc:"Set up all master data before creating a T&M project: parameters, project groups, categories, ledger posting matrix, and the project contract.",
+ cls:"sh-0",nc:"ln-0",
+ labs:[
+  {id:"0-0",badge:"lb-s",bl:"Setup",
+   title:"PMA Parameters & Project Stages",
+   sub:"Project management and accounting › Setup › Parameters",
+   obj:"Configure module-wide settings controlling T&M project behaviour, available stages, and journal names.",
+   why:"The parameters page is the master control panel for PMA. A wrong setting here causes posting errors on every project. Get this right first and every downstream task is easier.",
+   pre:["Access to USMF demo company","System admin or Project manager role"],
+   result:["Parameters saved with T&M stages enabled","Journal names confirmed for all 4 transaction types","Invoice tab reviewed"],
+   steps:[
+    {t:"Open PMA Parameters",b:'Navigate to: <span class="np">Project management and accounting <span class="sep">›</span> Setup <span class="sep">›</span> Project management and accounting parameters</span>',f:null,w:null,tp:"Bookmark this page — you will return often.",inf:null,v:null},
+    {t:"General tab — core T&M settings",b:"On the <strong>General</strong> tab configure:",f:[{f:"Stop project at remaining budget = 0",v:"Warning only",d:"Allows work to continue with a warning when budget runs out"},{f:"Default forecast model",v:"Rem",d:"Remaining forecast model"}],w:null,tp:null,inf:null,v:null},
+    {t:"Enable project stages for T&M",b:"Locate <strong>Project type = Time and material</strong>. Tick all 4 stages:",f:[{f:"Created",v:"✓",d:"Initial state"},{f:"In process",v:"✓",d:"Active — transactions can post"},{f:"Finished",v:"✓",d:"Closed — no new transactions"},{f:"On hold",v:"✓",d:"Temporary pause"}],w:null,tp:null,inf:null,v:null},
+    {t:"Journals tab — transaction journal names",b:"Click the <strong>Journals</strong> tab and confirm these journal names exist:",f:[{f:"Hour journal",v:"ProjHour",d:""},{f:"Expense journal",v:"ProjExpense",d:""},{f:"Fee journal",v:"ProjFee",d:""},{f:"Item journal",v:"ProjItem",d:""}],w:"If journal names don't exist, create them at Project management > Setup > Journals before continuing.",tp:null,inf:null,v:null},
+    {t:"Save and verify",b:"Click <strong>Save</strong>. Close and reopen to confirm values persisted.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["PMA parameters saved with all 4 T&M stages enabled","Journal names confirmed for Hour, Expense, Fee, Item"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"},{t:"Configure accounting for billable projects",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-accounting-billable-projects"}]},
+
+  {id:"0-1",badge:"lb-s",bl:"Setup",
+   title:"Create Project Group for T&M",
+   sub:"Project management and accounting › Setup › Posting › Project groups",
+   obj:"Create project group TM-CONSULT with Profit and loss posting and revenue accrual enabled.",
+   why:"The project group is the bridge between your project and the general ledger. Every cost and revenue posting flows through the project group's account mapping.",
+   pre:["PMA parameters configured (Lab 1)","GL accounts for revenue and cost exist in USMF"],
+   result:["TM-CONSULT group created — P&L direct posting","GL entries understood for hour transactions"],
+   steps:[
+    {t:"Open Project groups",b:'<span class="np">Project management and accounting <span class="sep">›</span> Setup <span class="sep">›</span> Posting <span class="sep">›</span> Project groups</span><br>Click <strong>New</strong>.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Fill in group header",b:"Enter identification fields:",f:[{f:"Project group",v:"TM-CONSULT",d:"Unique ID"},{f:"Name",v:"T&M Consulting Projects",d:""},{f:"Project type",v:"Time and material",d:"Restricts to T&M only"}],w:null,tp:null,inf:null,v:null},
+    {t:"Set Ledger FastTab",b:"On the <strong>Ledger</strong> FastTab, set posting for each transaction type:",f:[{f:"Hour — Cost",v:"Profit and loss",d:"Hour costs post directly to P&L"},{f:"Hour — Revenue",v:"Accrue revenue",d:"Revenue accrued when hours are posted"},{f:"Expense — Cost",v:"Profit and loss",d:""},{f:"Fee — Cost",v:"Profit and loss",d:""},{f:"Item — Cost",v:"Profit and loss",d:""}],w:null,tp:"For Fixed-price projects you would set these to Balance (WIP). For T&M, always Profit and loss.",inf:null,v:{lbl:"GL entries — Hour journal posted on T&M P&L project",rows:[{a:"601100 Project labour cost",dr:"USD 150.00",cr:""},{a:"Payroll allocation offset",dr:"",cr:"USD 150.00"},{a:"130200 WIP — Accrued revenue",dr:"USD 225.00",cr:""},{a:"401100 Accrued revenue — sales value",dr:"",cr:"USD 225.00"}]}},
+    {t:"Save",b:"Click <strong>Save</strong>. TM-CONSULT is now available for new projects.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["TM-CONSULT created with P&L posting","GL entry impact understood","Accrual revenue posting confirmed"],
+   refs:[{t:"Configure accounting for billable projects",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-accounting-billable-projects"}]},
+
+  {id:"0-2",badge:"lb-s",bl:"Setup",
+   title:"Create Project Categories",
+   sub:"Project management and accounting › Setup › Categories › Project categories",
+   obj:"Create Hour, Expense, Fee, and Item project categories mapped to correct GL accounts.",
+   why:"Every transaction on a T&M project must have a category. Wrong categories mean wrong P&L accounts — an audit finding waiting to happen.",
+   pre:["TM-CONSULT group created (Lab 2)","GL accounts exist in USMF chart of accounts"],
+   result:["4 categories created: ConsultHours (Hour), TravelExp (Expense), MgmtFee (Fee), Materials (Item)","Each mapped to debit (cost) and credit (revenue) GL accounts"],
+   steps:[
+    {t:"Open Project categories",b:'<span class="np">Project management and accounting <span class="sep">›</span> Setup <span class="sep">›</span> Categories <span class="sep">›</span> Project categories</span>',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Create ConsultHours (Hour)",b:"Click <strong>New</strong>:",f:[{f:"Project category",v:"ConsultHours",d:""},{f:"Category name",v:"Consulting Hours",d:""},{f:"Transaction type",v:"Hour",d:"Available in Hour journals only"},{f:"Cost account",v:"601100",d:"Project labour cost"},{f:"Revenue account",v:"401100",d:"Project revenue"}],w:null,tp:null,inf:null,v:null},
+    {t:"Create TravelExp (Expense)",b:"New:",f:[{f:"Project category",v:"TravelExp",d:""},{f:"Transaction type",v:"Expense",d:""},{f:"Cost account",v:"614100",d:"Travel & entertainment"},{f:"Revenue account",v:"401100",d:""}],w:"Expense categories are shared with Expense management. Check for existing shared categories before creating duplicates.",tp:null,inf:null,v:null},
+    {t:"Create MgmtFee (Fee)",b:"New:",f:[{f:"Project category",v:"MgmtFee",d:""},{f:"Transaction type",v:"Fee",d:""},{f:"Cost account",v:"601200",d:"Fee cost"},{f:"Revenue account",v:"401200",d:"Fee revenue"}],w:null,tp:null,inf:null,v:null},
+    {t:"Create Materials (Item)",b:"New:",f:[{f:"Project category",v:"Materials",d:""},{f:"Transaction type",v:"Item",d:"Available in Item journals and POs"},{f:"Cost account",v:"130300",d:"Material cost"},{f:"Revenue account",v:"401300",d:"Item/material revenue"}],w:null,tp:null,inf:null,v:null}
+   ],
+   out:["4 project categories created with correct transaction types","All categories mapped to cost and revenue GL accounts"],
+   refs:[{t:"Configure project categories",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-project-categories"}]},
+
+  {id:"0-3",badge:"lb-s",bl:"Setup",
+   title:"Create Project Contract & T&M Project",
+   sub:"Project management and accounting › Projects › Project contracts / All projects",
+   obj:"Create project contract CONT-TM-001 for customer US-013 and project PROJ-TM-001 linked to it.",
+   why:"Every external project must have a contract. The contract defines who pays; the project records what was done. Without both you cannot invoice.",
+   pre:["TM-CONSULT group and categories created","Customer US-013 exists in Accounts receivable"],
+   result:["CONT-TM-001 contract created — US-013 as funding source","PROJ-TM-001 T&M project in In process stage","Billing rule added"],
+   steps:[
+    {t:"Create the Project Contract",b:'<span class="np">Project management and accounting <span class="sep">›</span> Projects <span class="sep">›</span> Project contracts</span><br>Click <strong>New</strong>.',f:[{f:"Project contract ID",v:"CONT-TM-001",d:""},{f:"Name",v:"T&M Consulting Contract",d:""},{f:"Funding type",v:"Customer",d:""},{f:"Customer account",v:"US-013",d:""},{f:"Funding limit",v:"50,000.00",d:"Leave blank for unlimited"}],w:null,tp:null,inf:null,v:null},
+    {t:"Create the Project",b:'<span class="np">Project management and accounting <span class="sep">›</span> Projects <span class="sep">›</span> All projects</span><br>Click <strong>New</strong>.',f:[{f:"Project ID",v:"PROJ-TM-001",d:""},{f:"Project name",v:"Digital Transformation Q1",d:""},{f:"Project type",v:"Time and material",d:"⭐ Cannot be changed after Save"},{f:"Project group",v:"TM-CONSULT",d:""},{f:"Project contract ID",v:"CONT-TM-001",d:""},{f:"Start date",v:"01/01/2026",d:""},{f:"End date",v:"31/12/2026",d:""}],w:"Project type CANNOT be changed after saving. Double-check before clicking Save.",tp:null,inf:null,v:null},
+    {t:"Move to In process",b:"Click <strong>Project stage → In process</strong>.",f:null,w:null,tp:null,inf:"A project must be In process before any transactions can post. In Created stage, journals will error.",v:null},
+    {t:"Add a billing rule",b:"Setup tab → Billing rules → New → Type: Time and material.",f:[{f:"Contract line type",v:"Time and material",d:"Allows all transaction types on invoices"},{f:"Chargeable hours",v:"All",d:"All hours are billable by default"}],w:null,tp:null,inf:null,v:null}
+   ],
+   out:["CONT-TM-001 created with US-013 as customer","PROJ-TM-001 in In process — ready for transactions","Billing rule configured"],
+   refs:[{t:"Project management and accounting overview — project contracts",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 2 — ALL TRANSACTIONS ══════════════════,
+{id:1,label:"S2 · Transactions",title:"Section 2 — All T&M Transaction Types",
+ desc:"Post every transaction type available in PMA for T&M projects: hours, timesheets, expenses, fees, items, purchase orders, on-account entries, and adjustments.",
+ cls:"sh-1",nc:"ln-1",
+ labs:[
+  {id:"1-0",badge:"lb-t",bl:"Transaction",
+   title:"Hour Journal",
+   sub:"Project management and accounting › Journals › Hour",
+   obj:"Post 8 hours of consulting labour to PROJ-TM-001 at USD 150 cost / USD 225 sales price.",
+   why:"Hour journals are the most common T&M transaction. Cost price = internal labour cost; sales price = what the customer pays. The gap between the two is your project labour margin.",
+   pre:["PROJ-TM-001 in In process","ConsultHours category exists","Worker has hourly rates configured"],
+   result:["Hour journal posted — 8 hrs","Voucher: Dr Cost 1,200 / Cr Payroll 1,200 / Dr WIP 1,800 / Cr Accrued Revenue 1,800","Transaction in Posted transactions inquiry"],
+   steps:[
+    {t:"Create a new Hour journal",b:'<span class="np">Project management and accounting <span class="sep">›</span> Journals <span class="sep">›</span> Hour</span><br>Click <strong>New</strong>.',f:[{f:"Journal name",v:"ProjHour",d:""},{f:"Description",v:"Week 1 consulting hours",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Add a journal line",b:"Click <strong>Lines → New</strong>:",f:[{f:"Date",v:"15/01/2026",d:""},{f:"Project ID",v:"PROJ-TM-001",d:""},{f:"Category",v:"ConsultHours",d:"Must be Hour transaction type"},{f:"Worker",v:"Julia Funderburk",d:"Select from worker list"},{f:"Hours",v:"8",d:""},{f:"Cost price",v:"150.00",d:"Internal cost — not shown on customer invoice"},{f:"Sales price",v:"225.00",d:"Billed to customer"},{f:"Line property",v:"Chargeable",d:"Makes this hour appear on invoice"}],w:"If sales price is 0, the worker has no project rate set up. Go to Workers page → Project setup to add rates.",tp:"Always validate before posting — catches missing accounts and inactive categories without creating any GL entries.",inf:null,v:{lbl:"GL voucher — Hour journal (T&M P&L + revenue accrual)",rows:[{a:"601100 Project labour cost",dr:"USD 1,200.00",cr:""},{a:"Payroll allocation offset",dr:"",cr:"USD 1,200.00"},{a:"130200 WIP — Accrued revenue",dr:"USD 1,800.00",cr:""},{a:"401100 Accrued revenue — sales value",dr:"",cr:"USD 1,800.00"}]}},
+    {t:"Validate → Post → Verify",b:'<strong>Validate</strong> first. If no errors, click <strong>Post</strong>. Then click <strong>Voucher</strong> to see the GL entries above.',f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Hour journal posted — 8 hrs at USD 150/225","Voucher verified: cost + accrual entries created","Transaction visible in Posted project transactions"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"1-1",badge:"lb-t",bl:"Transaction",
+   title:"Timesheet (Employee-facing Hour Entry)",
+   sub:"Project management and accounting › Timesheets › All timesheets",
+   obj:"Submit and approve a weekly timesheet for worker Julia Funderburk for 40 hours on PROJ-TM-001.",
+   why:"Timesheets are how employees record hours. The project accountant needs to understand approval workflow, how timesheets create the same GL entries as hour journals, and what happens when a timesheet is rejected.",
+   pre:["PROJ-TM-001 in In process","Worker Julia Funderburk has a project activity assigned"],
+   result:["Timesheet submitted and approved","40 hours posted to project","Same GL entries as hour journal confirmed"],
+   steps:[
+    {t:"Create a timesheet",b:'<span class="np">Project management and accounting <span class="sep">›</span> Timesheets <span class="sep">›</span> All timesheets</span><br>Click <strong>New</strong>. Select worker and date range.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Add timesheet lines",b:"Add a row for the project:",f:[{f:"Project ID",v:"PROJ-TM-001",d:""},{f:"Category",v:"ConsultHours",d:""},{f:"Mon–Fri",v:"8 hrs each = 40 total",d:""},{f:"Line property",v:"Chargeable",d:""}],w:null,tp:"Workers can set a Favourite project so this pre-populates. Show your student this setting under My profile.",inf:null,v:null},
+    {t:"Submit and approve",b:"Click <strong>Submit</strong>. Log in as project manager and click <strong>Approve</strong>. The system auto-posts after approval.",f:null,w:null,tp:null,inf:"In production: configure proper approval routes in Workflow management. In USMF demo, approval is simplified.",v:null},
+    {t:"Verify in Posted transactions",b:'<span class="np">All projects <span class="sep">›</span> PROJ-TM-001 <span class="sep">›</span> Posted transactions</span> — 40 hours should appear.',f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Timesheet submitted and approved","40 hours posted — same GL result as hour journal","Approval workflow understood"],
+   refs:[{t:"Project timesheet mobile application",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-timesheet"}]},
+
+  {id:"1-2",badge:"lb-t",bl:"Transaction",
+   title:"Expense Journal",
+   sub:"Project management and accounting › Journals › Expense",
+   obj:"Post a USD 2,500 travel expense to PROJ-TM-001 using category TravelExp.",
+   why:"Expenses are the second most common T&M transaction. Unlike hours, expenses use an offset account (payable or bank) rather than payroll — knowing this difference prevents misposting.",
+   pre:["PROJ-TM-001 in In process","TravelExp category exists"],
+   result:["Expense posted — USD 2,500","Voucher: Dr Travel 2,500 / Cr AP offset 2,500"],
+   steps:[
+    {t:"Create new Expense journal",b:'<span class="np">Project management and accounting <span class="sep">›</span> Journals <span class="sep">›</span> Expense</span>',f:[{f:"Journal name",v:"ProjExpense",d:""},{f:"Description",v:"Travel — January site visits",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Add journal line",b:"Lines → New:",f:[{f:"Date",v:"20/01/2026",d:""},{f:"Project ID",v:"PROJ-TM-001",d:""},{f:"Category",v:"TravelExp",d:"Must be Expense type"},{f:"Amount",v:"2,500.00",d:""},{f:"Offset account type",v:"Ledger",d:""},{f:"Offset account",v:"200100",d:"Accounts payable — travel"},{f:"Line property",v:"Chargeable",d:""}],w:null,tp:"If the employee paid by credit card, set Offset account type = Worker to create a worker advance balance.",inf:null,v:{lbl:"GL voucher — Expense journal",rows:[{a:"614100 Travel & entertainment cost",dr:"USD 2,500.00",cr:""},{a:"200100 Accounts payable — travel",dr:"",cr:"USD 2,500.00"}]}},
+    {t:"Validate → Post → Verify",b:"Validate → Post → click Voucher.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Expense journal posted with correct offset account","Voucher verified","Chargeable confirmed"],
+   refs:[{t:"Create and process expense reports",u:"https://learn.microsoft.com/en-us/training/modules/create-process-expense-reports/"}]},
+
+  {id:"1-3",badge:"lb-t",bl:"Transaction",
+   title:"Fee Journal",
+   sub:"Project management and accounting › Journals › Fee",
+   obj:"Post a USD 5,000 management fee to PROJ-TM-001 using category MgmtFee.",
+   why:"Fee transactions represent fixed charges not tied to hours or expenses — project management surcharges, licence fees, retainers. They have their own posting logic and appear on invoices separately from hour and expense lines.",
+   pre:["PROJ-TM-001 in In process","MgmtFee category exists"],
+   result:["Fee posted — USD 5,000","WIP accrual entry created for full sales amount"],
+   steps:[
+    {t:"Create new Fee journal",b:'<span class="np">Project management and accounting <span class="sep">›</span> Journals <span class="sep">›</span> Fee</span>',f:[{f:"Journal name",v:"ProjFee",d:""},{f:"Description",v:"Q1 Management fee",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Add journal line",b:"Lines → New:",f:[{f:"Date",v:"31/01/2026",d:""},{f:"Project ID",v:"PROJ-TM-001",d:""},{f:"Category",v:"MgmtFee",d:"Must be Fee type"},{f:"Sales price",v:"5,000.00",d:"Amount to charge customer"},{f:"Cost price",v:"0.00",d:"Fee has no associated internal cost here"},{f:"Line property",v:"Chargeable",d:""}],w:null,tp:"Fee transactions often have 0 cost price — they are pure revenue. Only enter a cost if there is a real cost associated with delivering the fee service.",inf:null,v:{lbl:"GL voucher — Fee journal (revenue accrual)",rows:[{a:"130200 WIP — Accrued revenue (fee)",dr:"USD 5,000.00",cr:""},{a:"401200 Accrued revenue — fee",dr:"",cr:"USD 5,000.00"}]}},
+    {t:"Validate → Post → Verify",b:"Validate → Post → Voucher.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Fee journal posted — USD 5,000","WIP accrual entry created","Fee visible in Posted transactions"],
+   refs:[{t:"Use billing schedules with fee transactions",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/subscription-bill-projects"}]},
+
+  {id:"1-4",badge:"lb-t",bl:"Transaction",
+   title:"Item Journal (Material Consumption)",
+   sub:"Project management and accounting › Journals › Item",
+   obj:"Post 10 units of material item A0001 directly to PROJ-TM-001 via an item journal (immediate consumption).",
+   why:"Item journals are used when materials are taken directly from warehouse stock and consumed on the project — common in IT hardware deployments and construction. Different from a purchase order which brings material IN from a vendor.",
+   pre:["PROJ-TM-001 in In process","Released product A0001 with on-hand stock","Materials category exists"],
+   result:["Item journal posted — 10 units consumed","Inventory reduced / project cost created","Voucher: Dr Material cost / Cr Inventory"],
+   steps:[
+    {t:"Create new Item journal",b:'<span class="np">Project management and accounting <span class="sep">›</span> Journals <span class="sep">›</span> Item</span><br>Click <strong>New</strong>.',f:[{f:"Journal name",v:"ProjItem",d:""},{f:"Description",v:"Hardware deployment — January",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Add journal line",b:"Lines → New:",f:[{f:"Date",v:"22/01/2026",d:""},{f:"Item number",v:"A0001",d:"Select released product"},{f:"Quantity",v:"10",d:"Units to consume"},{f:"Project ID",v:"PROJ-TM-001",d:"⭐ Links cost to the project"},{f:"Category",v:"Materials",d:""},{f:"Line property",v:"Chargeable",d:"Item cost will appear on invoice"}],w:null,tp:null,inf:null,v:{lbl:"GL voucher — Item journal (stock consumption)",rows:[{a:"130300 WIP — Material cost",dr:"USD 500.00",cr:""},{a:"140200 Finished goods inventory",dr:"",cr:"USD 500.00"}]}},
+    {t:"Validate → Post → Verify",b:"Validate → Post → Voucher.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Item journal posted — 10 units consumed from inventory","Voucher verified: inventory reduced, project cost created","Transaction visible as Item type in Posted transactions"],
+   refs:[{t:"Project management and accounting overview — item transactions",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"1-5",badge:"lb-t",bl:"Transaction",
+   title:"Purchase Order (External Procurement)",
+   sub:"Procurement and sourcing › Purchase orders › All purchase orders",
+   obj:"Create a vendor purchase order for 5 software licences linked to PROJ-TM-001, receive them, and verify the project cost transaction.",
+   why:"POs are used when you need to buy material from an external vendor for the project. Unlike item journals (internal stock), POs create a procurement cycle: order → receive → vendor invoice. The project cost hits at receipt.",
+   pre:["PROJ-TM-001 in In process","Released product (service item) exists","Vendor US-102 exists"],
+   result:["PO confirmed and linked to project","Product receipt posted — cost hits project as Item type","Voucher: Dr WIP / Cr Uninvoiced receipts"],
+   steps:[
+    {t:"Create a Project Purchase Order",b:'<span class="np">Procurement and sourcing <span class="sep">›</span> Purchase orders <span class="sep">›</span> All purchase orders</span><br>Click <strong>New</strong>.',f:[{f:"Vendor account",v:"US-102",d:""},{f:"Purchase type",v:"Purchase order",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Add PO line with project reference",b:"In PO lines, add a line. Click the <strong>Project tab</strong> in Line details:",f:[{f:"Item number",v:"A0001",d:""},{f:"Quantity",v:"5",d:""},{f:"Unit price",v:"200.00",d:""},{f:"Project ID",v:"PROJ-TM-001",d:"⭐ On the Line details > Project tab"},{f:"Category",v:"Materials",d:""},{f:"Line property",v:"Chargeable",d:""}],w:"The Project ID field is on the Line details tab → Project tab — easy to miss. Without it, cost will not appear on the project.",tp:null,inf:null,v:null},
+    {t:"Confirm PO → Post product receipt",b:"Click <strong>Confirm</strong>. Then <strong>Receive → Product receipt</strong> → enter packing slip number → Post.",f:null,w:null,tp:null,inf:"Costs hit the project at product receipt time, not at PO creation or vendor invoice. This is the standard D365FO item transaction flow.",v:{lbl:"GL voucher — Product receipt (project PO)",rows:[{a:"130300 WIP — Cost value (item)",dr:"USD 1,000.00",cr:""},{a:"200200 Uninvoiced receipts accrual",dr:"",cr:"USD 1,000.00"}]}},
+    {t:"Post vendor invoice",b:"<strong>Invoice → Vendor invoice</strong> → enter vendor invoice number → match to PO → Post. The uninvoiced receipts accrual reverses and AP is created.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL voucher — Vendor invoice posted",rows:[{a:"200200 Uninvoiced receipts accrual (reversal)",dr:"USD 1,000.00",cr:""},{a:"200100 Accounts payable — vendor",dr:"",cr:"USD 1,000.00"}]}}
+   ],
+   out:["PO created and linked to project","Product receipt posted — item cost on project","Vendor invoice matched and posted","All 3 vouchers understood: receipt → vendor invoice"],
+   refs:[{t:"Project management and accounting overview — procurement",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"1-6",badge:"lb-t",bl:"Transaction",
+   title:"On-Account Transaction (Customer Advance / Deposit)",
+   sub:"Project management and accounting › Projects › All projects › PROJ-TM-001 › Manage › On-account",
+   obj:"Create an on-account transaction of USD 10,000 representing a customer advance payment received before invoicing.",
+   why:"On-account transactions are how D365FO records customer advances. They appear as an offset on the invoice proposal — so if the customer paid USD 10,000 upfront, the next invoice shows total USD 18,800 minus USD 10,000 already paid = USD 8,800 net. Without this, you double-charge the customer.",
+   pre:["PROJ-TM-001 in In process","CONT-TM-001 contract exists"],
+   result:["On-account transaction of USD 10,000 created","On-account appears as offset on invoice proposal","Deferred revenue accounting entry created"],
+   steps:[
+    {t:"Open On-account transactions",b:'<span class="np">All projects <span class="sep">›</span> PROJ-TM-001 <span class="sep">›</span> Manage tab <span class="sep">›</span> On-account</span><br>Click <strong>New</strong>.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Enter the advance details",b:"Fill in the on-account transaction:",f:[{f:"Invoice date",v:"01/01/2026",d:"Date advance was received"},{f:"Amount",v:"10,000.00",d:"Amount received from customer"},{f:"Description",v:"Project commencement advance",d:""},{f:"Category",v:"MgmtFee",d:"Used for posting profile lookup"},{f:"Sales tax group",v:"Select appropriate",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Post the on-account transaction",b:"Click <strong>Post</strong>. This creates a deferred revenue / liability entry.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL voucher — On-account transaction posted",rows:[{a:"120100 Customer receivable (US-013)",dr:"USD 10,000.00",cr:""},{a:"220100 Deferred revenue / on-account",dr:"",cr:"USD 10,000.00"}]}},
+    {t:"Verify on invoice proposal",b:"When you create the invoice proposal (Section 3), the on-account transaction appears as a deduction line. Net invoice = USD 18,800 − USD 10,000 = USD 8,800.",f:null,w:null,tp:"On-account transactions can also be used for billing milestones on T&M projects — e.g. bill USD 10,000 at project start, then bill actuals monthly.",inf:null,v:null}
+   ],
+   out:["On-account transaction created and posted","Deferred revenue entry in GL","On-account offset understood for invoice proposal"],
+   refs:[{t:"Project invoicing — on-account transactions",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-invoicing"}]},
+
+  {id:"1-7",badge:"lb-t",bl:"Transaction",
+   title:"Transaction Adjustment",
+   sub:"Project management and accounting › Journals › Hour  OR  Posted transactions › Adjust",
+   obj:"Adjust a posted hour transaction — change the sales price, move it to a different category, or mark it as non-chargeable.",
+   why:"Adjustments are one of the most used but least taught PMA features. Posting errors happen — wrong category, wrong project, wrong price. Adjustments let you correct them without reversals in most cases. Understanding this saves enormous time during month-end.",
+   pre:["At least one hour transaction posted (from Lab 1)","Transaction has not been invoiced yet"],
+   result:["Sales price adjusted on a posted hour transaction","Line property changed to Non-chargeable","Adjustment voucher created"],
+   steps:[
+    {t:"Open Posted project transactions",b:'<span class="np">Project management and accounting <span class="sep">›</span> Inquiries and reports <span class="sep">›</span> Posted project transactions</span><br>Find the 8-hour transaction from Lab 1.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Select and click Adjust",b:"Select the hour transaction line. Click <strong>Process → Adjust accounting</strong> (or Adjust on older versions).",f:[{f:"Sales price",v:"250.00",d:"Update from 225 to 250 — rate increase"},{f:"Line property",v:"Chargeable",d:"Leave chargeable for now"},{f:"New category",v:"Leave unchanged",d:"Can also move to a different category"}],w:"You cannot adjust a transaction that is already on a posted invoice. Always check invoice status first.",tp:"Adjustments create a reversal of the original entry and a new corrected entry — you can see both in the voucher.",inf:null,v:null},
+    {t:"Post the adjustment",b:"Click <strong>OK</strong>. The adjustment posts two vouchers: (1) reversal of original, (2) new corrected entry.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL voucher — Adjustment (sales price change: 225→250)",rows:[{a:"Reversal: WIP Accrued revenue",dr:"USD 1,800.00",cr:""},{a:"Reversal: Accrued revenue — sales value",dr:"",cr:"USD 1,800.00"},{a:"New: WIP Accrued revenue",dr:"USD 2,000.00",cr:""},{a:"New: Accrued revenue — sales value",dr:"",cr:"USD 2,000.00"}]}},
+    {t:"Change line property to Non-chargeable",b:"Select a different transaction. Adjust → change Line property to <strong>Non-chargeable</strong>. This removes it from future invoices but keeps the cost on the project.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Sales price adjusted on posted transaction","Non-chargeable adjustment made and understood","Adjustment voucher (reversal + correction) reviewed"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"1-8",badge:"lb-t",bl:"Transaction",
+   title:"Opening Balance / Beginning Transactions",
+   sub:"Project management and accounting › Journals › Hour / Expense",
+   obj:"Post opening balance transactions for a project that started before the D365FO go-live date, bringing historical costs into the system.",
+   why:"In real implementations, projects often start before D365FO goes live. You need to post historical costs and revenue as opening balances so the project statement shows the correct lifetime position. This is a common day-one task for every implementation consultant.",
+   pre:["New project created: PROJ-TM-HIST","Project in In process stage","Understand the historical transaction amounts"],
+   result:["Historical hour costs posted as opening balance","Historical expense posted","Project statement shows correct lifetime position"],
+   steps:[
+    {t:"Understand the approach",b:"Opening balances are posted exactly like regular transactions, but using a <strong>historical date</strong> (before the go-live date). The only difference is the date — which falls in a prior period.",f:null,w:null,tp:null,inf:"Before posting opening balances, ensure the historical period is open in General Ledger. Go to General ledger > Ledger > Fiscal year close > Open periods.",v:null},
+    {t:"Post historical hours",b:'Create an Hour journal with date 01/10/2025 (historical date before go-live).',f:[{f:"Date",v:"01/10/2025",d:"Historical date — pre-go-live"},{f:"Project ID",v:"PROJ-TM-001",d:""},{f:"Category",v:"ConsultHours",d:""},{f:"Hours",v:"200",d:"Total historical hours to bring in"},{f:"Cost price",v:"150.00",d:"Historical cost rate"},{f:"Sales price",v:"225.00",d:"Historical sales rate"},{f:"Line property",v:"Chargeable",d:""}],w:"The historical period must be open in GL for the journal to post. If the period is closed, you will get a 'period closed' error.",tp:"Post opening balances in a dedicated 'Opening Balance' period or adjustment period. Tag them clearly so they're identifiable in the audit trail.",inf:null,v:null},
+    {t:"Post historical expenses",b:"Create Expense journal with same historical date for any costs incurred before go-live.",f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Verify project statement shows full history",b:"Run the Project Statement with 'From date' = earliest historical date. Confirm historical + new transactions both appear.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Opening balance hours posted with historical date","Opening balance expenses posted","Project statement reflects full historical + current position"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 3 — INVOICING ══════════════════════════,
+{id:2,label:"S3 · Invoicing",title:"Section 3 — T&M Invoicing",
+ desc:"Review posted transactions, create the T&M invoice proposal, post the customer invoice, and understand accrual reversal mechanics.",
+ cls:"sh-2",nc:"ln-2",
+ labs:[
+  {id:"2-0",badge:"lb-i",bl:"Invoicing",
+   title:"Review Transactions Before Invoicing",
+   sub:"All projects › PROJ-TM-001 › Manage › Posted transactions",
+   obj:"Review all posted transactions and confirm which are chargeable before creating the invoice proposal.",
+   why:"Creating an invoice without reviewing transactions first is the most common invoicing mistake. Non-chargeable lines, wrong categories, or missing sales prices will cause billing errors — once invoiced they are very hard to fix.",
+   pre:["All Labs 1-8 completed"],
+   result:["All transactions reviewed — chargeable confirmed","On-account offset understood","Any line property issues fixed before invoice creation"],
+   steps:[
+    {t:"Open Posted transactions",b:'<span class="np">All projects <span class="sep">›</span> PROJ-TM-001 <span class="sep">›</span> Manage <span class="sep">›</span> Posted transactions</span>',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Review each transaction type",b:"Filter and check each type:",f:[{f:"Hours",v:"48 hrs (8 + 40)",d:"Check sales price = 225, line property = Chargeable"},{f:"Expenses",v:"USD 2,500",d:"Check line property = Chargeable"},{f:"Fee",v:"USD 5,000",d:"Check sales price = 5,000"},{f:"Items (journal)",v:"10 × 50 = USD 500",d:"Check project ID on each line"},{f:"Items (PO)",v:"5 × 200 = USD 1,000",d:"Check linked to correct project"}],w:null,tp:"Sort by Line property column to quickly see all Chargeable vs Non-chargeable lines.",inf:null,v:null},
+    {t:"Adjust any errors",b:"Select problem transactions → <strong>Process → Adjust</strong> → fix line property or sales price.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["All transactions reviewed — no errors found","Chargeable/non-chargeable correctly set","Ready to create invoice proposal"],
+   refs:[{t:"Project invoicing",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-invoicing"}]},
+
+  {id:"2-1",badge:"lb-i",bl:"Invoicing",
+   title:"Create Invoice Proposal",
+   sub:"Project management and accounting › Project invoices › Invoice proposals",
+   obj:"Create an invoice proposal for CONT-TM-001 covering all January transactions, review chargeable lines, and apply the on-account offset.",
+   why:"The invoice proposal is the draft invoice — your last chance to add, remove, or adjust transactions before they become a customer invoice. This is a weekly or monthly task on every active T&M project.",
+   pre:["All transactions reviewed (Lab S3-1)","On-account transaction of USD 10,000 posted"],
+   result:["Invoice proposal created — total approx. USD 8,800 (USD 18,800 minus USD 10,000 on-account)","All transaction types visible","On-account offset applied"],
+   steps:[
+    {t:"Open Invoice proposals",b:'<span class="np">Project management and accounting <span class="sep">›</span> Project invoices <span class="sep">›</span> Invoice proposals</span><br>Click <strong>New → Invoice proposal</strong>.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Set proposal parameters",b:"In the Create invoice proposal dialog:",f:[{f:"Project contract",v:"CONT-TM-001",d:""},{f:"From date",v:"01/01/2026",d:""},{f:"To date",v:"31/01/2026",d:""},{f:"Transaction types",v:"All",d:""},{f:"Chargeable only",v:"Yes",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Review proposal lines",b:"Verify each line type:",f:[{f:"Hour lines",v:"48 hrs × USD 225 = USD 10,800",d:"Confirm sales price not cost price"},{f:"Expense lines",v:"USD 2,500",d:""},{f:"Fee lines",v:"USD 5,000",d:""},{f:"Item lines",v:"USD 1,500 (journal + PO)",d:""}],w:null,tp:"You can edit sales prices on the proposal — changes affect only this invoice.",inf:null,v:null},
+    {t:"Add on-account offset",b:"In the proposal, click <strong>On-account → Select</strong> → choose the USD 10,000 advance. It appears as a negative line, reducing the invoice total.",f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Check totals",b:"Invoice total = USD 10,800 + 2,500 + 5,000 + 1,500 − 10,000 = <strong>USD 9,800</strong>. Click <strong>Totals</strong> to verify.",f:null,w:null,tp:"Invoice proposals can be routed for approval via workflow before posting. Set this up in Organization administration > Workflow.",inf:null,v:null}
+   ],
+   out:["Invoice proposal created with all 4 transaction types","On-account offset of USD 10,000 applied","Net invoice = USD 9,800","Proposal in Created status"],
+   refs:[{t:"Project invoicing — invoice proposals",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-invoicing"},{t:"Manage project invoice proposals",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/invoicing/format-update-project-invoice-proposals"}]},
+
+  {id:"2-2",badge:"lb-i",bl:"Invoicing",
+   title:"Post Customer Invoice",
+   sub:"Invoice proposal › Post",
+   obj:"Post the invoice proposal to create the customer invoice and verify the accrual reversal entries.",
+   why:"Posting the invoice reverses the WIP accrual built up from hour and fee postings and replaces it with real invoiced revenue. Understanding this reversal is the accounting mechanics that make T&M billing correct and auditable.",
+   pre:["Invoice proposal in Created status (Lab S3-2)"],
+   result:["Customer invoice posted — USD 9,800 in AR","Accrued revenue reversed — real invoiced revenue on P&L","Invoice printout reviewed"],
+   steps:[
+    {t:"Post the proposal",b:"Open the invoice proposal → click <strong>Post → Post</strong>.",f:null,w:null,tp:"If posting fails with 'voucher does not balance', check Totals view for rounding differences. Set a rounding tolerance in GL parameters.",inf:null,v:null},
+    {t:"Verify AR transaction",b:'<span class="np">AR <span class="sep">›</span> Customers <span class="sep">›</span> All customers <span class="sep">›</span> US-013 <span class="sep">›</span> Transactions</span><br>Invoice for USD 9,800 should appear.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Verify the GL voucher",b:"On the posted invoice, click <strong>Voucher</strong>:",f:null,w:null,tp:null,inf:null,v:{lbl:"GL voucher — Customer invoice posted (T&M with on-account offset)",rows:[{a:"120100 Customer receivable (US-013)",dr:"USD 9,800.00",cr:""},{a:"401100 Invoiced revenue — hours",dr:"",cr:"USD 10,800.00"},{a:"401100 Invoiced revenue — expenses",dr:"",cr:"USD 2,500.00"},{a:"401200 Invoiced revenue — fees",dr:"",cr:"USD 5,000.00"},{a:"401300 Invoiced revenue — items",dr:"",cr:"USD 1,500.00"},{a:"220100 On-account deferred revenue (offset)",dr:"USD 10,000.00",cr:""},{a:"WIP accrued revenue reversal",dr:"USD 15,800.00",cr:""},{a:"130200 WIP — Accrued revenue",dr:"",cr:"USD 15,800.00"}]}},
+    {t:"Print or email the invoice",b:"<strong>Print → Original</strong>. Invoice shows project name, line items, and total. This is sent to US-013.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Customer invoice posted — USD 9,800 AR","Accrued revenue reversed on posting","Net invoiced revenue recognised in P&L","Invoice printout reviewed"],
+   refs:[{t:"Invoicing process overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/invoicing/post-project-invoices"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 4 — REPORTS ════════════════════════════,
+{id:3,label:"S4 · Reports",title:"Section 4 — T&M Reporting Suite",
+ desc:"Run every report in D365FO PMA for a T&M project — project statement, cost control, utilisation, budget vs actuals, invoice ageing, cash flow, and forecast.",
+ cls:"sh-3",nc:"ln-3",
+ labs:[
+  {id:"3-0",badge:"lb-r",bl:"Report",
+   title:"Project Statement",
+   sub:"Project management and accounting › Inquiries and reports › Project statements",
+   obj:"Run the Project Statement for PROJ-TM-001 and identify every line: costs by category, revenue, WIP balance, and gross margin.",
+   why:"The project statement is the single most important PMA report. Every CFO question, every audit, and every project review starts here. Fluent reading of this report separates a project accountant from an accounting clerk.",
+   pre:["All transactions posted and invoice posted"],
+   result:["Statement generated — all 8 lines identified","WIP = 0 after invoicing confirmed","Exported to Excel with commentary"],
+   steps:[
+    {t:"Open Project statements",b:'<span class="np">Project management and accounting <span class="sep">›</span> Inquiries and reports <span class="sep">›</span> Project statements</span>',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Set parameters",b:"",f:[{f:"Project ID",v:"PROJ-TM-001",d:""},{f:"From date",v:"01/01/2026",d:""},{f:"To date",v:"31/01/2026",d:""},{f:"Show",v:"Actuals and budgets",d:""},{f:"Detail level",v:"Category",d:"Breaks down by ConsultHours, TravelExp, etc."},{f:"Include WIP",v:"Yes",d:""}],w:null,tp:"Run at Category level for the accounting team and at Project level for management.",inf:null,v:null},
+    {t:"Read every line",b:"",f:[{f:"Revenue invoiced",v:"USD 9,800.00",d:"Net invoice after on-account offset"},{f:"Revenue accrued (WIP)",v:"USD 0.00",d:"Should be 0 after invoicing"},{f:"Cost — Hours",v:"USD 7,200.00",d:"48 hrs × USD 150"},{f:"Cost — Expenses",v:"USD 2,500.00",d:""},{f:"Cost — Fees",v:"USD 0.00",d:"Zero cost fee"},{f:"Cost — Items",v:"USD 1,500.00",d:"Journal + PO items"},{f:"Gross margin",v:"USD -1,400.00",d:"Revenue net of on-account vs total costs — see tip"},{f:"Budget variance",v:"",d:"Compares actuals to entered budget"}],w:null,tp:"The net invoice of USD 9,800 vs costs of USD 11,200 shows negative margin here because the full advance was deducted. The full revenue of USD 19,800 vs USD 11,200 costs = USD 8,600 positive margin. Always look at gross revenue not net invoiced.",inf:null,v:null},
+    {t:"Drill to voucher",b:"Click any cost amount → drills to transaction → click again → voucher. Three-click audit trail.",f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Export to Excel",b:"Click <strong>Export</strong> → add commentary column → highlight margin row.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Project statement generated at category and project level","All lines identified and explained","WIP = 0 confirmed","Exported with commentary"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"},{t:"Manage project financials overview",u:"https://learn.microsoft.com/en-us/dynamics365/guidance/business-processes/project-to-profit-manage-project-financials-overview"}]},
+
+  {id:"3-1",badge:"lb-r",bl:"Report",
+   title:"Cost Control Workspace",
+   sub:"Project management and accounting › Workspaces › Cost control",
+   obj:"Use the Cost control workspace to monitor real-time budget vs actuals and committed costs.",
+   why:"This is the daily dashboard for project managers. Unlike the statement which is point-in-time, the workspace updates in real time as transactions post.",
+   pre:["Project budget entered","At least one open PO for committed costs"],
+   result:["All 4 tiles understood","Category drill-down completed","Committed costs vs actuals distinction mastered"],
+   steps:[
+    {t:"Open Cost control",b:'<span class="np">Project management and accounting <span class="sep">›</span> Workspaces <span class="sep">›</span> Cost control</span>',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Read the 4 tiles",b:"",f:[{f:"Original budget",v:"USD 25,000",d:"Approved baseline"},{f:"Actual costs",v:"USD 11,200",d:"All posted transactions"},{f:"Committed costs",v:"USD 1,000 (open PO)",d:"Confirmed POs not yet invoiced"},{f:"Remaining budget",v:"USD 12,800",d:"Budget − actual − committed"}],w:null,tp:null,inf:"Committed costs = open POs. Without this, remaining budget is overstated. This is the most common project overspend cause.",v:null},
+    {t:"Drill into categories",b:"Click <strong>Actual costs</strong> → see by category → click any category → individual transactions.",f:null,w:null,tp:"Add Cost at completion column to project spending rate. Flags over-budget risk early.",inf:null,v:null},
+    {t:"Personalise and bookmark",b:"Click <strong>Personalise → Add to Favourites</strong> for one-click access.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["All 4 tiles explained","Committed costs concept understood","Workspace bookmarked"],
+   refs:[{t:"Project forecasts and budgets",u:"https://learn.microsoft.com/en-in/dynamics365/project-operations/prod-pma/project-forecasts-budgets"}]},
+
+  {id:"3-2",badge:"lb-r",bl:"Report",
+   title:"Hour Utilisation Report",
+   sub:"Project management and accounting › Inquiries and reports › Hour utilization",
+   obj:"Run the Hour utilisation report and calculate billable percentage by worker for January.",
+   why:"Utilisation is the core KPI of any consulting or professional services business. A worker at 75%+ billable is profitable; below 50% is a cost. This report is what the CEO looks at weekly.",
+   pre:["Hour journals and timesheets posted"],
+   result:["Utilisation % calculated per worker","Non-billable hours identified","Excel report with conditional formatting created"],
+   steps:[
+    {t:"Open Hour utilisation",b:'<span class="np">Project management and accounting <span class="sep">›</span> Inquiries and reports <span class="sep">›</span> Hour utilization</span>',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Set parameters and read output",b:"",f:[{f:"From date",v:"01/01/2026",d:""},{f:"To date",v:"31/01/2026",d:""},{f:"Utilization type",v:"Billable",d:""},{f:"Total hours",v:"48.00",d:"All booked hours"},{f:"Billable hours",v:"48.00",d:"Chargeable line property"},{f:"Utilisation %",v:"100%",d:"All billable in this example — realistic target 75-80%"}],w:null,tp:"Add a non-chargeable internal training hour to see utilisation drop. This triggers performance conversations.",inf:null,v:null},
+    {t:"Export and format",b:"Export to Excel. Add conditional format: green >70%, amber 50-70%, red <50%.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Utilisation report generated","Billable % per worker calculated","Excel with conditional formatting created"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"3-3",badge:"lb-r",bl:"Report",
+   title:"Invoice Ageing & AR Reconciliation",
+   sub:"Project invoices › Posted project invoices  +  AR › Customer aging",
+   obj:"Reconcile posted project invoices to the AR balance and run the customer ageing report.",
+   why:"Invoiced revenue means nothing until collected. The ageing report shows how old each invoice is — a CFO who sees USD 500,000 aged 90+ days will immediately ask why. You must be able to answer that question.",
+   pre:["Invoice posted in Lab S3-3","AR setup for US-013 exists"],
+   result:["Posted invoices reconciled to AR balance","Ageing report reviewed","Payment posted — AR cleared"],
+   steps:[
+    {t:"Review Posted project invoices",b:'<span class="np">Project management and accounting <span class="sep">›</span> Project invoices <span class="sep">›</span> Posted project invoices</span><br>Filter: Project contract = CONT-TM-001.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Verify AR balance",b:'<span class="np">AR <span class="sep">›</span> Customers <span class="sep">›</span> All customers <span class="sep">›</span> US-013 <span class="sep">›</span> Transactions</span><br>Balance should match invoice total.',f:null,w:"If AR ≠ project invoice total: check credit notes, payments applied, or invoices posted directly in AR outside PMA.",tp:null,inf:null,v:null},
+    {t:"Run Customer ageing",b:'<span class="np">AR <span class="sep">›</span> Inquiries and reports <span class="sep">›</span> Customers <span class="sep">›</span> Customer aging</span>',f:[{f:"Customer",v:"US-013",d:""},{f:"Ageing periods",v:"30/60/90/120+",d:""}],w:null,tp:"Invoice date 31/01/2026 is 100+ days ago — in production this would be in the 90+ bucket requiring a collection call.",inf:null,v:null},
+    {t:"Post customer payment",b:'<span class="np">AR <span class="sep">›</span> Payments <span class="sep">›</span> Customer payment journal</span><br>Post USD 9,800 payment. Recheck ageing — balance = 0.',f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Invoices reconciled to AR","Ageing report reviewed","Payment posted — AR cleared to zero"],
+   refs:[{t:"Manage project financials overview",u:"https://learn.microsoft.com/en-us/dynamics365/guidance/business-processes/project-to-profit-manage-project-financials-overview"}]},
+
+  {id:"3-4",badge:"lb-r",bl:"Report",
+   title:"Project Forecast & Cost-at-Completion (EAC)",
+   sub:"Project management and accounting › Projects › PROJ-TM-001 › Plan › Forecasts",
+   obj:"Create a Q2 forecast model, enter remaining scope, and calculate Estimate-at-Completion (EAC) vs original budget.",
+   why:"The statement tells you what happened. The forecast tells you what will happen. EAC is the one number every project sponsor wants: 'Will we finish on budget?' Master this and you are a senior project accountant.",
+   pre:["All transactions posted","Budget entered"],
+   result:["Forecast model TM001-Q2 created","EAC calculated: USD 19,200 vs USD 25,000 budget","Forecast commentary written"],
+   steps:[
+    {t:"Create forecast model",b:'<span class="np">Project management and accounting <span class="sep">›</span> Setup <span class="sep">›</span> Forecasts <span class="sep">›</span> Forecast models</span><br>New: ID = TM001-Q2.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Enter remaining hours forecast",b:'<span class="np">PROJ-TM-001 <span class="sep">›</span> Plan <span class="sep">›</span> Hour forecast</span>',f:[{f:"Forecast model",v:"TM001-Q2",d:""},{f:"Category",v:"ConsultHours",d:""},{f:"Hours",v:"60",d:"Remaining to complete"},{f:"Cost price",v:"150.00",d:""},{f:"Sales price",v:"225.00",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Calculate EAC",b:"",f:[{f:"Actual cost to date",v:"USD 11,200",d:"All January transactions"},{f:"Forecast cost to complete",v:"60 × 150 = USD 9,000",d:""},{f:"EAC",v:"USD 11,200 + 9,000 = USD 20,200",d:"Total expected cost at completion"},{f:"Original budget",v:"USD 25,000",d:""},{f:"Forecast variance",v:"USD +4,800 under budget",d:"Project forecast to complete under budget"}],w:null,tp:"EAC formula: Actuals + Forecast to complete = EAC. If EAC > budget, trigger a scope review immediately.",inf:null,v:null}
+   ],
+   out:["Forecast model created with remaining scope","EAC calculated — under budget confirmed","Forecast commentary written for sponsor"],
+   refs:[{t:"Project forecasts and budgets",u:"https://learn.microsoft.com/en-in/dynamics365/project-operations/prod-pma/project-forecasts-budgets"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 5 — IT SCENARIO + WBS ══════════════════,
+{id:4,label:"S5 · IT Scenario",title:"Section 5 — IT Software Implementation Scenario + WBS",
+ desc:"Complete T&M scenario for an IT software implementation project: WBS template, all transaction types with realistic IT data, invoicing, and key reports.",
+ cls:"sh-4",nc:"ln-4",
+ labs:[
+  {id:"4-0",badge:"lb-w",bl:"WBS",
+   title:"IT WBS Template — Upload to D365FO",
+   sub:"Project management and accounting › Projects › All projects › PROJ-IT-001 › Plan › Work breakdown structure",
+   obj:"Create a complete WBS for an IT software implementation project covering Discovery, Design, Build, Test, and Go-Live phases with hours and costs.",
+   why:"A WBS in D365FO is more than a task list — it drives project cost budgets, resource scheduling, and milestone billing. Every professional services project manager needs to know how to build one correctly.",
+   pre:["Project PROJ-IT-001 created (T&M, TM-CONSULT group)","Workers assigned to the project"],
+   result:["5-phase WBS created with 20 tasks","Hours and costs assigned to each task","WBS exported to CSV for reuse"],
+   steps:[
+    {t:"Open Work Breakdown Structure",b:'<span class="np">All projects <span class="sep">›</span> PROJ-IT-001 <span class="sep">›</span> Plan tab <span class="sep">›</span> Work breakdown structure</span>',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Create Phase 1: Discovery",b:"Click <strong>Add task</strong> and build the structure below. Set the task as a parent (summary) task first, then add children.",f:null,w:null,tp:"Use the Indent button to create parent-child relationships. Parent tasks auto-roll up hours and costs from children.",inf:null,v:null},
+    {t:"Enter the full IT WBS",b:"Build this structure (reference the WBS table below for all fields):",f:null,w:null,tp:"Set hours on leaf (lowest-level) tasks only. Parent tasks auto-total. Assign a worker to each task for resource planning.",inf:null,v:null},
+    {t:"Save and review budget impact",b:"After saving the WBS, navigate to <strong>Plan → Budget</strong>. The WBS hours automatically populate the budget if 'Budget from WBS' is enabled in parameters.",f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Export WBS",b:"Click <strong>Export to Excel</strong> to save the WBS as a reusable template. Import it for future similar IT projects.",f:null,w:null,tp:"Keep a library of WBS templates for common project types: IT implementation, IT support, infrastructure deployment, etc. Reusing templates saves 2-3 hours of setup per project.",inf:null,v:null}
+   ],
+   wbs:{headers:["Task","Level","Description","Hours","Cost (USD)","Revenue (USD)","Category"],
+    rows:[
+     ["1 — DISCOVERY","L1","Phase 1: Requirements Discovery","","","",""],
+     ["1.1 Kickoff & planning","L2","Project initiation and planning workshop","16","2,400","3,600","ConsultHours"],
+     ["1.2 Current state analysis","L2","Document existing processes and systems","24","3,600","5,400","ConsultHours"],
+     ["1.3 Requirements workshops","L2","Run 3 × half-day workshops with stakeholders","24","3,600","5,400","ConsultHours"],
+     ["1.4 Requirements document","L2","Write and review requirements specification","16","2,400","3,600","ConsultHours"],
+     ["— TOTALS PHASE 1","","","80 hrs","USD 12,000","USD 18,000",""],
+     ["2 — DESIGN","L1","Phase 2: Solution Design","","","",""],
+     ["2.1 System architecture","L2","Design technical architecture and integrations","32","4,800","7,200","ConsultHours"],
+     ["2.2 Data migration design","L2","Map source → target data fields","24","3,600","5,400","ConsultHours"],
+     ["2.3 Security design","L2","Role-based access and security matrix","16","2,400","3,600","ConsultHours"],
+     ["2.4 Design sign-off workshop","L2","Present design to client and get approval","8","1,200","1,800","ConsultHours"],
+     ["— TOTALS PHASE 2","","","80 hrs","USD 12,000","USD 18,000",""],
+     ["3 — BUILD","L1","Phase 3: Configuration & Development","","","",""],
+     ["3.1 D365FO configuration","L2","Configure modules per design spec","80","12,000","18,000","ConsultHours"],
+     ["3.2 Custom development","L2","Develop custom reports and integrations","40","6,000","9,000","ConsultHours"],
+     ["3.3 Data migration build","L2","Build and test SSIS/data entity migration","32","4,800","7,200","ConsultHours"],
+     ["3.4 Software licences (PO)","L2","Microsoft D365FO user licences","0","8,000","10,000","Materials"],
+     ["3.5 Server hardware (PO)","L2","Azure infrastructure setup","0","5,000","6,500","Materials"],
+     ["— TOTALS PHASE 3","","","152 hrs + items","USD 35,800","USD 50,700",""],
+     ["4 — TEST","L1","Phase 4: Testing & UAT","","","",""],
+     ["4.1 System integration testing","L2","SIT execution and defect resolution","40","6,000","9,000","ConsultHours"],
+     ["4.2 User acceptance testing","L2","UAT support and issue tracking","32","4,800","7,200","ConsultHours"],
+     ["4.3 Performance testing","L2","Load and stress testing","16","2,400","3,600","ConsultHours"],
+     ["4.4 Test management fee","L2","Fixed fee for test management coordination","0","0","5,000","MgmtFee"],
+     ["— TOTALS PHASE 4","","","88 hrs + fee","USD 13,200","USD 24,800",""],
+     ["5 — GO-LIVE","L1","Phase 5: Deployment & Hypercare","","","",""],
+     ["5.1 Go-live preparation","L2","Cutover planning and rehearsal","16","2,400","3,600","ConsultHours"],
+     ["5.2 Data migration execution","L2","Run final production migration","24","3,600","5,400","ConsultHours"],
+     ["5.3 Go-live support","L2","5 days on-site hypercare support","40","6,000","9,000","ConsultHours"],
+     ["5.4 Travel (hyp. care team)","L2","Travel to client site","0","3,500","3,500","TravelExp"],
+     ["5.5 Project closure fee","L2","Closure report and sign-off fee","0","0","3,000","MgmtFee"],
+     ["— TOTALS PHASE 5","","","80 hrs + items","USD 15,500","USD 24,500",""],
+     ["═══ PROJECT TOTAL","","","480 hrs + items","USD 88,500","USD 136,000",""]
+    ]
+   },
+   out:["Full 5-phase IT WBS created in D365FO","Hours and costs assigned to each task","WBS exported as Excel template","Budget populated from WBS"],
+   refs:[{t:"Project management and accounting overview — WBS",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"4-1",badge:"lb-sc",bl:"Scenario",
+   title:"IT Scenario — All Transactions End-to-End",
+   sub:"IT Software Implementation · Project PROJ-IT-001",
+   obj:"Walk through all transaction types using realistic IT implementation data: consulting hours by phase, software licence PO, travel expenses, fixed management fee, and on-account advance.",
+   why:"Reading transaction labs with generic data is one thing. Being able to post a real IT project from scratch — with correct categories, correct GL accounts, and correct line properties — is the skill employers pay for.",
+   pre:["IT WBS created (Lab S5-1)","PROJ-IT-001 in In process","All categories created from Section 1"],
+   result:["Phase 1 Discovery hours posted (80 hrs)","Software licence PO posted (5 licences)","Travel expense posted","Management fee posted","On-account advance posted","Invoice proposal created for Phase 1 milestone"],
+   steps:[
+    {t:"Post Phase 1 Discovery hours",b:"Create Hour journal — post 80 hours across 4 workers:",f:[{f:"Worker 1",v:"40 hrs ConsultHours at USD 150/225",d:"Senior consultant"},{f:"Worker 2",v:"24 hrs ConsultHours at USD 130/195",d:"Mid-level consultant"},{f:"Worker 3",v:"16 hrs ConsultHours at USD 100/150",d:"Junior consultant"},{f:"Project ID",v:"PROJ-IT-001",d:""},{f:"Line property",v:"Chargeable",d:"All hours billable in discovery"}],w:null,tp:"Use different cost/sales rates per worker to reflect seniority. The project statement shows blended margin across all rates.",inf:null,v:null},
+    {t:"Post software licence PO",b:"Create PO from Vendor US-102 for D365FO licences:",f:[{f:"Item",v:"D365FO-USR-LIC",d:"Software licence item"},{f:"Qty",v:"10",d:"User licences"},{f:"Unit price",v:"800.00",d:"Cost per licence"},{f:"Project ID",v:"PROJ-IT-001",d:""},{f:"Sales price",v:"1,000.00",d:"Licence resale price to customer"}],w:null,tp:null,inf:null,v:null},
+    {t:"Post travel expense",b:"Expense journal — 3 consultants flew to client site:",f:[{f:"Category",v:"TravelExp",d:""},{f:"Amount",v:"3,500.00",d:"Flights + hotel for 3 consultants"},{f:"Line property",v:"Chargeable",d:"Travel at cost — no markup"}],w:null,tp:null,inf:null,v:null},
+    {t:"Post Phase 1 management fee",b:"Fee journal — fixed Phase 1 management fee:",f:[{f:"Category",v:"MgmtFee",d:""},{f:"Sales price",v:"5,000.00",d:"Fixed Phase 1 coordination fee"},{f:"Line property",v:"Chargeable",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Post client advance (on-account)",b:"On-account transaction — client paid 30% upfront:",f:[{f:"Amount",v:"40,800.00",d:"30% of USD 136,000 total contract = USD 40,800"},{f:"Description",v:"Project commencement advance — 30%",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Create Phase 1 invoice",b:"Invoice proposal → CONT-IT-001 → date range Phase 1. Net invoice = Phase 1 revenue minus advance portion.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   out:["All IT project transaction types posted with realistic data","Phase 1 invoice proposal created","On-account advance applied as offset"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 6 — CONSTRUCTION & MFG ═════════════════,
+{id:5,label:"S6 · Construction",title:"Section 6 — Construction & Manufacturing Scenarios + WBS",
+ desc:"T&M scenarios and WBS templates for construction projects (civil engineering) and manufacturing projects (custom equipment). Covers item requirements, production orders, and sub-project structures.",
+ cls:"sh-5",nc:"ln-5",
+ labs:[
+  {id:"5-0",badge:"lb-w",bl:"WBS",
+   title:"Construction WBS Template",
+   sub:"Project management and accounting › Projects › All projects › PROJ-CONST-001",
+   obj:"Build a construction project WBS for a commercial office fit-out project with phases: Pre-Construction, Structural, MEP, Fit-Out, and Commissioning.",
+   why:"Construction T&M projects have a unique mix: labour hours, heavy material procurement (POs), subcontractor fees, and equipment costs. A well-structured WBS drives correct cost allocation to each phase, enabling accurate phase-by-phase billing.",
+   pre:["Project PROJ-CONST-001 created (T&M)","Construction-specific categories created: SiteLabour, Materials, Subcontract, Equipment"],
+   result:["5-phase construction WBS built","Material and subcontract lines included","Export as template for future construction projects"],
+   steps:[
+    {t:"Create construction-specific categories",b:"Before building the WBS, ensure these construction categories exist:",f:[{f:"SiteLabour",v:"Transaction type: Hour",d:"On-site workers, foremen, engineers"},{f:"Materials",v:"Transaction type: Item",d:"Concrete, steel, fixtures — via POs"},{f:"Subcontract",v:"Transaction type: Fee",d:"Electrical, plumbing, HVAC subcontractors"},{f:"Equipment",v:"Transaction type: Expense",d:"Plant hire, crane rental, scaffolding"}],w:null,tp:null,inf:null,v:null},
+    {t:"Build the Construction WBS",b:"Open WBS for PROJ-CONST-001 and build the structure (see WBS table below).",f:null,w:null,tp:"For construction, use sub-projects per phase. This enables phase-level billing milestones and phase-level reporting — critical for construction contract management.",inf:null,v:null},
+    {t:"Note key construction differences",b:"",f:[{f:"Materials via POs only",v:"Never use item journals for construction materials",d:"PO → receipt → vendor invoice is the audit trail"},{f:"Subcontractors as Fee or PO",v:"Fee journal for quick billing; PO for formal subcontract",d:""},{f:"Equipment as Expense",v:"Plant hire invoices come as vendor invoices posted to expense",d:""},{f:"Retention",v:"Not covered in standard PMA — use on-account transaction",d:"Post retention as a negative on-account transaction"}],w:null,tp:null,inf:null,v:null}
+   ],
+   wbs:{headers:["Task","Level","Description","Labour (hrs)","Materials","Subcontracts","Equipment"],
+    rows:[
+     ["1 — PRE-CONSTRUCTION","L1","Design, permits, procurement","","","",""],
+     ["1.1 Site survey","L2","Survey and topographic mapping","40 hrs","—","USD 5,000","—"],
+     ["1.2 Architectural design","L2","Working drawings and specifications","80 hrs","—","USD 35,000","—"],
+     ["1.3 Permits & approvals","L2","Building permit applications and approvals","24 hrs","—","—","—"],
+     ["1.4 Main procurement","L2","Procure structural steel and concrete","—","USD 180,000","—","—"],
+     ["— PHASE 1 TOTAL","","","144 hrs","USD 180,000","USD 40,000","—"],
+     ["2 — STRUCTURAL","L1","Foundation and structural frame","","","",""],
+     ["2.1 Excavation","L2","Site excavation and grading","—","—","USD 25,000","USD 12,000"],
+     ["2.2 Foundation","L2","Concrete foundations and piling","120 hrs","USD 45,000","USD 30,000","USD 8,000"],
+     ["2.3 Structural steel","L2","Steel frame erection","80 hrs","USD 120,000","USD 40,000","USD 15,000"],
+     ["2.4 Concrete floors","L2","Slab pours — all levels","60 hrs","USD 35,000","USD 20,000","USD 5,000"],
+     ["— PHASE 2 TOTAL","","","260 hrs","USD 200,000","USD 115,000","USD 40,000"],
+     ["3 — MEP","L1","Mechanical, Electrical & Plumbing","","","",""],
+     ["3.1 Electrical installation","L2","Cabling, switchboards, lighting","—","USD 30,000","USD 55,000","—"],
+     ["3.2 Plumbing","L2","Pipework, sanitaryware, drainage","—","USD 20,000","USD 40,000","—"],
+     ["3.3 HVAC","L2","Air conditioning and ventilation","—","USD 40,000","USD 60,000","—"],
+     ["3.4 Fire protection","L2","Sprinklers, alarms, extinguishers","—","USD 15,000","USD 25,000","—"],
+     ["— PHASE 3 TOTAL","","","—","USD 105,000","USD 180,000","—"],
+     ["4 — FIT-OUT","L1","Internal fit-out and finishes","","","",""],
+     ["4.1 Partitioning & ceilings","L2","Drywall, suspended ceilings","160 hrs","USD 25,000","USD 35,000","—"],
+     ["4.2 Flooring & tiling","L2","Carpet, tiles, timber flooring","—","USD 30,000","USD 20,000","—"],
+     ["4.3 Joinery & fixtures","L2","Kitchens, bathrooms, reception desk","—","USD 45,000","USD 30,000","—"],
+     ["4.4 Painting & decorating","L2","Painting all internal surfaces","80 hrs","USD 8,000","USD 15,000","—"],
+     ["— PHASE 4 TOTAL","","","240 hrs","USD 108,000","USD 100,000","—"],
+     ["5 — COMMISSIONING","L1","Testing, sign-off and handover","","","",""],
+     ["5.1 Systems commissioning","L2","Test all MEP systems","80 hrs","—","USD 10,000","—"],
+     ["5.2 Defects rectification","L2","Address snag list items","120 hrs","USD 5,000","—","—"],
+     ["5.3 Practical completion","L2","Handover and documentation","40 hrs","—","—","—"],
+     ["═══ PROJECT TOTAL","","","864 hrs","USD 598,000","USD 445,000","USD 40,000"]
+    ]
+   },
+   out:["Construction WBS built with 5 phases","Labour, material, subcontract, and equipment lines differentiated","Template exported for future projects"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"5-1",badge:"lb-sc",bl:"Scenario",
+   title:"Construction Scenario — T&M Transactions",
+   sub:"Construction office fit-out · PROJ-CONST-001",
+   obj:"Post all construction-specific transactions: site labour hours, structural material POs, subcontractor fee journals, and equipment expense journals.",
+   why:"Construction T&M has unique complexity: multiple subcontractors as fee transactions, high-value material POs, and equipment as expense. Understanding how each maps to the correct GL category prevents month-end reconciliation nightmares.",
+   pre:["PROJ-CONST-001 in In process","SiteLabour, Materials, Subcontract, Equipment categories created","Construction POs and vendors set up"],
+   result:["Site labour hours posted by trade","Concrete PO received — material cost on project","Electrical subcontractor fee posted","Plant hire expense posted","Progress invoice proposal created"],
+   steps:[
+    {t:"Post site labour hours by trade",b:"Create separate Hour journals per trade for clear reporting:",f:[{f:"Foreman",v:"40 hrs at USD 75/hr",d:"Site supervision"},{f:"Concretors",v:"80 hrs at USD 55/hr",d:"Foundation pour"},{f:"Steel fixers",v:"60 hrs at USD 65/hr",d:"Rebar installation"},{f:"Category",v:"SiteLabour",d:""},{f:"Line property",v:"Chargeable",d:"All labour billable on T&M contract"}],w:null,tp:"Post separate journals per trade for drill-down reporting. Mixing trades in one journal loses the category-level detail that drives billing disputes.",inf:null,v:null},
+    {t:"Post concrete supply PO",b:"Procurement → PO → Vendor for concrete supplier:",f:[{f:"Item",v:"CONCRETE-20MPA",d:"Concrete item"},{f:"Qty",v:"150 m³",d:""},{f:"Unit price",v:"180.00",d:"Per cubic metre"},{f:"Project ID",v:"PROJ-CONST-001",d:""},{f:"Category",v:"Materials",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Post electrical subcontractor fee",b:"Fee journal for electrical subcontractor monthly claim:",f:[{f:"Category",v:"Subcontract",d:""},{f:"Sales price",v:"55,000.00",d:"Electrical subcontractor claim for month"},{f:"Description",v:"Electrical works — Phase 3 progress claim #2",d:""},{f:"Line property",v:"Chargeable",d:""}],w:"Always review subcontractor claims before posting. In construction, disputed claims are common — mark disputed amounts as non-chargeable until resolved.",tp:null,inf:null,v:null},
+    {t:"Post plant hire expense",b:"Expense journal for crane rental:",f:[{f:"Category",v:"Equipment",d:""},{f:"Amount",v:"12,000.00",d:"Monthly crane hire"},{f:"Offset account",v:"200100 AP",d:""},{f:"Line property",v:"Chargeable",d:"Equipment cost passed through to client at cost"}],w:null,tp:null,inf:null,v:null},
+    {t:"Create progress claim invoice",b:"Construction contracts typically use monthly progress claims. Invoice proposal → select current month → review all chargeable lines → calculate retention if applicable.",f:null,w:null,tp:"Construction retention: if contract has 5% retention, post a negative on-account transaction for 5% of the invoice amount. Release when project reaches practical completion.",inf:null,v:null}
+   ],
+   out:["Site labour by trade posted","Concrete PO received on project","Subcontractor fee posted and reviewed","Plant hire expense posted","Progress invoice proposal created"],
+   refs:[{t:"Intercompany invoicing",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/intercompany-invoicing"}]},
+
+  {id:"5-2",badge:"lb-w",bl:"WBS",
+   title:"Manufacturing WBS Template (Custom Equipment)",
+   sub:"Project management and accounting › Projects › All projects › PROJ-MFG-001",
+   obj:"Build a manufacturing WBS for a custom equipment project with phases: Engineering, Procurement, Fabrication, Assembly, and Delivery.",
+   why:"Manufacturing T&M projects integrate Supply Chain Management (production orders, BOM) with Project accounting. The WBS drives both the production schedule and the project financial forecast — making it essential for project-based manufacturers.",
+   pre:["Project PROJ-MFG-001 created (T&M)","Manufacturing categories: Engineering, Fabrication, Assembly, Logistics"],
+   result:["5-phase manufacturing WBS created","Production order integration understood","Material requirements planning (MRP) impact noted"],
+   steps:[
+    {t:"Create manufacturing-specific categories",b:"",f:[{f:"Engineering",v:"Transaction type: Hour",d:"Design and engineering hours"},{f:"Fabrication",v:"Transaction type: Hour + Item",d:"Production hours and raw materials"},{f:"Assembly",v:"Transaction type: Hour",d:"Assembly and testing hours"},{f:"Logistics",v:"Transaction type: Expense",d:"Freight, packaging, delivery"}],w:null,tp:null,inf:null,v:null},
+    {t:"Build the Manufacturing WBS",b:"See the WBS table below. Note that Fabrication includes both hours and material (item) costs.",f:null,w:null,tp:"In manufacturing, consider using sub-projects per production order. This links production order costs directly to the project — critical for accurate job costing.",inf:null,v:null},
+    {t:"Link to production orders",b:"For fabrication tasks: set the <strong>Production order method</strong> in parameters to <strong>Consumed item</strong>. This allows production order costs (materials + labour) to flow directly into the project cost.",f:null,w:null,tp:null,inf:"Production order integration: Consumed item method posts actual production costs (BOM materials + routing hours) to the project as work progresses. Finished item method posts total cost only when the production order is complete.",v:null}
+   ],
+   wbs:{headers:["Task","Level","Description","Engineering (hrs)","Production (hrs)","Materials (USD)","Logistics (USD)"],
+    rows:[
+     ["1 — ENGINEERING","L1","Custom design and specifications","","","",""],
+     ["1.1 Conceptual design","L2","Concept drawings and feasibility","80 hrs","—","—","—"],
+     ["1.2 Detailed engineering","L2","Full engineering drawings and BOM","160 hrs","—","—","—"],
+     ["1.3 Client review & approval","L2","Design review meetings and amendments","40 hrs","—","—","—"],
+     ["— PHASE 1 TOTAL","","","280 hrs","—","—","—"],
+     ["2 — PROCUREMENT","L1","Raw materials and bought-in components","","","",""],
+     ["2.1 Steel procurement","L2","Structural steel — beams, plate, tube","—","—","USD 85,000","—"],
+     ["2.2 Drive components","L2","Motors, gearboxes, inverters","—","—","USD 45,000","—"],
+     ["2.3 Control system","L2","PLC, HMI, electrical panels","—","—","USD 30,000","—"],
+     ["2.4 Bought-in parts","L2","Bearings, seals, fasteners, pneumatics","—","—","USD 20,000","—"],
+     ["— PHASE 2 TOTAL","","","—","—","USD 180,000","—"],
+     ["3 — FABRICATION","L1","Steel fabrication and machining","","","",""],
+     ["3.1 Steel cutting & prep","L2","Plasma/laser cutting, bending","—","160 hrs","—","—"],
+     ["3.2 Welding & fabrication","L2","MIG/TIG welding of structural frames","—","240 hrs","—","—"],
+     ["3.3 CNC machining","L2","Precision machined components","—","120 hrs","—","—"],
+     ["3.4 Painting & surface treatment","L2","Shot blasting and industrial painting","—","80 hrs","USD 8,000","—"],
+     ["— PHASE 3 TOTAL","","","—","600 hrs","USD 8,000","—"],
+     ["4 — ASSEMBLY & TEST","L1","Mechanical and electrical assembly","","","",""],
+     ["4.1 Mechanical assembly","L2","Fit all mechanical components","—","200 hrs","—","—"],
+     ["4.2 Electrical installation","L2","Wire up control system","—","120 hrs","—","—"],
+     ["4.3 Factory acceptance test (FAT)","L2","Full testing and commissioning at factory","—","80 hrs","—","—"],
+     ["4.4 Site acceptance test (SAT)","L2","On-site commissioning at customer","—","40 hrs","—","—"],
+     ["— PHASE 4 TOTAL","","","—","440 hrs","—","—"],
+     ["5 — DELIVERY","L1","Packing, shipping and installation","","","",""],
+     ["5.1 Packing & documentation","L2","Export packing, manuals, certs","—","40 hrs","USD 5,000","—"],
+     ["5.2 Freight to site","L2","Heavy-lift transport and insurance","—","—","—","USD 15,000"],
+     ["5.3 Site installation","L2","Rigging, installation, final connections","—","80 hrs","—","USD 5,000"],
+     ["— PHASE 5 TOTAL","","","—","120 hrs","USD 5,000","USD 20,000"],
+     ["═══ PROJECT TOTAL","","","280 hrs","1,160 hrs","USD 193,000","USD 20,000"]
+    ]
+   },
+   out:["5-phase manufacturing WBS built","Production order integration approach understood","Material costs distinguished from labour","WBS exported as template"],
+   refs:[{t:"Manage project production orders",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/manage-project-production-orders"}]},
+
+  {id:"5-3",badge:"lb-sc",bl:"Scenario",
+   title:"Manufacturing Scenario — T&M Transactions",
+   sub:"Custom equipment project · PROJ-MFG-001",
+   obj:"Post all manufacturing-specific transactions: engineering hours, raw material POs, production order costs, and delivery expenses.",
+   why:"Manufacturing T&M is the most complex PMA scenario because it combines HR (engineering hours), supply chain (raw material POs and BOM), production (work centre costs), and project accounting — all in one project.",
+   pre:["PROJ-MFG-001 in In process","Manufacturing WBS created","Production order linked to project"],
+   result:["Engineering hours posted by phase","Steel PO received — material cost on project","Production order fabrication hours posted","Delivery expense posted","Phase-based progress invoice created"],
+   steps:[
+    {t:"Post engineering hours (Phase 1)",b:"Hour journal — engineering team:",f:[{f:"Lead engineer",v:"160 hrs ConsultHours at USD 120/175",d:"Senior design engineer"},{f:"Design engineer",v:"80 hrs ConsultHours at USD 90/135",d:"Detailed design"},{f:"Project manager",v:"40 hrs ConsultHours at USD 100/150",d:"Project management overhead"},{f:"Line property",v:"Chargeable",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Post structural steel PO",b:"PO from steel supplier:",f:[{f:"Item",v:"STEEL-PLATE-10MM",d:"10mm structural steel plate"},{f:"Qty",v:"5,000 kg",d:""},{f:"Unit price",v:"1.80/kg",d:""},{f:"Project ID",v:"PROJ-MFG-001",d:""},{f:"Category",v:"Fabrication",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Post production order costs",b:"After production order with Consumed item method is linked to project, fabrication hours from the routing post automatically:",f:[{f:"Work centre: Welding bay",v:"240 hrs at USD 45/hr",d:"Posted by production order posting"},{f:"Work centre: CNC",v:"120 hrs at USD 65/hr",d:""},{f:"Material: BOM consumption",v:"At standard cost from BOM",d:"Steel, consumables, etc."}],w:null,tp:"With Consumed item method, costs appear in real time as the production order progresses. Use Finished item if you want a single cost entry on completion.",inf:null,v:null},
+    {t:"Post delivery expense",b:"Expense journal — freight invoice:",f:[{f:"Category",v:"Logistics",d:""},{f:"Amount",v:"15,000.00",d:"Heavy-lift transport to client site"},{f:"Line property",v:"Chargeable",d:"Freight passed through at cost"}],w:null,tp:null,inf:null,v:null},
+    {t:"Create phase-based invoice",b:"For manufacturing, create invoice proposals per project phase (milestone billing is common even on T&M contracts):",f:[{f:"Phase 1: Engineering",v:"Invoice after design approval",d:"280 hrs × USD 150 avg = USD 42,000"},{f:"Phase 3: Fabrication complete",v:"Invoice after FAT",d:"Fab hours + materials at agreed rates"},{f:"Phase 5: Delivery",v:"Final invoice on SAT completion",d:"Remaining scope + delivery costs"}],w:null,tp:"Use the Phase filter in the invoice proposal to select only specific WBS phases for each progress invoice. This gives clients a clear phase-by-phase bill that matches the contract milestones.",inf:null,v:null}
+   ],
+   out:["Engineering hours posted by phase and trade","Steel PO received with project linkage","Production order costs flowing to project","Delivery expense posted","Phase-based invoicing structure understood"],
+   refs:[{t:"Manage project production orders",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/manage-project-production-orders"},{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]}
+ ]
+},
+// ══════════════════════ SECTION 7 — FP CONFIGURATION ══════════════════
+]; // END SECTIONS
+
+
+const TOTAL = SECTIONS.reduce((a,s)=>a+s.labs.length,0);
+const done  = new Set(JSON.parse(localStorage.getItem('pma_tm_done')||'[]'));
+function saveDone(){ localStorage.setItem('pma_tm_done',JSON.stringify([...done])); }
+function updateProg(){
+  const n=done.size, p=Math.round(n/TOTAL*100);
+  document.getElementById('pbadge').textContent = n+' / '+TOTAL+' done';
+  document.getElementById('ps-fill').style.width = p+'%';
+  document.getElementById('ps-pct').textContent  = p+'%';
+  document.getElementById('total-lbl').textContent = TOTAL;
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────
+let curSec=0;
+
+function buildNav(){
+  const c=document.getElementById('ntabs');
+  SECTIONS.forEach((s,i)=>{
+    const b=document.createElement('div');
+    b.className='ntab'+(i===0?' on':'');
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected',i===0?'true':'false');
+    b.textContent=s.label;
+    b.onclick=()=>switchSec(i);
+    c.appendChild(b);
+  });
+}
+
+function switchSec(i){
+  curSec=i;
+  document.querySelectorAll('.ntab').forEach((t,j)=>{
+    t.classList.toggle('on',j===i);
+    t.setAttribute('aria-selected',j===i?'true':'false');
+  });
+  document.querySelectorAll('.sec-view').forEach((v,j)=>v.classList.toggle('on',j===i));
+  document.getElementById('main-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function buildViews(){
+  const c=document.getElementById('sec-views');
+  SECTIONS.forEach((sec,si)=>{
+    const view=document.createElement('div');
+    view.className='sec-view'+(si===0?' on':'');
+
+    // Section header
+    const hdr=document.createElement('div');
+    hdr.className='sec-hdr '+sec.cls;
+    hdr.innerHTML=`<div><div class="sh-title">${sec.title}</div><div class="sh-desc">${sec.desc}</div></div>
+      <div class="sh-meta"><span class="sh-pill">Section ${si+1} of ${SECTIONS.length}</span><span class="sh-pill">${sec.labs.length} labs</span></div>`;
+    view.appendChild(hdr);
+
+    const labsDiv=document.createElement('div');
+    labsDiv.className='labs';
+    sec.labs.forEach((lab,li)=>{
+      labsDiv.appendChild(buildLab(lab,si,li,sec));
+    });
+    view.appendChild(labsDiv);
+    c.appendChild(view);
+  });
+}
+
+function buildLab(lab,si,li,sec){
+  const key=lab.id;
+  const card=document.createElement('div');
+  card.className='lab';
+
+  const head=document.createElement('div');
+  head.className='lab-head';
+  const isDone=done.has(key);
+  head.innerHTML=`
+    <div class="lab-num ${sec.nc}">${li+1}</div>
+    <div class="lab-info">
+      <div class="lab-title">${lab.title}</div>
+      <div class="lab-sub">${lab.sub}</div>
+    </div>
+    <span class="lbadge ${lab.badge}">${lab.bl}</span>
+    <div class="tick${isDone?' done':''}" title="Mark complete">✓</div>
+    <span class="chev">⌄</span>`;
+  head.querySelector('.tick').onclick=e=>{
+    e.stopPropagation();
+    done.has(key)?done.delete(key):done.add(key);
+    saveDone(); updateProg();
+    e.target.classList.toggle('done',done.has(key));
+  };
+  head.onclick=()=>card.classList.toggle('open');
+
+  const body=document.createElement('div');
+  body.className='lab-body';
+  body.appendChild(buildBody(lab,si));
+  card.appendChild(head);
+  card.appendChild(body);
+  return card;
+}
+
+function buildBody(lab,si){
+  const d=document.createElement('div');
+  d.className='lb-inner';
+
+  // Objective + Why
+  d.innerHTML=`<div class="ow-row">
+    <div class="ow-card ow-obj"><div class="ow-ico">🎯</div><div><strong>Objective:</strong> ${lab.obj}</div></div>
+    <div class="ow-card ow-why"><div class="ow-ico">💡</div><div><strong>Why this matters:</strong> ${lab.why}</div></div>
+  </div>`;
+
+  // Pre + Result
+  d.innerHTML+=`<div class="pr-row">
+    <div class="pr-card pr-pre"><div class="pr-lbl">Prerequisites</div><ul class="prl">${lab.pre.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="pr-card pr-res"><div class="pr-lbl">Expected results</div><ul class="prl">${lab.result.map(r=>`<li>${r}</li>`).join('')}</ul></div>
+  </div>`;
+
+  // Steps
+  const slbl=document.createElement('div');
+  slbl.className='slbl';
+  slbl.textContent='Step-by-step instructions';
+  d.appendChild(slbl);
+
+  const stepsDiv=document.createElement('div');
+  stepsDiv.className='steps';
+  lab.steps.forEach((s,idx)=>{
+    const st=document.createElement('div');
+    st.className='step';
+    let extra='';
+    if(s.f){
+      extra+='<table class="ft"><thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead><tbody>';
+      s.f.forEach(f=>{ extra+=`<tr><td class="fn">${f.f}</td><td class="fv">${f.v}</td><td class="fd">${f.d}</td></tr>`; });
+      extra+='</tbody></table>';
+    }
+    if(s.w) extra+=`<div class="warn"><div class="bi">⚠️</div><div>${s.w}</div></div>`;
+    if(s.tp) extra+=`<div class="tip"><div class="bi">💡</div><div><strong>Tip:</strong> ${s.tp}</div></div>`;
+    if(s.inf) extra+=`<div class="info"><div class="bi">ℹ️</div><div>${s.inf}</div></div>`;
+    if(s.v){
+      extra+=`<div class="voucher"><div class="vlbl">${s.v.lbl}</div>`;
+      s.v.rows.forEach(r=>{
+        extra+=`<div class="ve"><div class="va">${r.a}</div>`;
+        extra+=r.dr?`<div class="vdr">Dr ${r.dr}</div>`:`<div class="vbl"></div>`;
+        extra+=r.cr?`<div class="vcr">Cr ${r.cr}</div>`:`<div class="vbl"></div>`;
+        extra+='</div>';
+      });
+      extra+='</div>';
+    }
+    st.innerHTML=`<div class="sdot sd-${si%6}">${idx+1}</div><div class="step-c"><div class="step-t">${s.t}</div><div class="step-b">${s.b}${extra}</div></div>`;
+    stepsDiv.appendChild(st);
+  });
+  d.appendChild(stepsDiv);
+
+  // WBS table
+  if(lab.wbs){
+    const wlbl=document.createElement('div');
+    wlbl.className='slbl';
+    wlbl.textContent='WBS Template — enter in D365FO';
+    d.appendChild(wlbl);
+    const wr=document.createElement('div');
+    wr.className='wbs-wrap';
+    let th=lab.wbs.headers.map(h=>`<th>${h}</th>`).join('');
+    let rows=lab.wbs.rows.map(r=>{
+      const isTotal=r[0].includes('TOTAL') || r[0].includes('═══');
+      const isL1=r[1]==='L1';
+      const isL2=r[1]==='L2';
+      const isL3=r[1]==='L3';
+      const rowClass=isTotal?'tot':isL1?'l1':isL2?'l2':isL3?'l3':'';
+      return `<tr><td class="${rowClass}">${r[0]}</td>${r.slice(1).map((c,ci)=>`<td class="${[1,2].includes(ci)?'hrs':ci>=3?'cost':''}">${c}</td>`).join('')}</tr>`;
+    }).join('');
+    wr.innerHTML=`<table class="wbs"><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table>`;
+    d.appendChild(wr);
+  }
+
+  // References
+  if(lab.refs&&lab.refs.length){
+    const rl=document.createElement('div');
+    rl.className='rlbl';
+    rl.textContent='Microsoft Learn references';
+    d.appendChild(rl);
+    const refs=document.createElement('div');
+    refs.className='refs';
+    lab.refs.forEach(r=>{
+      const a=document.createElement('a');
+      a.className='refa'; a.href=r.u; a.target='_blank'; a.rel='noopener';
+      a.innerHTML=`<div class="ri">↗</div><div class="rb-t">${r.t}</div><div class="rsrc">MS Learn</div>`;
+      refs.appendChild(a);
+    });
+    d.appendChild(refs);
+  }
+
+  // Sign-off
+  d.appendChild(buildSignoff(lab));
+  return d;
+}
+
+function buildSignoff(lab){
+  const key=lab.id;
+  const saved=JSON.parse(localStorage.getItem('pma_tm_so_'+key)||'null');
+  const so=document.createElement('div');
+  so.className='so';
+  const head=document.createElement('div');
+  head.className='so-h';
+  head.textContent='✅ Lab sign-off — confirm all outcomes';
+  const body=document.createElement('div');
+  body.className='so-b';
+  head.onclick=()=>body.classList.toggle('on');
+  so.appendChild(head);
+
+  // Outcomes table
+  let t=`<table class="oct"><thead><tr><th>Expected outcome</th><th>Done?</th><th>Notes</th></tr></thead><tbody>`;
+  lab.out.forEach((o,oi)=>{
+    const ok=saved&&saved.oc&&saved.oc[oi];
+    t+=`<tr><td>${o}</td><td style="text-align:center"><span class="occ${ok?' ok':''}" onclick="this.classList.toggle('ok')">✓</span></td><td><input type="text" style="width:100%;border:none;background:transparent;font-size:12px;color:#555;outline:none" value="${saved&&saved.ns&&saved.ns[oi]||''}" placeholder="notes..."></td></tr>`;
+  });
+  t+='</tbody></table>';
+
+  // Rating
+  const ratings=[['1','⭐ Needs review'],['2','⭐⭐ Getting there'],['3','⭐⭐⭐ Confident'],['4','⭐⭐⭐⭐ Could teach it']];
+  let rHtml='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:7px">Session rating</div><div class="rr">';
+  ratings.forEach(([v,l])=>{
+    const sel=saved&&saved.rating===v?` s${v}`:'';
+    rHtml+=`<button class="rb${sel}" data-v="${v}" onclick="selRating(this,event)">${l}</button>`;
+  });
+  rHtml+='</div>';
+
+  // Sig inputs
+  const inputs=`<div class="si-grid">
+    <div class="sif"><label>Student name</label><input type="text" id="sn-${key}" value="${saved&&saved.sn||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Student signature + date</label><input type="text" id="ss-${key}" value="${saved&&saved.ss||''}" placeholder="Sign / DD MMM YYYY"></div>
+    <div class="sif"><label>Instructor name</label><input type="text" id="in-${key}" value="${saved&&saved.in||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Instructor signature + date</label><input type="text" id="is-${key}" value="${saved&&saved.is||''}" placeholder="Sign / DD MMM YYYY"></div>
+  </div>`;
+
+  body.innerHTML=t+rHtml+inputs;
+
+  const btn=document.createElement('button');
+  btn.className='sbtn';
+  btn.textContent='Save sign-off';
+  btn.onclick=()=>{
+    const oc={},ns={};
+    body.querySelectorAll('.occ').forEach((el,i)=>oc[i]=el.classList.contains('ok'));
+    body.querySelectorAll('input[type=text]').forEach((el,i)=>{if(i<lab.out.length) ns[i]=el.value;});
+    const selBtn=body.querySelector('.rb[class*=" s"]');
+    const rating=selBtn?selBtn.dataset.v:'';
+    const data={oc,ns,rating,
+      sn:document.getElementById('sn-'+key)?.value||'',
+      ss:document.getElementById('ss-'+key)?.value||'',
+      in:document.getElementById('in-'+key)?.value||'',
+      is:document.getElementById('is-'+key)?.value||''
+    };
+    localStorage.setItem('pma_tm_so_'+key,JSON.stringify(data));
+    done.add(key); saveDone(); updateProg();
+    // Update tick on card head
+    const ticks=document.querySelectorAll('.tick');
+    ticks.forEach(t=>{ /* tick is updated by key match */ });
+    btn.textContent='✓ Saved';
+    setTimeout(()=>btn.textContent='Save sign-off',2000);
+  };
+  body.appendChild(btn);
+  so.appendChild(body);
+  return so;
+}
+
+// Expose for HTML onclick (ES module safe)
+window.scrollToSection=function(type){
+  const secMap={'tm':0,'fp':6};
+  const idx=secMap[type]||0;
+  switchSec(idx);
+  document.getElementById('main-wrap').scrollIntoView({behavior:'smooth'});
+};
+window.selRating=function(btn,e){
+  e.stopPropagation();
+  btn.closest('.rr').querySelectorAll('.rb').forEach(b=>{
+    b.className='rb';
+    b.removeAttribute('data-selected');
+  });
+  btn.className='rb s'+btn.dataset.v;
+};
+window.switchSec=switchSec;
+
+// ─────────────────────────────────────────────────────────────
+// EXPORT REPORT
+// ─────────────────────────────────────────────────────────────
+document.getElementById('exp-btn').onclick=function(){
+  const now=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  let rows='';
+  let gi=0;
+  SECTIONS.forEach((sec,si)=>{
+    sec.labs.forEach((lab,li)=>{
+      const k=lab.id;
+      const isDone=done.has(k);
+      const so=JSON.parse(localStorage.getItem('pma_tm_so_'+k)||'null');
+      const rating=so&&so.rating?'⭐'.repeat(parseInt(so.rating)):'-';
+      const ssig=(so&&so.ss)||'';
+      const isig=(so&&so.is)||'';
+      gi++;
+      rows+=`<tr style="background:${gi%2===0?'#f8f7f2':'#fff'}">
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:600;color:${['#0047cc','#006d5b','#a05a00','#5c2d91','#155724','#b84000'][si]};font-size:11px">${sec.label}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:500;font-size:12px">${lab.title}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center;color:${isDone?'#155724':'#888'};font-weight:${isDone?700:400}">${isDone?'✓ Done':'○ Pending'}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center">${rating}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${ssig}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${isig}</td>
+      </tr>`;
+    });
+  });
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PMA Lab Progress Report</title>
+<style>body{font-family:Arial,sans-serif;margin:36px;color:#1c1a16;font-size:14px}h1{font-size:20px;margin-bottom:4px}.meta{color:#888;font-size:13px;margin-bottom:18px}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#0d0d0d;color:#fff;padding:7px 9px;text-align:left;font-size:11px}.sum{display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap}.sc{background:#f5f3ef;border-radius:6px;padding:10px 16px}.sv{font-size:20px;font-weight:700}.sl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}.tip{background:#e8f0ff;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#0047cc}@media print{.tip{display:none}}</style>
+</head><body>
+<div class="tip">💡 File → Save As → .doc or .docx &nbsp;|&nbsp; Ctrl+P to print</div>
+<h1>D365FO PMA Lab — T&amp;M Complete Guide · Progress Report</h1>
+<div class="meta">Date: ${now} &nbsp;·&nbsp; Demo company: USMF</div>
+<div class="sum">
+<div class="sc"><div class="sv">${done.size}/${TOTAL}</div><div class="sl">Labs done</div></div>
+<div class="sc"><div class="sv">${Math.round(done.size/TOTAL*100)}%</div><div class="sl">Complete</div></div>
+<div class="sc"><div class="sv">6</div><div class="sl">Sections</div></div>
+<div class="sc"><div class="sv">3</div><div class="sl">Industry scenarios</div></div>
+</div>
+<table><thead><tr><th>Section</th><th>Lab</th><th>Status</th><th>Rating</th><th>Student</th><th>Instructor</th></tr></thead><tbody>${rows}</tbody></table>
+<div style="margin-top:44px;display:flex;gap:80px">
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Student signature &amp; date</div></div>
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Instructor signature &amp; date</div></div>
+</div></body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`PMA_TM_Lab_Progress_${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+};
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+buildNav();
+buildViews();
+updateProg();
+
+
+</script>
+</body>
+</html>

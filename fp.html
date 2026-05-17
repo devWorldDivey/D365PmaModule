@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>D365FO — Fixed Price Lab Guide</title>
+<meta name="description" content="Complete hands-on lab guide for D365FO Fixed Price projects — base setup, WIP accounting, both recognition methods, milestone invoicing, WIP elimination, and 2 industry scenarios with WBS templates.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & TOKENS ───────────────────────────────────── */
+:root{
+  --ink:#0d0d0d;--ink2:#0a1a17;--paper:#f5faf9;
+  --line:#d4e8e4;--line2:#b0d5ce;
+  --blue:#0047cc;--blue-bg:#e8f0ff;--blue-mid:#b3c8f5;
+  --teal:#006d5b;--teal-bg:#e0f5f1;--teal-mid:#7ecbbf;
+  --amber:#a05a00;--amber-bg:#fff4e0;--amber-mid:#f5c97a;
+  --purple:#5c2d91;--purple-bg:#f0eaff;--purple-mid:#c4a8f5;
+  --green:#155724;--green-bg:#e8f5e9;--green-mid:#81c784;
+  --red:#c41c1c;--red-bg:#ffebeb;--red-mid:#f5a3a3;
+  --orange:#b84000;--orange-bg:#fff0e6;
+  --mono:'Syne Mono',monospace;--sans:'Inter',sans-serif;--display:'Syne',sans-serif;
+  /* FP accent — teal dominant */
+  --accent:#006d5b;--accent-bg:#e0f5f1;--accent-mid:#4dcfbe;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:#0d0d0d;font-size:14px;line-height:1.65}
+
+/* ── TOP NAV ─────────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:200;background:#071410;
+  display:flex;align-items:center;padding:0 24px;height:52px;
+  gap:0;flex-wrap:nowrap;overflow:hidden;
+}
+.nav-brand{
+  font-family:var(--display);font-size:13px;font-weight:700;
+  color:#fff;white-space:nowrap;margin-right:16px;flex-shrink:0;
+  letter-spacing:-.01em;
+}
+.nav-type-badge{
+  font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;
+  background:rgba(77,207,190,.2);color:#4dcfbe;
+  border:1px solid rgba(77,207,190,.3);white-space:nowrap;
+  flex-shrink:0;margin-right:12px;font-family:var(--display);
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.nav-tabs{display:flex;gap:0;overflow-x:auto;flex:1;-ms-overflow-style:none;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{
+  color:rgba(255,255,255,.4);font-size:11px;font-weight:500;
+  padding:0 12px;height:52px;display:flex;align-items:center;
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .15s;white-space:nowrap;user-select:none;
+  font-family:var(--display);
+}
+.ntab:hover{color:rgba(255,255,255,.7)}
+.ntab.on{color:#fff;border-bottom-color:#4dcfbe}
+.nav-right{margin-left:auto;flex-shrink:0;padding-left:10px;display:flex;align-items:center;gap:8px}
+.nav-switch{
+  font-size:11px;font-weight:600;color:#5b8fff;
+  text-decoration:none;background:rgba(91,143,255,.12);
+  border:1px solid rgba(91,143,255,.3);border-radius:20px;
+  padding:3px 11px;white-space:nowrap;transition:background .15s;flex-shrink:0;
+}
+.nav-switch:hover{background:rgba(91,143,255,.22)}
+.nav-home{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:color .15s}
+.nav-home:hover{color:rgba(255,255,255,.7)}
+.pbadge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.65);white-space:nowrap;font-family:var(--display);flex-shrink:0}
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero{background:#071410;padding:48px 28px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% 0%,rgba(0,109,91,.2),transparent 65%)}
+.hero::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.01) 0,rgba(255,255,255,.01) 1px,transparent 0,transparent 8px)}
+.hero-inner{position:relative;z-index:1}
+.hero-lbl{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.1);border-radius:4px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:4px 12px;margin-bottom:16px;font-family:var(--display)}
+.hero h1{font-family:var(--display);font-size:clamp(26px,5vw,46px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-.03em;margin-bottom:10px}
+.hero h1 .hl{color:#4dcfbe}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.45);max-width:540px;margin:0 auto 24px;line-height:1.7}
+.hero-chips{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:5px;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:4px 11px;font-size:11px;font-weight:500;color:rgba(255,255,255,.55)}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.d-blue{background:#5b8fff}.d-teal{background:#4dcfbe}.d-amber{background:#f5c97a}.d-purple{background:#c4a8f5}.d-green{background:#81c784}.d-orange{background:#ffb347}
+
+/* ── STATS ───────────────────────────────────────────── */
+.stats{background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto}
+.stat{padding:14px 22px;border-right:1px solid var(--line);flex-shrink:0}
+.stat-n{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em;color:#006d5b}
+.stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-top:2px}
+
+/* ── LAYOUT ──────────────────────────────────────────── */
+.wrap{max-width:1020px;margin:0 auto;padding:28px 18px 80px}
+.sec-view{display:none}
+.sec-view.on{display:block;animation:rise .22s ease}
+@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION HEADER ──────────────────────────────────── */
+.sec-hdr{border-radius:12px;padding:20px 24px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.sh-0{background:var(--teal-bg);border-left:4px solid var(--teal)}.sh-0 .sh-title{color:var(--teal)}
+.sh-1{background:#e8fff9;border-left:4px solid #00967c}.sh-1 .sh-title{color:#00967c}
+.sh-2{background:var(--green-bg);border-left:4px solid var(--green)}.sh-2 .sh-title{color:var(--green)}
+.sh-3{background:var(--orange-bg);border-left:4px solid var(--orange)}.sh-3 .sh-title{color:var(--orange)}
+.sh-4{background:var(--blue-bg);border-left:4px solid var(--blue)}.sh-4 .sh-title{color:var(--blue)}
+.sh-5{background:var(--purple-bg);border-left:4px solid var(--purple)}.sh-5 .sh-title{color:var(--purple)}
+.sh-title{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.sh-desc{font-size:13px;color:#555;line-height:1.6;max-width:580px}
+.sh-meta{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.sh-pill{font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:rgba(0,0,0,.06);color:#0d0d0d;white-space:nowrap}
+
+/* ── LAB CARDS ───────────────────────────────────────── */
+.labs{display:flex;flex-direction:column;gap:9px}
+.lab{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;transition:border-color .15s}
+.lab:hover{border-color:var(--line2)}
+.lab.open{border-color:#7ecbbf}
+.lab-head{display:grid;grid-template-columns:42px 1fr auto auto auto;gap:10px;align-items:center;padding:12px 16px;cursor:pointer;user-select:none}
+.lab-num{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;font-weight:700;flex-shrink:0}
+.ln-0{background:var(--teal-bg);color:var(--teal)}.ln-1{background:#e8fff9;color:#00967c}
+.ln-2{background:var(--green-bg);color:var(--green)}.ln-3{background:var(--orange-bg);color:var(--orange)}
+.ln-4{background:var(--blue-bg);color:var(--blue)}.ln-5{background:var(--purple-bg);color:var(--purple)}
+.lab-info{min-width:0}
+.lab-title{font-size:13.5px;font-weight:600;color:#0d0d0d;margin-bottom:2px;font-family:var(--display)}
+.lab-sub{font-size:11px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
+.lb-s{background:#d4f5ee;color:#006d5b}.lb-t{background:#e0fff8;color:#00967c}
+.lb-i{background:#ede0ff;color:#5c2d91}.lb-r{background:#e8f5e9;color:#155724}
+.lb-w{background:#e8f0ff;color:#0047cc}.lb-sc{background:#ffebeb;color:#c41c1c}
+.tick{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;font-size:11px;color:transparent}
+.tick.done{background:var(--teal);border-color:var(--teal);color:#fff}
+.chev{font-size:14px;color:#bbb;transition:transform .2s;flex-shrink:0}
+.lab.open .chev{transform:rotate(180deg)}
+
+/* ── LAB BODY ────────────────────────────────────────── */
+.lab-body{display:none;border-top:1px solid var(--line)}
+.lab.open .lab-body{display:block;animation:rise .18s ease}
+.lb-inner{padding:16px 18px}
+.ow-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ow-card{border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.6;display:flex;gap:7px}
+.ow-obj{background:var(--teal-bg);color:#004d42}
+.ow-why{background:var(--amber-bg);color:var(--amber)}
+.ow-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.pr-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pr-card{border-radius:7px;padding:10px 13px;font-size:12px;line-height:1.55}
+.pr-pre{background:#f0faf8;border:1px solid var(--line);color:#444}
+.pr-res{background:var(--teal-bg);border:1px solid var(--teal-mid);color:var(--teal)}
+.pr-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;opacity:.7}
+.prl{list-style:none;display:flex;flex-direction:column;gap:3px}
+.prl li{display:flex;gap:6px;align-items:flex-start}
+.prl li::before{content:'›';flex-shrink:0;opacity:.5;font-size:15px;margin-top:-1px}
+.slbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.steps{display:flex;flex-direction:column;position:relative;margin-bottom:16px}
+.steps::before{content:'';position:absolute;left:18px;top:26px;bottom:26px;width:2px;background:var(--line);z-index:0}
+.step{display:flex;gap:12px;position:relative;z-index:1;padding:3px 0}
+.sdot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:700;flex-shrink:0;background:#fff;border:2px solid var(--line);margin-top:2px}
+.sd-0{border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
+.sd-1{border-color:#00967c;color:#00967c;background:#e8fff9}
+.sd-2{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+.sd-3{border-color:var(--orange);color:var(--orange);background:var(--orange-bg)}
+.sd-4{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.sd-5{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
+.step-c{flex:1;padding-bottom:12px}
+.step-t{font-size:13px;font-weight:600;color:#0d0d0d;margin-bottom:4px;font-family:var(--display)}
+.step-b{font-size:13px;color:#444;line-height:1.6}
+.step-b code{font-family:var(--mono);font-size:11px;background:#e8f5f2;border:1px solid var(--line);padding:1px 5px;border-radius:3px;color:#004d42}
+.np{display:inline-flex;align-items:center;gap:3px;background:#071410;color:#fff;border-radius:4px;padding:3px 9px;font-family:var(--mono);font-size:10.5px;margin:4px 0;flex-wrap:wrap}
+.np .sep{opacity:.35}
+.ft{width:100%;border-collapse:collapse;margin:7px 0 3px;font-size:12.5px}
+.ft th{background:#0d2a20;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.7);padding:6px 9px;text-align:left;border-bottom:2px solid var(--line)}
+.ft td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.ft tr:last-child td{border-bottom:none}
+.fn{font-family:var(--mono);font-size:11px;color:var(--teal);font-weight:500}
+.fv{color:#006d5b;font-family:var(--mono);font-size:11px;background:var(--teal-bg);padding:1px 5px;border-radius:3px}
+.fd{color:#666;font-size:12px}
+.warn{background:var(--red-bg);border:1px solid var(--red-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--red);display:flex;gap:7px;margin:6px 0}
+.tip{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:var(--amber);display:flex;gap:7px;margin:6px 0}
+.info{background:var(--teal-bg);border:1px solid var(--teal-mid);border-radius:7px;padding:9px 12px;font-size:12.5px;color:#004d42;display:flex;gap:7px;margin:6px 0}
+.bi{font-size:15px;flex-shrink:0;margin-top:1px}
+.voucher{background:#f0faf8;border:1px solid var(--line);border-radius:7px;padding:10px 13px;margin:7px 0}
+.vlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:6px}
+.ve{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 0}
+.va{color:#333;font-size:11.5px;font-family:var(--mono);flex:1}
+.vdr{color:var(--red);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vcr{color:var(--teal);font-weight:600;font-family:var(--mono);font-size:11.5px;min-width:100px;text-align:right}
+.vbl{min-width:100px}
+.wbs-wrap{overflow-x:auto;margin:8px 0}
+.wbs{width:100%;border-collapse:collapse;font-size:12px}
+.wbs th{background:#071410;color:rgba(255,255,255,.8);padding:7px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.wbs td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.wbs tr:nth-child(even) td{background:#f0faf8}
+.wbs .l1{font-weight:700;color:var(--teal);background:var(--teal-bg)!important}
+.wbs .l2{font-weight:600;color:#333;padding-left:20px}
+.wbs .l3{color:#555;padding-left:36px}
+.wbs .tot{font-weight:700}
+.wbs .hrs{text-align:right;font-family:var(--mono);font-size:11px}
+.wbs .cost{text-align:right;font-family:var(--mono);font-size:11px;color:var(--teal)}
+.rlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:16px 0 7px;display:flex;align-items:center;gap:7px}
+.rlbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.refs{display:flex;flex-direction:column;gap:5px;margin-bottom:3px}
+.refa{display:flex;align-items:flex-start;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:8px 11px;text-decoration:none;color:#0d0d0d;transition:background .15s,border-color .15s}
+.refa:hover{background:var(--teal-bg);border-color:var(--teal-mid)}
+.ri{color:var(--teal);font-size:13px;flex-shrink:0;margin-top:2px}
+.rb-t{font-size:12px;font-weight:500;color:var(--teal);margin-bottom:1px}
+.rb-u{font-size:10px;color:#aaa;word-break:break-all;font-family:var(--mono)}
+.rsrc{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;align-self:flex-start;background:var(--teal-bg);color:var(--teal)}
+.so{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:14px;overflow:hidden}
+.so-h{display:flex;align-items:center;gap:7px;padding:10px 14px;cursor:pointer;font-size:12.5px;font-weight:600;background:#f0faf8;color:#555;user-select:none}
+.so-h:hover{background:var(--line)}
+.so-b{display:none;padding:14px}
+.so-b.on{display:block;animation:rise .18s ease}
+.oct{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px}
+.oct th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;padding:6px 9px;border-bottom:1px solid var(--line);text-align:left}
+.oct td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+.oct tr:last-child td{border-bottom:none}
+.occ{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:transparent;transition:all .15s}
+.occ.ok{background:var(--teal);border-color:var(--teal);color:#fff}
+.rr{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.rb{border:1px solid var(--line);background:transparent;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s;color:#555}
+.rb:hover{background:var(--teal-bg)}
+.rb.s1{background:var(--red-bg);border-color:var(--red-mid);color:var(--red)}
+.rb.s2{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.rb.s3{background:var(--teal-bg);border-color:var(--teal-mid);color:var(--teal)}
+.rb.s4{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.si-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.sif label{font-size:11px;font-weight:500;color:#888;display:block;margin-bottom:3px}
+.sif input{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:13px;font-family:var(--sans);background:var(--paper);color:#0d0d0d}
+.sif input:focus{outline:none;border-color:var(--teal-mid)}
+.sbtn{background:#071410;color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:opacity .15s}
+.sbtn:hover{opacity:.82}
+.pstrip{background:#fff;border-top:1px solid var(--line);padding:0 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;bottom:0;z-index:100}
+.ps-lbl{font-size:12px;font-weight:600;color:#555;padding:10px 0;white-space:nowrap}
+.ps-trk{flex:1;min-width:160px;height:5px;background:var(--line);border-radius:3px;overflow:hidden;max-width:280px}
+.ps-fill{height:100%;border-radius:3px;background:var(--teal);transition:width .4s}
+.ps-pct{font-size:12px;font-weight:600;color:var(--teal);min-width:32px;font-family:var(--display)}
+.ps-exp{margin-left:auto;background:#071410;color:#fff;border:none;border-radius:6px;padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.ps-exp:hover{opacity:.82}
+.footer{background:#071410;padding:24px 28px;text-align:center}
+.footer p{font-size:12px;color:rgba(255,255,255,.3);margin-bottom:4px}
+.footer a{color:rgba(77,207,190,.6);text-decoration:none}
+.footer a:hover{color:rgba(77,207,190,.9)}
+@media(max-width:680px){
+  .ow-row,.pr-row,.si-grid{grid-template-columns:1fr}
+  .lab-head{grid-template-columns:36px 1fr auto auto}
+  .lbadge{display:none}
+  .sec-hdr{grid-template-columns:1fr}
+  .sh-meta{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+  .nav-switch{display:none}
+}
+@media(max-width:460px){
+  .nav-brand{font-size:12px}
+  .ntab{font-size:10px;padding:0 8px}
+  .hero h1{font-size:22px}
+}
+@media print{
+  .nav,.pstrip,.footer{display:none!important}
+  .sec-view{display:block!important;page-break-after:always;break-after:page}
+  .lab-body{display:block!important}
+  .so-b{display:block!important}
+  .lab{page-break-inside:avoid;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-brand">D365FO · PMA</span>
+  <span class="nav-type-badge">Fixed Price</span>
+  <div class="nav-tabs" id="ntabs"></div>
+  <div class="nav-right">
+    <a class="nav-home" href="labs.html">⌂ Labs</a>
+    <a class="nav-switch" href="tm.html">⏱ Time &amp; Material →</a>
+    <a class="nav-switch" href="investment.html" style="color:#a78bfa;background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.25)">🏗️ Investment →</a>
+
+    <a href="internal.html" style="font-size:11px;font-weight:600;color:#f59e0b;text-decoration:none;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">👥</a>
+    <a href="cost.html" style="font-size:11px;font-weight:600;color:#10b981;text-decoration:none;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">💰</a>
+    <a href="time.html" style="font-size:11px;font-weight:600;color:#ef4444;text-decoration:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0">🕒</a>
+    <span class="pbadge" id="pbadge">0 / 0 done</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-lbl">🧪 Hands-on Lab · D365FO PMA · Demo USMF</div>
+    <h1>Fixed Price<br><span class="hl">Complete Lab Guide</span></h1>
+    <div class="hero-sub">Start from scratch — WIP project groups, both recognition methods (% Completion & Completed Contract), milestone invoicing, WIP elimination, and 2 industry scenarios with WBS templates.</div>
+    <div class="hero-chips">
+      <div class="chip"><span class="dot d-teal"></span>S1 · Base Setup</div>
+      <div class="chip"><span class="dot d-teal"></span>S2 · WIP Cycle</div>
+      <div class="chip"><span class="dot d-green"></span>S3 · ERP Scenario + WBS</div>
+      <div class="chip"><span class="dot d-orange"></span>S4 · Building Scenario + WBS</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-n">4</div><div class="stat-l">Sections</div></div>
+  <div class="stat"><div class="stat-n" id="total-lbl">11</div><div class="stat-l">Labs</div></div>
+  <div class="stat"><div class="stat-n">USMF</div><div class="stat-l">Demo company</div></div>
+  <div class="stat"><div class="stat-n">2</div><div class="stat-l">WBS templates</div></div>
+  <div class="stat"><div class="stat-n">WIP</div><div class="stat-l">Accounting focus</div></div>
+</div>
+
+<!-- MAIN -->
+<div class="wrap" id="main-wrap"><div id="sec-views"></div></div>
+
+<!-- PROGRESS STRIP -->
+<div class="pstrip">
+  <span class="ps-lbl">Lab progress</span>
+  <div class="ps-trk"><div class="ps-fill" id="ps-fill" style="width:0%"></div></div>
+  <span class="ps-pct" id="ps-pct">0%</span>
+  <button class="ps-exp" id="exp-btn">📄 Export progress report</button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>D365FO Fixed Price Lab Guide · Demo company USMF · All references link to official Microsoft Learn documentation</p>
+  <p><a href="index.html">⌂ Home</a> &nbsp;·&nbsp; <a href="tm.html">⏱ Switch to Time &amp; Material</a> &nbsp;·&nbsp; <a href="https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview" target="_blank">MS Learn: Revenue Recognition</a></p>
+</div>
+
+<script>
+const SECTIONS = [
+{id:0,label:"S1 · Base Setup",title:"Section 1 — Base Setup: FP Parameters, Groups & Contract",
+ desc:"Set up everything D365FO needs for a Fixed Price project: WIP-based project group, cost and revenue profiles, estimate methods, and milestone billing rules.",
+ cls:"sh-1",nc:"ln-1",
+ labs:[
+  {id:"0-0",badge:"lb-s",bl:"Setup",
+   title:"FP Project Group — Balance (WIP) Posting",
+   sub:"Project management and accounting › Setup › Posting › Project groups",
+   obj:"Create project group FP-IMPLEMENT with Balance (WIP) posting — the critical difference from T&M groups.",
+   why:"The most important distinction between T&M and Fixed Price in D365FO is the ledger posting method. FP uses Balance (WIP) — costs accumulate on the balance sheet until an estimate posts them to P&L. Getting this wrong means your P&L is wrong from day one.",
+   pre:["PMA parameters configured (this guide Lab 1)","GL accounts for WIP, revenue, and cost exist"],
+   result:["FP-IMPLEMENT group created with Balance posting","WIP accounts mapped","Difference from T&M P&L posting clearly articulated"],
+   steps:[
+    {t:"Create FP Project group",b:'<span class="np">Project management and accounting <span class="sep">›</span> Setup <span class="sep">›</span> Posting <span class="sep">›</span> Project groups</span><br>New:',f:[{f:"Project group",v:"FP-IMPLEMENT",d:""},{f:"Name",v:"Fixed Price Implementation Projects",d:""},{f:"Project type",v:"Fixed-price",d:"Restricts to FP only"}],w:null,tp:null,inf:null,v:null},
+    {t:"Set Ledger FastTab — Balance posting",b:"Set ALL transaction type cost postings to <strong>Balance</strong>:",f:[{f:"Hour — Cost",v:"Balance",d:"Hour costs go to WIP balance sheet, NOT P&L"},{f:"Expense — Cost",v:"Balance",d:""},{f:"Fee — Cost",v:"Balance",d:""},{f:"Item — Cost",v:"Balance",d:""},{f:"Revenue",v:"Accrue revenue",d:"Revenue accrued via periodic estimates"}],w:"CRITICAL: Balance = costs held on balance sheet as WIP. If accidentally set to P&L, costs hit income statement immediately — wrong for FP accounting.",tp:"Draw on whiteboard: T&M costs flow straight to P&L. FP costs pool in WIP until estimates release them. This is the core FP accounting concept.",inf:null,v:{lbl:"GL — Hour journal on FP Balance project (costs in WIP, not P&L)",rows:[{a:"130100 WIP — Cost value (hours)",dr:"USD 1,500.00",cr:""},{a:"Payroll allocation offset",dr:"",cr:"USD 1,500.00"},{a:"P&L Cost account 601100",v:"NOT POSTED — in WIP only",dr:"—",cr:"—"}]}},
+    {t:"T&M vs FP posting comparison",b:"",f:[{f:"T&M: P&L method",v:"Dr 601100 Cost / Cr Payroll",d:"Hits income statement immediately"},{f:"FP: Balance method",v:"Dr 130100 WIP / Cr Payroll",d:"Balance sheet only until estimate runs"},{f:"FP WIP — Cost value",v:"130100",d:"Accumulates costs on balance sheet"},{f:"FP WIP — Invoiced on account",v:"220100",d:"Customer billings before revenue recognised"},{f:"FP WIP — Sales value",v:"130200",d:"Revenue recognised via estimate"}],w:null,tp:null,inf:null,v:null}
+   ],
+   out:["FP-IMPLEMENT created with Balance posting","WIP account structure understood","T&M vs FP difference articulated"],
+   refs:[{t:"Configure accounting for billable projects",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/project-accounting/configure-accounting-billable-projects"}]},
+
+  {id:"0-1",badge:"lb-s",bl:"Setup",
+   title:"Revenue Recognition Methods: % Completion vs Completed Contract",
+   sub:"Project management and accounting › Projects › Fixed-price revenue estimate projects",
+   obj:"Configure and compare both FP revenue recognition methods: Completed Contract and Percentage of Completion.",
+   why:"Choosing the wrong recognition method is an IFRS 15 compliance issue. Completed Contract defers all revenue until 100% done. Percentage of Completion spreads revenue proportionally. Your auditors will ask which you use and why.",
+   pre:["FP-IMPLEMENT project group created","FP project PROJ-FP-001 in In process"],
+   result:["Both methods compared with GL entries","Method selected with justification","Accounting implications of each understood"],
+   steps:[
+    {t:"Completed Contract — key behaviour",b:"",f:[{f:"Method",v:"Completed contract",d:"Revenue recognised ONLY when 100% complete"},{f:"WIP behaviour",v:"All costs accumulate in WIP until elimination",d:"Nothing in P&L until project finishes"},{f:"Use when",v:"Short projects under 3 months or when % completion unreliable",d:""},{f:"Risk",v:"P&L flatlines then spikes at completion",d:""}],w:null,tp:"Construction companies often use Completed Contract for small jobs. For multi-year projects, % completion is more appropriate.",inf:null,v:{lbl:"GL — Completed Contract: costs in WIP, zero revenue until done",rows:[{a:"130100 WIP — Cost value (accumulates)",dr:"USD 15,000.00",cr:""},{a:"Payroll / AP offset",dr:"",cr:"USD 15,000.00"},{a:"P&L Revenue — ZERO until 100%",dr:"$0",cr:"$0"}]}},
+    {t:"Percentage of Completion — key behaviour",b:"",f:[{f:"Method",v:"Completed percentage",d:"Revenue recognised proportionally as % of work done"},{f:"% calculation",v:"Actual cost ÷ Total estimated cost",d:"e.g. USD 15k ÷ USD 100k = 15% complete"},{f:"Revenue recognised",v:"15% × USD 150k contract = USD 22,500",d:"Recognised before invoicing"},{f:"Use when",v:"Long-term projects with measurable progress",d:""},{f:"Risk",v:"Requires reliable cost-to-complete estimates",d:""}],w:null,tp:null,inf:null,v:{lbl:"GL — % Completion estimate posted (15% complete, USD 150k contract)",rows:[{a:"130200 WIP — Sales value",dr:"USD 22,500.00",cr:""},{a:"401100 Accrued revenue — sales value",dr:"",cr:"USD 22,500.00"}]}}
+   ],
+   out:["Both methods compared with GL entries","Method selected for project with justification"],
+   refs:[{t:"Manage revenue estimates",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/rev-rec-completed-contract-method"},{t:"Revenue recognition overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview"}]},
+
+  {id:"0-2",badge:"lb-s",bl:"Setup",
+   title:"Milestone Billing Rules for FP Projects",
+   sub:"Project management and accounting › Projects › Project contracts › Billing rules",
+   obj:"Create a milestone billing schedule for a USD 150,000 fixed price contract with 4 milestone payments.",
+   why:"Fixed price billing is milestone-driven — you don't invoice monthly. Milestones define when the customer pays. Misconfigured milestones cause wrong invoices, revenue recognition errors, and billing disputes.",
+   pre:["FP contract CONT-FP-001 created","PROJ-FP-001 in In process"],
+   result:["4 milestones totalling USD 150,000","Milestone completion process understood","Milestone invoice GL entry reviewed"],
+   steps:[
+    {t:"Open billing rules",b:'<span class="np">All projects <span class="sep">›</span> PROJ-FP-001 <span class="sep">›</span> Setup <span class="sep">›</span> Billing rules</span><br>New:',f:[{f:"Contract line type",v:"Milestone",d:"FP projects use Milestone billing rules"}],w:null,tp:null,inf:null,v:null},
+    {t:"Add 4 milestones",b:"",f:[{f:"M1: Project Kickoff",v:"USD 30,000 — 01/02/2026",d:"20% of contract"},{f:"M2: Design Complete",v:"USD 37,500 — 01/04/2026",d:"25%"},{f:"M3: UAT Sign-off",v:"USD 45,000 — 01/07/2026",d:"30%"},{f:"M4: Go-Live Complete",v:"USD 37,500 — 01/09/2026",d:"25%"}],w:"Milestones must total USD 150,000. D365FO does NOT warn if they don't — underbilling will result.",tp:null,inf:null,v:null},
+    {t:"Mark milestone complete and invoice",b:"Milestone 1 reached → select line → Mark as complete → invoice proposal → post.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — FP milestone invoice posted (M1: USD 30,000)",rows:[{a:"120100 Customer receivable",dr:"USD 30,000.00",cr:""},{a:"220100 WIP — Invoiced on account",dr:"",cr:"USD 30,000.00"}]}}
+   ],
+   out:["4 milestones created totalling USD 150,000","Milestone completion and invoice process understood","WIP — Invoiced on account GL entry reviewed"],
+   refs:[{t:"Project contracts — billing rules",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-contracts"},{t:"Project invoicing — fixed price",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-invoicing"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 8 — FP TRANSACTIONS ════════════════════,
+{id:1,label:"S2 · WIP Cycle",title:"Section 2 — FP Transactions & Monthly WIP Cycle",
+ desc:"Post all cost transactions to a Fixed Price project, run the monthly WIP estimate, post milestone invoices, and run WIP elimination at completion.",
+ cls:"sh-1",nc:"ln-1",
+ labs:[
+  {id:"1-0",badge:"lb-t",bl:"Transaction",
+   title:"Post Costs to FP Project — WIP Accumulation",
+   sub:"Same journals as T&M — observe WIP balance sheet outcome",
+   obj:"Post hours, expenses, and items to PROJ-FP-001 and verify costs accumulate in WIP balance sheet accounts (not P&L).",
+   why:"The transaction posting process for FP is identical to T&M — same journals, same menus. The difference is entirely the GL result. Understanding WHY costs go to WIP instead of P&L is the conceptual leap that makes FP accounting click.",
+   pre:["PROJ-FP-001 in In process (FP-IMPLEMENT group)"],
+   result:["80 hours posted — WIP cost (not P&L)","Expenses and items in WIP","P&L shows ZERO — understood why"],
+   steps:[
+    {t:"Post 80 hours (same as S2 Lab 1)",b:"Hour journal → PROJ-FP-001 → ConsultHours → 80 hrs → Cost USD 150.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Hour journal on FP project (Balance — WIP not P&L)",rows:[{a:"130100 WIP — Cost value (hours)",dr:"USD 12,000.00",cr:""},{a:"Payroll allocation",dr:"",cr:"USD 12,000.00"},{a:"601100 P&L Cost",v:"NOT POSTED",dr:"—",cr:"—"}]}},
+    {t:"Post USD 5,000 expense",b:"Expense journal → PROJ-FP-001 → TravelExp → USD 5,000.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Expense on FP project",rows:[{a:"130100 WIP — Cost value (expenses)",dr:"USD 5,000.00",cr:""},{a:"200100 AP offset",dr:"",cr:"USD 5,000.00"}]}},
+    {t:"Review WIP balance",b:'<span class="np">All projects <span class="sep">›</span> PROJ-FP-001 <span class="sep">›</span> Manage <span class="sep">›</span> WIP</span><br>130100 shows USD 17,000. P&L shows ZERO.',f:null,w:null,tp:"Show a trial balance: WIP on balance sheet growing, P&L flat. This is the visual that makes FP accounting click for beginners.",inf:null,v:null}
+   ],
+   out:["Hours and expenses posted to FP project","WIP balance sheet confirmed — P&L zero","T&M vs FP posting difference visually demonstrated"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"1-1",badge:"lb-t",bl:"Transaction",
+   title:"Run Monthly WIP Estimate — Percentage of Completion",
+   sub:"Project management and accounting › Periodic › Estimates",
+   obj:"Run the month-end revenue estimate using % Completion, review the % calculated, and post the WIP estimate entries to P&L.",
+   why:"The estimate is unique to Fixed Price projects. It is the monthly calculation that releases costs and revenue from WIP to P&L. Every FP project accountant runs this at month-end. Skipping it = unrecognised revenue = wrong financial statements.",
+   pre:["Costs posted (this guide Lab 3)","Forecast to complete entered"],
+   result:["% completion calculated — 20%","Revenue recognised: USD 30,000 (20% × USD 150k)","WIP estimate posted to P&L"],
+   steps:[
+    {t:"Enter forecast to complete",b:'<span class="np">All projects <span class="sep">›</span> PROJ-FP-001 <span class="sep">›</span> Plan <span class="sep">›</span> Hour forecast</span><br>Enter 320 remaining hours × USD 150 = USD 48,000.',f:[{f:"Total estimated cost",v:"USD 17,000 + USD 48,000 + other = USD 85,000",d:""},{f:"% completion",v:"17,000 ÷ 85,000 = 20%",d:""}],w:null,tp:"Accurate forecast to complete (FTC) is critical. Optimistic FTC = higher % = more revenue recognised early. Auditors scrutinise FTC assumptions.",inf:null,v:null},
+    {t:"Create and calculate estimate",b:'<span class="np">Project management and accounting <span class="sep">›</span> Periodic <span class="sep">›</span> Estimates</span><br>Select FP estimate project → Estimate.',f:[{f:"Period end",v:"31/01/2026",d:""},{f:"Assessment principle",v:"Completed percentage",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Review and post estimate",b:"Review: 20% complete → Revenue USD 30,000 → Post.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — WIP estimate posted (20% complete, USD 150k contract)",rows:[{a:"130200 WIP — Sales value",dr:"USD 30,000.00",cr:""},{a:"401100 Accrued revenue — sales value",dr:"",cr:"USD 30,000.00"}]}},
+    {t:"WIP balance after estimate",b:"",f:[{f:"130100 WIP — Cost (Dr)",v:"USD 17,000",d:"Costs accumulated"},{f:"130200 WIP — Sales (Dr)",v:"USD 30,000",d:"Revenue recognised"},{f:"P&L Revenue 401100",v:"Cr USD 30,000",d:"Month-end income statement"}],w:null,tp:"Run estimates every month-end. A missed estimate = understated revenue = wrong P&L.",inf:null,v:null}
+   ],
+   out:["% completion calculated: 20%","Revenue recognised USD 30,000 via estimate","WIP balance sheet shows both cost and sales value WIP"],
+   refs:[{t:"Manage revenue estimates",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/rev-rec-completed-contract-method"}]},
+
+  {id:"1-2",badge:"lb-t",bl:"Transaction",
+   title:"Milestone Invoice — FP On-account Billing",
+   sub:"Invoice proposals › Milestone on-account billing",
+   obj:"Post Milestone 1 invoice (USD 30,000) and understand how WIP — Invoiced on account offsets the WIP sales value.",
+   why:"FP invoice proposals select completed milestones — not cost transactions. The milestone invoice creates an Invoiced on account WIP entry representing billing that may be ahead of or behind recognised revenue.",
+   pre:["Milestone 1 marked complete","WIP estimate posted"],
+   result:["Milestone 1 invoice USD 30,000 posted","WIP — Invoiced on account entry understood","Net WIP balance sheet reconciled"],
+   steps:[
+    {t:"Mark milestone complete",b:'Billing rules → Milestone 1 → Mark as complete.',f:null,w:null,tp:null,inf:null,v:null},
+    {t:"Create and post milestone invoice",b:'Invoice proposals → New → Milestone 1 → Post.',f:null,w:null,tp:null,inf:null,v:{lbl:"GL — FP milestone 1 invoice (USD 30,000)",rows:[{a:"120100 Customer receivable",dr:"USD 30,000.00",cr:""},{a:"220100 WIP — Invoiced on account",dr:"",cr:"USD 30,000.00"}]}},
+    {t:"Reconcile WIP balance sheet",b:"After M1 invoice + estimate:",f:[{f:"130100 WIP Cost (Dr)",v:"USD 17,000",d:""},{f:"130200 WIP Sales (Dr)",v:"USD 30,000",d:""},{f:"220100 WIP Invoiced (Cr)",v:"USD 30,000",d:""},{f:"Net WIP",v:"Dr USD 17,000",d:"Only cost remains — billing = recognised revenue"}],w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Milestone invoice posted — USD 30,000 AR","WIP Invoiced on account explained","Net WIP = cost only when billing = recognised revenue"],
+   refs:[{t:"Project invoicing",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/project-invoicing"}]},
+
+  {id:"1-3",badge:"lb-t",bl:"Transaction",
+   title:"WIP Elimination at Project Completion",
+   sub:"Project management and accounting › Periodic › Estimates › Eliminate",
+   obj:"Run WIP elimination at 100% completion — clear all WIP balance sheet accounts and post final cost and revenue to P&L.",
+   why:"WIP elimination is the final FP accounting step. It clears the balance sheet WIP and posts all final revenue and cost to P&L simultaneously. This affects both statements at once — every FP project accountant must master this process.",
+   pre:["Project 100% complete","All milestones invoiced","Final estimate at 100%"],
+   result:["WIP elimination run — all WIP cleared to zero","P&L: USD 150,000 revenue / USD 100,000 cost / USD 50,000 profit","Project set to Finished"],
+   steps:[
+    {t:"Run final estimate at 100%",b:"FTC = 0. Recalculate — 100% complete.",f:[{f:"% completion",v:"100%",d:""},{f:"Total revenue",v:"USD 150,000",d:""},{f:"Post final estimate",v:"Run and post",d:""}],w:null,tp:null,inf:null,v:null},
+    {t:"Run WIP elimination",b:'<span class="np">Project management and accounting <span class="sep">›</span> Periodic <span class="sep">›</span> Estimates → Eliminate</span>',f:null,w:null,tp:null,inf:null,v:{lbl:"GL — WIP elimination (project 100% complete)",rows:[{a:"601100 Project cost (P&L) — RECOGNISED",dr:"USD 100,000.00",cr:""},{a:"130100 WIP — Cost value (CLEARED)",dr:"",cr:"USD 100,000.00"},{a:"130200 WIP — Sales value (CLEARED)",dr:"USD 150,000.00",cr:""},{a:"401100 Invoiced revenue (RECOGNISED)",dr:"",cr:"USD 150,000.00"},{a:"220100 WIP — Invoiced on account (CLEARED)",dr:"USD 150,000.00",cr:""},{a:"Clearing / offset",dr:"",cr:"USD 150,000.00"}]}},
+    {t:"Set project to Finished",b:'Project stage → Finished. Run project statement to confirm: P&L = USD 50k profit, WIP = zero.',f:null,w:null,tp:"Show project statement BEFORE and AFTER elimination side by side. Before: costs in WIP, P&L shows estimates only. After: full revenue and cost on P&L, zero WIP. This visual comparison makes elimination tangible.",inf:null,v:null}
+   ],
+   out:["WIP elimination run — balance sheet cleared to zero","P&L: USD 150k revenue / USD 100k cost / USD 50k profit","Project stage = Finished","Before/after project statement comparison completed"],
+   refs:[{t:"Manage revenue estimates — elimination",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/rev-rec-completed-contract-method"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 9 — FP ERP SCENARIO + WBS ══════════════,
+{id:2,label:"S3 · ERP Scenario",title:"Section 3 — FP ERP Implementation Scenario + WBS",
+ desc:"Complete Fixed Price % Completion scenario for a D365FO ERP implementation — USD 200,000 contract, 6 phases, 6 billing milestones, full WBS.",
+ cls:"sh-4",nc:"ln-4",
+ labs:[
+  {id:"2-0",badge:"lb-w",bl:"WBS",
+   title:"FP ERP Implementation WBS — USD 200,000",
+   sub:"PROJ-FP-ERP · Fixed Price · Percentage of Completion recognition",
+   obj:"Build a complete 6-phase WBS for a D365FO ERP implementation on a USD 200,000 fixed price contract with milestone billing at each phase.",
+   why:"ERP implementations are the most common FP project type in consulting. This WBS mirrors real-world D365FO projects your students will manage.",
+   pre:["PROJ-FP-ERP created (FP type, FP-IMPLEMENT group)","Contract CONT-FP-ERP: USD 200,000 with US-013","% Completion method configured"],
+   result:["6-phase WBS created","Milestone billing amounts mapped to phases","Template exported for reuse"],
+   steps:[
+    {t:"Set up 6 billing milestones",b:"",f:[{f:"M1: Discovery complete",v:"USD 20,000 (10%) — 01/02/2026",d:""},{f:"M2: Design sign-off",v:"USD 30,000 (15%) — 01/04/2026",d:""},{f:"M3: Build complete",v:"USD 50,000 (25%) — 01/06/2026",d:""},{f:"M4: UAT sign-off",v:"USD 40,000 (20%) — 01/08/2026",d:""},{f:"M5: Go-live",v:"USD 40,000 (20%) — 01/09/2026",d:""},{f:"M6: Hypercare complete",v:"USD 20,000 (10%) — 01/11/2026",d:""}],w:"All milestones must total USD 200,000.",tp:null,inf:null,v:null},
+    {t:"Build the ERP WBS",b:"See WBS table. Use effort hours even on FP — they drive the % completion calculation.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   wbs:{headers:["Task","Level","Hours","Cost (USD)","Milestone billing","Category"],
+    rows:[
+     ["1 — DISCOVERY","L1","","","",""],
+     ["1.1 Kickoff & governance","L2","16 hrs","USD 2,400","—","ConsultHours"],
+     ["1.2 Current state (AS-IS)","L2","40 hrs","USD 6,000","—","ConsultHours"],
+     ["1.3 Requirements (Finance)","L2","32 hrs","USD 4,800","—","ConsultHours"],
+     ["1.4 Requirements (SCM + PMA)","L2","32 hrs","USD 4,800","—","ConsultHours"],
+     ["1.5 Requirements specification","L2","24 hrs","USD 3,600","—","ConsultHours"],
+     ["1.6 Project management","L2","16 hrs","USD 2,400","M1: USD 20,000","MgmtFee"],
+     ["— PHASE 1 TOTAL","","160 hrs","USD 24,000","USD 20,000 billed",""],
+     ["2 — SOLUTION DESIGN","L1","","","",""],
+     ["2.1 D365FO architecture","L2","40 hrs","USD 6,000","—","ConsultHours"],
+     ["2.2 Chart of accounts redesign","L2","24 hrs","USD 3,600","—","ConsultHours"],
+     ["2.3 PMA module design","L2","32 hrs","USD 4,800","—","ConsultHours"],
+     ["2.4 Integration design","L2","40 hrs","USD 6,000","—","ConsultHours"],
+     ["2.5 Data migration design","L2","24 hrs","USD 3,600","—","ConsultHours"],
+     ["2.6 Security design","L2","16 hrs","USD 2,400","—","ConsultHours"],
+     ["2.7 Design review & sign-off","L2","16 hrs","USD 2,400","M2: USD 30,000","ConsultHours"],
+     ["— PHASE 2 TOTAL","","192 hrs","USD 28,800","USD 30,000 billed",""],
+     ["3 — BUILD & CONFIGURE","L1","","","",""],
+     ["3.1 Finance module (GL/AP/AR)","L2","80 hrs","USD 12,000","—","ConsultHours"],
+     ["3.2 PMA module","L2","60 hrs","USD 9,000","—","ConsultHours"],
+     ["3.3 SCM module","L2","60 hrs","USD 9,000","—","ConsultHours"],
+     ["3.4 Custom development","L2","80 hrs","USD 12,000","—","ConsultHours"],
+     ["3.5 Integration development","L2","60 hrs","USD 9,000","—","ConsultHours"],
+     ["3.6 Data migration scripts","L2","40 hrs","USD 6,000","—","ConsultHours"],
+     ["3.7 D365FO licences (PO)","L2","—","USD 20,000","M3: USD 50,000","Materials"],
+     ["— PHASE 3 TOTAL","","380 hrs + items","USD 77,000","USD 50,000 billed",""],
+     ["4 — TEST","L1","","","",""],
+     ["4.1 System integration testing","L2","60 hrs","USD 9,000","—","ConsultHours"],
+     ["4.2 Data migration testing","L2","40 hrs","USD 6,000","—","ConsultHours"],
+     ["4.3 User acceptance testing","L2","80 hrs","USD 12,000","—","ConsultHours"],
+     ["4.4 Performance testing","L2","24 hrs","USD 3,600","—","ConsultHours"],
+     ["4.5 UAT sign-off","L2","16 hrs","USD 2,400","M4: USD 40,000","ConsultHours"],
+     ["— PHASE 4 TOTAL","","220 hrs","USD 33,000","USD 40,000 billed",""],
+     ["5 — GO-LIVE","L1","","","",""],
+     ["5.1 Cutover planning","L2","32 hrs","USD 4,800","—","ConsultHours"],
+     ["5.2 Data migration execution","L2","40 hrs","USD 6,000","—","ConsultHours"],
+     ["5.3 Go-live support (3 days)","L2","24 hrs","USD 3,600","—","ConsultHours"],
+     ["5.4 Travel — go-live team","L2","—","USD 4,500","—","TravelExp"],
+     ["5.5 Go-live sign-off","L2","8 hrs","USD 1,200","M5: USD 40,000","ConsultHours"],
+     ["— PHASE 5 TOTAL","","104 hrs + travel","USD 20,100","USD 40,000 billed",""],
+     ["6 — HYPERCARE","L1","","","",""],
+     ["6.1 Hypercare support (30 days)","L2","60 hrs","USD 9,000","—","ConsultHours"],
+     ["6.2 Knowledge transfer","L2","24 hrs","USD 3,600","—","ConsultHours"],
+     ["6.3 Handover documentation","L2","16 hrs","USD 2,400","—","ConsultHours"],
+     ["6.4 Project closure sign-off","L2","8 hrs","USD 1,200","M6: USD 20,000","ConsultHours"],
+     ["— PHASE 6 TOTAL","","108 hrs","USD 16,200","USD 20,000 billed",""],
+     ["═══ CONTRACT TOTAL","","1,164 hrs + items","USD 199,100","USD 200,000 total",""]
+    ]
+   },
+   out:["6-phase ERP WBS created with milestones","Cost vs billing reconciled","WBS template exported"],
+   refs:[{t:"Project management and accounting overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/prod-pma/overview-project-management-accounting"}]},
+
+  {id:"2-1",badge:"lb-sc",bl:"Scenario",
+   title:"FP ERP — Phase 1+2 Cost, Estimate, Invoice Cycle",
+   sub:"PROJ-FP-ERP · Phases 1+2 complete · % Completion",
+   obj:"Run the complete FP accounting cycle for Phases 1+2: post costs to WIP, run % completion estimate, invoice milestones, reconcile balance sheet.",
+   why:"This is the monthly workflow every FP project accountant follows. Running it with real ERP project numbers makes the abstract accounting concrete.",
+   pre:["ERP WBS created (this guide Lab 1)","Phase 1+2 work in progress"],
+   result:["Phase 1+2 costs: USD 52,800 in WIP","% completion: 26.5% → Revenue USD 53,000","Milestones 1+2 invoiced: USD 50,000","WIP balance sheet reconciled"],
+   steps:[
+    {t:"Post Phase 1+2 costs (352 hrs)",b:"Hour journals for all Phase 1+2 hours from WBS:",f:[{f:"Total hours",v:"352 hrs × avg USD 150 = USD 52,800",d:"All to WIP 130100"}],w:null,tp:null,inf:null,v:null},
+    {t:"Run % completion estimate",b:"FTC = 812 hrs + items = USD 146,300. Total estimate = USD 199,100. % = 26.5%. Revenue = 26.5% × USD 200k = USD 53,000.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — WIP estimate (26.5% complete)",rows:[{a:"130200 WIP — Sales value",dr:"USD 53,000.00",cr:""},{a:"401100 Accrued revenue",dr:"",cr:"USD 53,000.00"}]}},
+    {t:"Invoice M1 (USD 20k) + M2 (USD 30k)",b:"Mark milestones complete → invoice proposals → post.",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Milestone 1+2 invoices cumulative",rows:[{a:"120100 Customer receivable",dr:"USD 50,000.00",cr:""},{a:"220100 WIP — Invoiced on account",dr:"",cr:"USD 50,000.00"}]}},
+    {t:"Reconcile WIP balance sheet",b:"",f:[{f:"130100 WIP Cost (Dr)",v:"USD 52,800",d:""},{f:"130200 WIP Sales (Dr)",v:"USD 53,000",d:""},{f:"220100 WIP Invoiced (Cr)",v:"USD 50,000",d:""},{f:"Net WIP",v:"Dr USD 55,800",d:"Clears at project completion"}],w:null,tp:null,inf:null,v:null}
+   ],
+   out:["Phase 1+2 cycle completed end-to-end","% completion estimate run","Milestones 1+2 invoiced","WIP reconciled"],
+   refs:[{t:"Manage revenue estimates",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/rev-rec-completed-contract-method"}]}
+ ]
+},
+
+// ══════════════════════ SECTION 10 — FP BUILDING SCENARIO ══════════════,
+{id:3,label:"S4 · Building",title:"Section 4 — FP Commercial Building Scenario + WBS",
+ desc:"Fixed Price commercial construction project using Completed Contract recognition — revenue deferred until practical completion. Includes a realistic over-budget scenario.",
+ cls:"sh-5",nc:"ln-5",
+ labs:[
+  {id:"3-0",badge:"lb-w",bl:"WBS",
+   title:"FP Building Project WBS — USD 500,000 Completed Contract",
+   sub:"PROJ-FP-BUILD · Fixed Price USD 500,000 · Completed Contract",
+   obj:"Build a 4-phase construction WBS for a commercial fit-out on a Fixed Price contract using Completed Contract revenue recognition with retention.",
+   why:"Construction FP contracts with Completed Contract recognition are a distinct scenario from % completion ERP projects. Revenue is deferred until practical completion — the WBS tracks costs and drives milestone billing but revenue recognition is all-or-nothing.",
+   pre:["PROJ-FP-BUILD created (FP type)","FP-CONSTRUCT group with Completed Contract method","Contract USD 500,000 with retention clause"],
+   result:["4-phase WBS created","Completed Contract method configured","Retention milestone structure included"],
+   steps:[
+    {t:"Configure Completed Contract group",b:"Create FP-CONSTRUCT project group:",f:[{f:"Project group",v:"FP-CONSTRUCT",d:""},{f:"Ledger — all costs",v:"Balance",d:"Same WIP posting"},{f:"Estimate method",v:"Completed contract",d:"Revenue deferred until 100% — KEY difference from FP-IMPLEMENT"}],w:null,tp:"The project group setup is identical to FP-IMPLEMENT. The only difference is the estimate method. This setting is on the revenue ESTIMATE project.",inf:null,v:null},
+    {t:"Milestones with 5% retention",b:"",f:[{f:"M1: Structural complete",v:"USD 125,000 — less 5% = USD 118,750 invoiced",d:""},{f:"M2: MEP complete",v:"USD 150,000 — less 5% = USD 142,500 invoiced",d:""},{f:"M3: Fit-out complete",v:"USD 150,000 — less 5% = USD 142,500 invoiced",d:""},{f:"M4: Practical completion",v:"USD 75,000 + all retention = USD 96,250 invoiced",d:""}],w:"Retention in D365FO: post a negative on-account transaction for 5% of each milestone. Release by posting positive on-account at practical completion.",tp:null,inf:null,v:null},
+    {t:"Build WBS",b:"See WBS table.",f:null,w:null,tp:null,inf:null,v:null}
+   ],
+   wbs:{headers:["Task","Level","Hours","Materials (USD)","Subcontracts (USD)","Milestone"],
+    rows:[
+     ["1 — STRUCTURAL WORKS","L1","","","",""],
+     ["1.1 Excavation & foundations","L2","—","—","USD 45,000","—"],
+     ["1.2 Structural steel frame","L2","120 hrs","USD 120,000","USD 30,000","—"],
+     ["1.3 Concrete floors & core","L2","80 hrs","USD 40,000","USD 20,000","—"],
+     ["1.4 Structural sign-off","L2","16 hrs","—","—","M1: USD 125,000"],
+     ["— PHASE 1 TOTAL","","216 hrs","USD 160,000","USD 95,000",""],
+     ["2 — MEP & SERVICES","L1","","","",""],
+     ["2.1 Electrical installation","L2","—","USD 25,000","USD 50,000","—"],
+     ["2.2 Plumbing & drainage","L2","—","USD 20,000","USD 35,000","—"],
+     ["2.3 HVAC systems","L2","—","USD 35,000","USD 55,000","—"],
+     ["2.4 Fire suppression","L2","—","USD 12,000","USD 18,000","—"],
+     ["2.5 MEP commissioning","L2","16 hrs","—","—","M2: USD 150,000"],
+     ["— PHASE 2 TOTAL","","16 hrs","USD 92,000","USD 158,000",""],
+     ["3 — FIT-OUT","L1","","","",""],
+     ["3.1 Partitioning & ceilings","L2","160 hrs","USD 20,000","USD 35,000","—"],
+     ["3.2 Flooring & tiling","L2","—","USD 30,000","USD 18,000","—"],
+     ["3.3 Joinery & fixtures","L2","—","USD 40,000","USD 28,000","—"],
+     ["3.4 Painting & finishes","L2","80 hrs","USD 8,000","USD 14,000","—"],
+     ["3.5 Fit-out inspection","L2","8 hrs","—","—","M3: USD 150,000"],
+     ["— PHASE 3 TOTAL","","248 hrs","USD 98,000","USD 95,000",""],
+     ["4 — COMMISSIONING","L1","","","",""],
+     ["4.1 Systems commissioning","L2","80 hrs","—","USD 10,000","—"],
+     ["4.2 Defects rectification","L2","120 hrs","USD 5,000","—","—"],
+     ["4.3 Practical completion cert.","L2","24 hrs","—","—","M4: USD 75k + retention"],
+     ["— PHASE 4 TOTAL","","224 hrs","USD 5,000","USD 10,000",""],
+     ["═══ CONTRACT TOTAL","","704 hrs","USD 355,000","USD 358,000","USD 500,000"]
+    ]
+   },
+   out:["FP construction WBS built — 4 phases","Completed Contract method configured","Retention billing structure set up"],
+   refs:[{t:"Manage revenue estimates — completed contract",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/rev-rec-completed-contract-method"}]},
+
+  {id:"3-1",badge:"lb-sc",bl:"Scenario",
+   title:"FP Building — Completed Contract: Zero Revenue Until Done",
+   sub:"PROJ-FP-BUILD · P&L zero during construction — spike at completion",
+   obj:"Demonstrate the Completed Contract lifecycle: costs accumulate in WIP for months with zero P&L revenue, then elimination at practical completion recognises everything simultaneously.",
+   why:"The Completed Contract P&L profile — flat zero then a spike — is the hardest concept for non-accountants. CFOs ask 'why does our profitable project show nothing on the P&L?' This lab answers that question with real D365FO entries.",
+   pre:["PROJ-FP-BUILD WBS created","Construction costs posting over several months"],
+   result:["Construction costs in WIP — P&L shows ZERO revenue","Monthly estimates post zero revenue (Completed Contract)","Practical completion: elimination reveals USD 500k revenue / USD 713k cost = USD 213k loss","IFRS 15 onerous contract concept introduced"],
+   steps:[
+    {t:"Post all construction costs to WIP",b:"Post labour, materials, and subcontract over project duration:",f:[{f:"Phase 1 structural",v:"USD 255,000 to WIP",d:""},{f:"Phase 2 MEP",v:"USD 250,000 to WIP",d:""},{f:"Phase 3 fit-out",v:"USD 193,000 to WIP",d:""},{f:"Phase 4 commissioning",v:"USD 15,000 to WIP",d:""},{f:"Total WIP cost",v:"USD 713,000",d:"Note: project over budget"}],w:null,tp:null,inf:null,v:null},
+    {t:"Monthly estimates — zero revenue",b:"Run estimates each month-end. Completed Contract = zero revenue every month.",f:[{f:"Each monthly estimate",v:"Revenue recognised: USD 0",d:"All costs in WIP — P&L shows nothing"},{f:"Month 1-6",v:"P&L: flat at zero",d:"Management sees nothing on income statement"}],w:null,tp:"Show the trial balance monthly — WIP growing, P&L flat. This is the visual that makes Completed Contract tangible for students.",inf:null,v:null},
+    {t:"Invoice milestones during construction",b:"All milestone invoices post to WIP — Invoiced on account — NOT to revenue.",f:[{f:"M1-M4 invoices cumulative",v:"USD 500,000 (less retention held)",d:""},{f:"WIP — Invoiced on account",v:"USD 500,000",d:"Customer paid in full but no revenue yet"}],w:null,tp:null,inf:null,v:null},
+    {t:"Run WIP elimination at practical completion",b:"Set FTC = 0, estimate at 100%, run elimination:",f:null,w:null,tp:null,inf:null,v:{lbl:"GL — Elimination at completion (LOSS-MAKING project)",rows:[{a:"601100 Project cost (P&L) — ALL COST RECOGNISED",dr:"USD 713,000.00",cr:""},{a:"130100 WIP — Cost value (CLEARED)",dr:"",cr:"USD 713,000.00"},{a:"130200 WIP — Sales value",dr:"USD 500,000.00",cr:""},{a:"401100 Revenue (RECOGNISED)",dr:"",cr:"USD 500,000.00"},{a:"NET P&L RESULT",v:"LOSS: USD 213,000",dr:"",cr:""}]}},
+    {t:"IFRS 15: Onerous contract lesson",b:"The project ran USD 213k over budget — a loss contract. Under IFRS 15:",f:[{f:"When should provision be recognised?",v:"When EAC first exceeds contract value",d:"As soon as you know total costs > USD 500k"},{f:"What to do in D365FO",v:"Post a manual provision journal",d:"D365FO does not auto-create onerous contract provisions"},{f:"Key control",v:"Monthly EAC review — flag when EAC > contract value",d:""},{f:"Journal entry",v:"Dr Loss on contract / Cr Provision for loss",d:"Post via General journals"}],w:null,tp:"Use this loss scenario to teach: monthly EAC reviews matter. By Month 3 of construction, the over-budget position would have been visible — giving time to renegotiate scope or accept reduced margin.",inf:null,v:null}
+   ],
+   out:["Completed Contract mechanics demonstrated","P&L zero during construction — explained and shown in D365FO","Elimination posts USD 500k revenue + USD 713k cost simultaneously","Loss of USD 213k revealed","IFRS 15 onerous contract provision requirement understood"],
+   refs:[{t:"Manage revenue estimates — completed contract",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/rev-rec-completed-contract-method"},{t:"Revenue recognition overview",u:"https://learn.microsoft.com/en-us/dynamics365/project-operations/revenue-recognition/revenue-recognition-overview"},{t:"Manage project financials overview",u:"https://learn.microsoft.com/en-us/dynamics365/guidance/business-processes/project-to-profit-manage-project-financials-overview"}]}
+ ]
+}
+]; // END SECTIONS
+
+
+const TOTAL = SECTIONS.reduce((a,s)=>a+s.labs.length,0);
+const done  = new Set(JSON.parse(localStorage.getItem('pma_fp_done')||'[]'));
+function saveDone(){ localStorage.setItem('pma_fp_done',JSON.stringify([...done])); }
+function updateProg(){
+  const n=done.size, p=Math.round(n/TOTAL*100);
+  document.getElementById('pbadge').textContent = n+' / '+TOTAL+' done';
+  document.getElementById('ps-fill').style.width = p+'%';
+  document.getElementById('ps-pct').textContent  = p+'%';
+  document.getElementById('total-lbl').textContent = TOTAL;
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────
+let curSec=0;
+
+function buildNav(){
+  const c=document.getElementById('ntabs');
+  SECTIONS.forEach((s,i)=>{
+    const b=document.createElement('div');
+    b.className='ntab'+(i===0?' on':'');
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected',i===0?'true':'false');
+    b.textContent=s.label;
+    b.onclick=()=>switchSec(i);
+    c.appendChild(b);
+  });
+}
+
+function switchSec(i){
+  curSec=i;
+  document.querySelectorAll('.ntab').forEach((t,j)=>{
+    t.classList.toggle('on',j===i);
+    t.setAttribute('aria-selected',j===i?'true':'false');
+  });
+  document.querySelectorAll('.sec-view').forEach((v,j)=>v.classList.toggle('on',j===i));
+  document.getElementById('main-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function buildViews(){
+  const c=document.getElementById('sec-views');
+  SECTIONS.forEach((sec,si)=>{
+    const view=document.createElement('div');
+    view.className='sec-view'+(si===0?' on':'');
+
+    // Section header
+    const hdr=document.createElement('div');
+    hdr.className='sec-hdr '+sec.cls;
+    hdr.innerHTML=`<div><div class="sh-title">${sec.title}</div><div class="sh-desc">${sec.desc}</div></div>
+      <div class="sh-meta"><span class="sh-pill">Section ${si+1} of ${SECTIONS.length}</span><span class="sh-pill">${sec.labs.length} labs</span></div>`;
+    view.appendChild(hdr);
+
+    const labsDiv=document.createElement('div');
+    labsDiv.className='labs';
+    sec.labs.forEach((lab,li)=>{
+      labsDiv.appendChild(buildLab(lab,si,li,sec));
+    });
+    view.appendChild(labsDiv);
+    c.appendChild(view);
+  });
+}
+
+function buildLab(lab,si,li,sec){
+  const key=lab.id;
+  const card=document.createElement('div');
+  card.className='lab';
+
+  const head=document.createElement('div');
+  head.className='lab-head';
+  const isDone=done.has(key);
+  head.innerHTML=`
+    <div class="lab-num ${sec.nc}">${li+1}</div>
+    <div class="lab-info">
+      <div class="lab-title">${lab.title}</div>
+      <div class="lab-sub">${lab.sub}</div>
+    </div>
+    <span class="lbadge ${lab.badge}">${lab.bl}</span>
+    <div class="tick${isDone?' done':''}" title="Mark complete">✓</div>
+    <span class="chev">⌄</span>`;
+  head.querySelector('.tick').onclick=e=>{
+    e.stopPropagation();
+    done.has(key)?done.delete(key):done.add(key);
+    saveDone(); updateProg();
+    e.target.classList.toggle('done',done.has(key));
+  };
+  head.onclick=()=>card.classList.toggle('open');
+
+  const body=document.createElement('div');
+  body.className='lab-body';
+  body.appendChild(buildBody(lab,si));
+  card.appendChild(head);
+  card.appendChild(body);
+  return card;
+}
+
+function buildBody(lab,si){
+  const d=document.createElement('div');
+  d.className='lb-inner';
+
+  // Objective + Why
+  d.innerHTML=`<div class="ow-row">
+    <div class="ow-card ow-obj"><div class="ow-ico">🎯</div><div><strong>Objective:</strong> ${lab.obj}</div></div>
+    <div class="ow-card ow-why"><div class="ow-ico">💡</div><div><strong>Why this matters:</strong> ${lab.why}</div></div>
+  </div>`;
+
+  // Pre + Result
+  d.innerHTML+=`<div class="pr-row">
+    <div class="pr-card pr-pre"><div class="pr-lbl">Prerequisites</div><ul class="prl">${lab.pre.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="pr-card pr-res"><div class="pr-lbl">Expected results</div><ul class="prl">${lab.result.map(r=>`<li>${r}</li>`).join('')}</ul></div>
+  </div>`;
+
+  // Steps
+  const slbl=document.createElement('div');
+  slbl.className='slbl';
+  slbl.textContent='Step-by-step instructions';
+  d.appendChild(slbl);
+
+  const stepsDiv=document.createElement('div');
+  stepsDiv.className='steps';
+  lab.steps.forEach((s,idx)=>{
+    const st=document.createElement('div');
+    st.className='step';
+    let extra='';
+    if(s.f){
+      extra+='<table class="ft"><thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead><tbody>';
+      s.f.forEach(f=>{ extra+=`<tr><td class="fn">${f.f}</td><td class="fv">${f.v}</td><td class="fd">${f.d}</td></tr>`; });
+      extra+='</tbody></table>';
+    }
+    if(s.w) extra+=`<div class="warn"><div class="bi">⚠️</div><div>${s.w}</div></div>`;
+    if(s.tp) extra+=`<div class="tip"><div class="bi">💡</div><div><strong>Tip:</strong> ${s.tp}</div></div>`;
+    if(s.inf) extra+=`<div class="info"><div class="bi">ℹ️</div><div>${s.inf}</div></div>`;
+    if(s.v){
+      extra+=`<div class="voucher"><div class="vlbl">${s.v.lbl}</div>`;
+      s.v.rows.forEach(r=>{
+        extra+=`<div class="ve"><div class="va">${r.a}</div>`;
+        extra+=r.dr?`<div class="vdr">Dr ${r.dr}</div>`:`<div class="vbl"></div>`;
+        extra+=r.cr?`<div class="vcr">Cr ${r.cr}</div>`:`<div class="vbl"></div>`;
+        extra+='</div>';
+      });
+      extra+='</div>';
+    }
+    st.innerHTML=`<div class="sdot sd-${si%6}">${idx+1}</div><div class="step-c"><div class="step-t">${s.t}</div><div class="step-b">${s.b}${extra}</div></div>`;
+    stepsDiv.appendChild(st);
+  });
+  d.appendChild(stepsDiv);
+
+  // WBS table
+  if(lab.wbs){
+    const wlbl=document.createElement('div');
+    wlbl.className='slbl';
+    wlbl.textContent='WBS Template — enter in D365FO';
+    d.appendChild(wlbl);
+    const wr=document.createElement('div');
+    wr.className='wbs-wrap';
+    let th=lab.wbs.headers.map(h=>`<th>${h}</th>`).join('');
+    let rows=lab.wbs.rows.map(r=>{
+      const isTotal=r[0].includes('TOTAL') || r[0].includes('═══');
+      const isL1=r[1]==='L1';
+      const isL2=r[1]==='L2';
+      const isL3=r[1]==='L3';
+      const rowClass=isTotal?'tot':isL1?'l1':isL2?'l2':isL3?'l3':'';
+      return `<tr><td class="${rowClass}">${r[0]}</td>${r.slice(1).map((c,ci)=>`<td class="${[1,2].includes(ci)?'hrs':ci>=3?'cost':''}">${c}</td>`).join('')}</tr>`;
+    }).join('');
+    wr.innerHTML=`<table class="wbs"><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table>`;
+    d.appendChild(wr);
+  }
+
+  // References
+  if(lab.refs&&lab.refs.length){
+    const rl=document.createElement('div');
+    rl.className='rlbl';
+    rl.textContent='Microsoft Learn references';
+    d.appendChild(rl);
+    const refs=document.createElement('div');
+    refs.className='refs';
+    lab.refs.forEach(r=>{
+      const a=document.createElement('a');
+      a.className='refa'; a.href=r.u; a.target='_blank'; a.rel='noopener';
+      a.innerHTML=`<div class="ri">↗</div><div class="rb-t">${r.t}</div><div class="rsrc">MS Learn</div>`;
+      refs.appendChild(a);
+    });
+    d.appendChild(refs);
+  }
+
+  // Sign-off
+  d.appendChild(buildSignoff(lab));
+  return d;
+}
+
+function buildSignoff(lab){
+  const key=lab.id;
+  const saved=JSON.parse(localStorage.getItem('pma_fp_so_'+key)||'null');
+  const so=document.createElement('div');
+  so.className='so';
+  const head=document.createElement('div');
+  head.className='so-h';
+  head.textContent='✅ Lab sign-off — confirm all outcomes';
+  const body=document.createElement('div');
+  body.className='so-b';
+  head.onclick=()=>body.classList.toggle('on');
+  so.appendChild(head);
+
+  // Outcomes table
+  let t=`<table class="oct"><thead><tr><th>Expected outcome</th><th>Done?</th><th>Notes</th></tr></thead><tbody>`;
+  lab.out.forEach((o,oi)=>{
+    const ok=saved&&saved.oc&&saved.oc[oi];
+    t+=`<tr><td>${o}</td><td style="text-align:center"><span class="occ${ok?' ok':''}" onclick="this.classList.toggle('ok')">✓</span></td><td><input type="text" style="width:100%;border:none;background:transparent;font-size:12px;color:#555;outline:none" value="${saved&&saved.ns&&saved.ns[oi]||''}" placeholder="notes..."></td></tr>`;
+  });
+  t+='</tbody></table>';
+
+  // Rating
+  const ratings=[['1','⭐ Needs review'],['2','⭐⭐ Getting there'],['3','⭐⭐⭐ Confident'],['4','⭐⭐⭐⭐ Could teach it']];
+  let rHtml='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:7px">Session rating</div><div class="rr">';
+  ratings.forEach(([v,l])=>{
+    const sel=saved&&saved.rating===v?` s${v}`:'';
+    rHtml+=`<button class="rb${sel}" data-v="${v}" onclick="selRating(this,event)">${l}</button>`;
+  });
+  rHtml+='</div>';
+
+  // Sig inputs
+  const inputs=`<div class="si-grid">
+    <div class="sif"><label>Student name</label><input type="text" id="sn-${key}" value="${saved&&saved.sn||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Student signature + date</label><input type="text" id="ss-${key}" value="${saved&&saved.ss||''}" placeholder="Sign / DD MMM YYYY"></div>
+    <div class="sif"><label>Instructor name</label><input type="text" id="in-${key}" value="${saved&&saved.in||''}" placeholder="Print name"></div>
+    <div class="sif"><label>Instructor signature + date</label><input type="text" id="is-${key}" value="${saved&&saved.is||''}" placeholder="Sign / DD MMM YYYY"></div>
+  </div>`;
+
+  body.innerHTML=t+rHtml+inputs;
+
+  const btn=document.createElement('button');
+  btn.className='sbtn';
+  btn.textContent='Save sign-off';
+  btn.onclick=()=>{
+    const oc={},ns={};
+    body.querySelectorAll('.occ').forEach((el,i)=>oc[i]=el.classList.contains('ok'));
+    body.querySelectorAll('input[type=text]').forEach((el,i)=>{if(i<lab.out.length) ns[i]=el.value;});
+    const selBtn=body.querySelector('.rb[class*=" s"]');
+    const rating=selBtn?selBtn.dataset.v:'';
+    const data={oc,ns,rating,
+      sn:document.getElementById('sn-'+key)?.value||'',
+      ss:document.getElementById('ss-'+key)?.value||'',
+      in:document.getElementById('in-'+key)?.value||'',
+      is:document.getElementById('is-'+key)?.value||''
+    };
+    localStorage.setItem('pma_fp_so_'+key,JSON.stringify(data));
+    done.add(key); saveDone(); updateProg();
+    // Update tick on card head
+    const ticks=document.querySelectorAll('.tick');
+    ticks.forEach(t=>{ /* tick is updated by key match */ });
+    btn.textContent='✓ Saved';
+    setTimeout(()=>btn.textContent='Save sign-off',2000);
+  };
+  body.appendChild(btn);
+  so.appendChild(body);
+  return so;
+}
+
+// Expose for HTML onclick (ES module safe)
+window.scrollToSection=function(type){
+  const secMap={'tm':0,'fp':6};
+  const idx=secMap[type]||0;
+  switchSec(idx);
+  document.getElementById('main-wrap').scrollIntoView({behavior:'smooth'});
+};
+window.selRating=function(btn,e){
+  e.stopPropagation();
+  btn.closest('.rr').querySelectorAll('.rb').forEach(b=>{
+    b.className='rb';
+    b.removeAttribute('data-selected');
+  });
+  btn.className='rb s'+btn.dataset.v;
+};
+window.switchSec=switchSec;
+
+// ─────────────────────────────────────────────────────────────
+// EXPORT REPORT
+// ─────────────────────────────────────────────────────────────
+document.getElementById('exp-btn').onclick=function(){
+  const now=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  let rows='';
+  let gi=0;
+  SECTIONS.forEach((sec,si)=>{
+    sec.labs.forEach((lab,li)=>{
+      const k=lab.id;
+      const isDone=done.has(k);
+      const so=JSON.parse(localStorage.getItem('pma_fp_so_'+k)||'null');
+      const rating=so&&so.rating?'⭐'.repeat(parseInt(so.rating)):'-';
+      const ssig=(so&&so.ss)||'';
+      const isig=(so&&so.is)||'';
+      gi++;
+      rows+=`<tr style="background:${gi%2===0?'#f8f7f2':'#fff'}">
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:600;color:${['#0047cc','#006d5b','#a05a00','#5c2d91','#155724','#b84000'][si]};font-size:11px">${sec.label}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-weight:500;font-size:12px">${lab.title}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center;color:${isDone?'#155724':'#888'};font-weight:${isDone?700:400}">${isDone?'✓ Done':'○ Pending'}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;text-align:center">${rating}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${ssig}</td>
+        <td style="padding:6px 9px;border:1px solid #e0d9ce;font-size:11px">${isig}</td>
+      </tr>`;
+    });
+  });
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PMA Lab Progress Report</title>
+<style>body{font-family:Arial,sans-serif;margin:36px;color:#1c1a16;font-size:14px}h1{font-size:20px;margin-bottom:4px}.meta{color:#888;font-size:13px;margin-bottom:18px}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#0d0d0d;color:#fff;padding:7px 9px;text-align:left;font-size:11px}.sum{display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap}.sc{background:#f5f3ef;border-radius:6px;padding:10px 16px}.sv{font-size:20px;font-weight:700}.sl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}.tip{background:#e8f0ff;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#0047cc}@media print{.tip{display:none}}</style>
+</head><body>
+<div class="tip">💡 File → Save As → .doc or .docx &nbsp;|&nbsp; Ctrl+P to print</div>
+<h1>D365FO PMA Lab — T&amp;M Complete Guide · Progress Report</h1>
+<div class="meta">Date: ${now} &nbsp;·&nbsp; Demo company: USMF</div>
+<div class="sum">
+<div class="sc"><div class="sv">${done.size}/${TOTAL}</div><div class="sl">Labs done</div></div>
+<div class="sc"><div class="sv">${Math.round(done.size/TOTAL*100)}%</div><div class="sl">Complete</div></div>
+<div class="sc"><div class="sv">6</div><div class="sl">Sections</div></div>
+<div class="sc"><div class="sv">3</div><div class="sl">Industry scenarios</div></div>
+</div>
+<table><thead><tr><th>Section</th><th>Lab</th><th>Status</th><th>Rating</th><th>Student</th><th>Instructor</th></tr></thead><tbody>${rows}</tbody></table>
+<div style="margin-top:44px;display:flex;gap:80px">
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Student signature &amp; date</div></div>
+<div><div style="border-top:1px solid #1c1a16;width:180px;padding-top:5px;font-size:11px;color:#888;margin-top:32px">Instructor signature &amp; date</div></div>
+</div></body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`PMA_FP_Lab_Progress_${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+};
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+buildNav();
+buildViews();
+updateProg();
+
+
+</script>
+</body>
+</html>
